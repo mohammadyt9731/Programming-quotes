@@ -10,6 +10,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.example.programmingquotes.core.navigation.NavGraph
 import com.example.programmingquotes.ui.theme.ProgrammingQuotesTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,15 +20,24 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ProgrammingQuotesTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-
-                }
+            val navController = rememberNavController()
+            MyApp {
+                NavGraph(navHostController = navController)
             }
+        }
+    }
+}
+
+@Composable
+fun MyApp(
+    content: @Composable () -> Unit
+) {
+    ProgrammingQuotesTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colors.background
+        ) {
+            content()
         }
     }
 }

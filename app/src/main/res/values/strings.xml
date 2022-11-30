@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">ProgrammingQuotes</string>
+    <string name="label_p_quotes">P.Quotes</string>
+    <string name="label_generate_random">Generate Random</string>
+    <string name="content_desc_app">App Icon</string>
+    <string name="content_desc_top_bar">Top Bar Icon</string>
 </resources>
