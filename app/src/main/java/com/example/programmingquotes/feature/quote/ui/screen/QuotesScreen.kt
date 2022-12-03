@@ -14,11 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.programmingquotes.core.navigation.Screens
 import com.example.programmingquotes.feature.quote.ui.component.QuoteListItem
 import com.example.programmingquotes.feature.quote.ui.component.QuoteTopBar
 
 @Composable
-fun QuotesScreen(navHostController: NavHostController) {
+fun QuotesScreen(navHostController: NavHostController, authorName: String?) {
     val scaffoldState = rememberScaffoldState()
     Scaffold(
         modifier = Modifier
@@ -28,8 +29,9 @@ fun QuotesScreen(navHostController: NavHostController) {
         scaffoldState = scaffoldState,
         topBar = {
             QuoteTopBar(
+                modifier = Modifier.padding(horizontal = 8.dp),
                 emojiCode = (128512..128580).random(),
-                authorName = "Mohammad yazdi"
+                authorName = authorName ?: ""
             )
         }
     ) {
@@ -54,7 +56,7 @@ fun QuotesScreen(navHostController: NavHostController) {
         ) {
             items(quotes.size) { index ->
                 QuoteListItem(quote = quotes[index]) {
-                    //  navHostController.navigate(Screens.QuoteDetailScreen.route)
+                    navHostController.navigate(Screens.QuoteDetailScreen.withArg("1"))
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }

@@ -1,6 +1,7 @@
 package com.example.programmingquotes.feature.authors.ui.component
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Card
@@ -14,12 +15,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun AuthorListItem() {
+fun AuthorListItem(onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .fillMaxWidth()
-            .height(98.dp),
+            .height(98.dp)
+            .clickable { onClick() },
         shape = MaterialTheme.shapes.medium,
         border = BorderStroke(
             width = 1.dp,

@@ -8,6 +8,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.programmingquotes.core.common.Constants
 import com.example.programmingquotes.feature.authors.ui.screen.AuthorsScreen
+import com.example.programmingquotes.feature.quote.ui.screen.QuoteDetailScreen
+import com.example.programmingquotes.feature.quote.ui.screen.QuotesScreen
 import com.example.programmingquotes.feature.splash.ui.screen.SplashScreen
 
 @Composable
@@ -21,24 +23,27 @@ fun NavGraph(navHostController: NavHostController) {
         composable(route = Screens.AuthorsScreen.route) {
             AuthorsScreen(navController = navHostController)
         }
-        composable(route = Screens.QuotesScreen.route,
+        composable(route = Screens.QuotesScreen.route + "/{${Constants.AUTHOR_NAME_KEY}}",
             arguments = listOf(
                 navArgument(name = Constants.AUTHOR_NAME_KEY) {
                     type = NavType.StringType
                 }
             )
-        ) {
-
+        ) { entry ->
+            QuotesScreen(
+                navHostController = navHostController,
+                authorName = entry.arguments?.getString(Constants.AUTHOR_NAME_KEY)
+            )
         }
         composable(
-            route = Screens.QuoteDetailScreen.route,
+            route = Screens.QuoteDetailScreen.route + "/{${Constants.QUOTE_ID_KEY}}",
             arguments = listOf(
                 navArgument(name = Constants.QUOTE_ID_KEY) {
                     type = NavType.IntType
                 }
             )
-        ) {
-
+        ) { entry ->
+            QuoteDetailScreen(id = entry.arguments?.getInt(Constants.QUOTE_ID_KEY))
         }
     }
 }

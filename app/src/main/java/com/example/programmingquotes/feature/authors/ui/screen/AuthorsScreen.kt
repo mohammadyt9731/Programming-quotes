@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.example.programmingquotes.core.navigation.Screens
 import com.example.programmingquotes.feature.authors.ui.component.AppBar
 import com.example.programmingquotes.feature.authors.ui.component.AuthorListItem
 import com.example.programmingquotes.feature.authors.ui.component.GenerateRandomButton
@@ -25,7 +26,9 @@ fun AuthorsScreen(navController: NavController) {
             ) {
                 LazyColumn {
                     items(10) {
-                        AuthorListItem()
+                        AuthorListItem() {
+                            navController.navigate(Screens.QuotesScreen.withArg("Mohammad"))
+                        }
                     }
                 }
                 GenerateRandomButton(
