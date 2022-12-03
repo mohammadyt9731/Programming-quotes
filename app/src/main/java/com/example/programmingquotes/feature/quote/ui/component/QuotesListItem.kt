@@ -26,8 +26,8 @@ fun QuoteListItem(
                 shape = MaterialTheme.shapes.medium
             )
             .clip(shape = MaterialTheme.shapes.medium)
-            .padding(all = 22.dp)
             .clickable { onClick() }
+            .padding(all = 22.dp)
             .then(modifier),
         text = quote,
         style = MaterialTheme.typography.body1,

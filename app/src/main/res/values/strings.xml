@@ -4,4 +4,7 @@
     <string name="label_generate_random">Generate Random</string>
     <string name="content_desc_app">App Icon</string>
     <string name="content_desc_top_bar">Top Bar Icon</string>
+    <string name="label_share">Share</string>
+    <string name="label_open_wiki_peida">Open Wikipedia</string>
+    <string name="label_sample_quote">Nine women can\'t make a baby in one month.</string>
 </resources>

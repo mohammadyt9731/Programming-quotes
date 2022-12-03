@@ -18,7 +18,7 @@ fun GenerateRandomButton(
 ) {
     Button(
         modifier = modifier
-            .padding(bottom = 7.dp)
+            .padding(bottom = 16.dp)
             .width(188.dp)
             .height(48.dp),
         onClick = { onClick.invoke() },

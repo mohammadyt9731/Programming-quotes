@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="Theme.ProgrammingQuotes" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">@color/purple_700</item>
+        <item name="android:statusBarColor">@color/white_500</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
     </style>
 </resources>
