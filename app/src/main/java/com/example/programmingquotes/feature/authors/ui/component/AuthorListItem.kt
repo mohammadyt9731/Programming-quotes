@@ -14,9 +14,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.programmingquotes.feature.authors.ui.model.AuthorView
 
 @Composable
-fun AuthorListItem(onClick: () -> Unit) {
+fun AuthorListItem(authorView: AuthorView, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -32,36 +33,35 @@ fun AuthorListItem(onClick: () -> Unit) {
             .padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Emoji()
+        Emoji(authorView.emoji)
         Spacer(modifier = Modifier.width(4.dp))
         Text(
-            text = "Ken Thompson",
+            text = authorView.name,
             style = MaterialTheme.typography.body1
         )
         Box(modifier = Modifier.weight(1f))
-        CountCircle()
+        CountCircle(authorView.quoteCount)
     }
 
 }
 
 @Composable
-private fun Emoji() {
-    val code = (128512..128580).random()
+private fun Emoji(emojiCode: Int) {
     Text(
-        text = String(Character.toChars(code)),
+        text = String(Character.toChars(emojiCode)),
         style = MaterialTheme.typography.subtitle1.copy(fontSize = 30.sp)
     )
 }
 
 @Composable
-private fun CountCircle() {
+private fun CountCircle(quoteCount: Int) {
     Surface(
         modifier = Modifier.size(26.dp),
         shape = CircleShape,
         color = MaterialTheme.colors.primary
     ) {
         Text(
-            text = "12",
+            text = quoteCount.toString(),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.button
         )
