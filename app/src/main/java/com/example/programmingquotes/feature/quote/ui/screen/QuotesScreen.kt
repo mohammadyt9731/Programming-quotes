@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.programmingquotes.core.navigation.Screens
 import com.example.programmingquotes.feature.quote.ui.component.QuoteListItem
 import com.example.programmingquotes.feature.quote.ui.component.QuoteTopBar
