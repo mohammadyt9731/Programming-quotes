@@ -7,4 +7,6 @@
     <string name="label_share">Share</string>
     <string name="label_open_wiki_peida">Open Wikipedia</string>
     <string name="label_sample_quote">Nine women can\'t make a baby in one month.</string>
+    <string name="label_shake_your_phone_to_see_magic">Shake your phone to see magic</string>
+    <string name="label_you_can_shake_again">Tip:You can shake again.</string>
 </resources>
