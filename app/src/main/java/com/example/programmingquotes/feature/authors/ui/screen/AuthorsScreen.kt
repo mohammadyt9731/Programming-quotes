@@ -4,10 +4,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -40,18 +45,6 @@ fun AuthorsScreen(navController: NavController) {
             },
         )
     }
-
-
-    val authorViewModel: AuthorViewModel = hiltViewModel()
-
-    /* authorViewModel.insertAuthors(listOf(
-         AuthorView(name = "Mohammad", wikiUrl = "aaa", quoteCount = 12, emoji = 123),
-         AuthorView(name = "Mohammad2", wikiUrl = "asdf", quoteCount = 21, emoji = 123),
-         AuthorView(name = "Mohammad123", wikiUrl = "fads", quoteCount = 3, emoji = 123),
-         AuthorView(name = "Mohammad123123", wikiUrl = "g", quoteCount = 421, emoji = 123),
-         AuthorView(name = "Mohammad123", wikiUrl = "d", quoteCount = 3, emoji = 234),
-         AuthorView(name = "Mohammad123", wikiUrl = "d", quoteCount = 1, emoji = 234),
-     ))*/
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -61,15 +54,22 @@ private fun Body(
     scope: CoroutineScope,
     navController: NavController
 ) {
+    val authorViewModel: AuthorViewModel = hiltViewModel()
+    val authors = authorViewModel.authors.collectAsState()
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        LazyColumn(contentPadding = PaddingValues(bottom = 80.dp)) {
-            items(10) {
-                AuthorListItem {
-                    navController.navigate(Screens.QuotesScreen.withArg("Mohammad"))
+        if (authors.value.isNotEmpty()) {
+            LazyColumn(contentPadding = PaddingValues(bottom = 80.dp)) {
+                items(authors.value) { author ->
+                    AuthorListItem(author) {
+                        navController.navigate(Screens.QuotesScreen.withArg(author.name))
+                    }
                 }
             }
+        } else {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         }
         GenerateRandomButton(
             modifier = Modifier
