@@ -14,6 +14,6 @@ class QuoteLocalDataSourceImpl @Inject constructor(
     }
 
     override fun getAuthorQuotes(authorName: String): Flow<List<QuoteEntity>> {
-        return quoteDao.getAuthorQuotes()
+        TODO()
     }
 }
