@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class QuoteViewModel @Inject constructor(
+class QuoteDetailViewModel @Inject constructor(
     private val repository: QuoteRepository
 ) : ViewModel() {
 
@@ -27,21 +27,6 @@ class QuoteViewModel @Inject constructor(
     )
     val authorWithQuotes: StateFlow<AuthorWithQuotesView> = _authorWithQuotes
 
-    init {
-        var counter = 0
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.insertQuotes(
-                listOf(
-                    QuoteView(id = "${counter++}", "Mohammad yazdi", "AAAAA$counter"),
-                    QuoteView(id = "${counter++}", "Mohammad yazdi", "AAAAA$counter"),
-                    QuoteView(id = "${counter++}", "Mohammad yazdi", "AAAAA$counter"),
-                    QuoteView(id = "${counter++}", "Mohammad yazdi3", "AAAAA$counter"),
-                    QuoteView(id = "${counter++}", "Mohammad yazdi3", "AAAAA$counter"),
-                    QuoteView(id = "${counter++}", "Mohammad yazdi4", "AAAAA$counter"),
-                )
-            )
-        }
-    }
 
     fun getQuotes(authorName: String) =
         viewModelScope.launch(Dispatchers.IO) {
@@ -49,15 +34,4 @@ class QuoteViewModel @Inject constructor(
                 _authorWithQuotes.value = authorWithQuotes
             }
         }
-
-    private fun getAuthorQuotesFromApiAndInsertToDb(authorName: String) {
-        viewModelScope.launch {
-            when (repository.getAuthorQuotesFromApiAndInsertToDb(authorName = authorName)) {
-                is ResultWrapper.Success -> {}
-                is ResultWrapper.ApplicationError -> {}
-                is ResultWrapper.HttpError -> {}
-                is ResultWrapper.NetworkError -> {}
-            }
-        }
-    }
 }

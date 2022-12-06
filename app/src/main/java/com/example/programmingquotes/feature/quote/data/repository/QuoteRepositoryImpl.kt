@@ -5,7 +5,9 @@ import com.example.programmingquotes.core.data.network.safeApiCall
 import com.example.programmingquotes.feature.quote.data.datasource.local.QuoteLocalDataSource
 import com.example.programmingquotes.feature.quote.data.datasource.remote.QuoteRemoteDataSource
 import com.example.programmingquotes.feature.quote.data.db.entity.toQuoteEntity
+import com.example.programmingquotes.feature.quote.ui.model.AuthorWithQuotesView
 import com.example.programmingquotes.feature.quote.ui.model.QuoteView
+import com.example.programmingquotes.feature.quote.ui.model.toAuthorWithQuotesView
 import com.example.programmingquotes.feature.quote.ui.model.toQuoteView
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -26,20 +28,14 @@ class QuoteRepositoryImpl @Inject constructor(
                     quotes = it.quotes.map { quoteResponse ->
                         quoteResponse.toQuoteEntity()
                     })
-
-                it.quotes.map { quoteResponse ->
-                    quoteResponse.toQuoteView()
-                }
             }
+            listOf()
         }
     }
 
-    override fun getAuthorQuotes(authorName: String): Flow<List<QuoteView>> {
-        return localDataSource.getAuthorQuotes(authorName = authorName).map {
-            it.map { quote ->
-                quote.toQuoteView()
-            }
-        }
-    }
+    override fun getAuthorWithQuotes(authorName: String): Flow<AuthorWithQuotesView> =
+        localDataSource.getAuthorWithQuotes(authorName).map { it.toAuthorWithQuotesView() }
 
+    override suspend fun insertQuotes(quotes: List<QuoteView>) =
+        localDataSource.insertAuthorQuotes(quotes = quotes.map { it.toQuoteEntity() })
 }

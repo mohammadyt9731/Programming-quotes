@@ -5,42 +5,37 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.programmingquotes.R
 import com.example.programmingquotes.feature.quote.ui.component.AutoResizeText
 import com.example.programmingquotes.feature.quote.ui.component.QuoteTopBar
 import com.example.programmingquotes.feature.quote.ui.component.RoundedButton
+import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteDetailViewModel
+import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun QuoteDetailScreen(id: Int? = 0) {
+fun QuoteDetailScreen(id: Int? = 0, authorName: String? = "") {
+
     val scaffoldState = rememberScaffoldState()
-    val pagerState = rememberPagerState(initialPage = id?:0)
-
-    val quotes = listOf(
-        "Nine women can't make a baby in one month.",
-        "Nine women can't make a baby in one month. Nine women can't make a baby in one month.",
-        "Nine women can't make a baby in one month. Nine women can't make a baby in one month. Nine women can't make a baby in one month.",
-        "Nine women can't make ",
-        "Nine women can't make a one month.",
-        "Ninn't mane month.",
-        "Nine women can't make a baby in one month. Nine women can't make a baby in one month. Nine women can't make a baby in one month.Nine women can't make a baby in one month.Nine women can't make a baby in one month. Nine women can't make a baby in one month.Nine women can't make a baby in one month.Nine women can't make a baby in one month.Nine women can't make a baby in one month.Nine women can't make a baby in one month.Nine women can't make a baby in one month.",
-        "Nine women can't make a baby in one month.",
-        "Nine women can't make a baby in one month.",
-        "Nine women can't make a baby in one month.",
-        "Nine women can't make a baby in one month.",
-        "Nine women can't make a baby in one month.",
-        "Nine women can't make a baby in one month.",
-        "Nine women can't make a baby in one month.",
-    )
-
+    val pagerState = rememberPagerState(initialPage = id ?: 0)
+    var emojiState by remember {
+        mutableStateOf(0)
+    }
+    val quoteDetailViewModel: QuoteDetailViewModel = hiltViewModel()
+    val authorWithQuotes = quoteDetailViewModel.authorWithQuotes.collectAsState().value
+    emojiState = authorWithQuotes.author.emoji
+    if (authorName != null) {
+        quoteDetailViewModel.getQuotes(authorName)
+    }
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -49,26 +44,24 @@ fun QuoteDetailScreen(id: Int? = 0) {
         scaffoldState = scaffoldState,
         topBar = {
             QuoteTopBar(
-                emojiCode = (128512..128580).random(),
-                authorName = "Mohammad yazdi"
+                emojiCode = emojiState,
+                authorName = authorName ?: ""
             )
         }
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-
             HorizontalPager(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(bottom = 80.dp),
-                count = quotes.size,
+                count = authorWithQuotes.quotes.size,
                 state = pagerState
             ) { page ->
                 AutoResizeText(
-                    text = quotes[page],
+                    text = authorWithQuotes.quotes[page].quote,
                     style = MaterialTheme.typography.h1
                 )
             }
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
