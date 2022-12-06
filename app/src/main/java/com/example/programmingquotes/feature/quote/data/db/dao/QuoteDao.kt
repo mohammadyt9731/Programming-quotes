@@ -15,8 +15,4 @@ interface QuoteDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAuthorQuotes(quotes: List<QuoteEntity>)
-
-    @Transaction
-    @Query("SELECT * FROM author WHERE name=:authorName")
-    fun getAuthorWithQuotes(authorName: String): Flow<AuthorWithQuotes>
 }
