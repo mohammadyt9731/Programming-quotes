@@ -6,17 +6,11 @@ import com.example.programmingquotes.feature.quote.data.network.model.QuoteRespo
 data class QuoteView(
     val id: String,
     val author: String,
-    val en: String
+    val quote: String
 )
 
 fun QuoteEntity.toQuoteView() = QuoteView(
     id = id,
     author = author,
-    en = en
-)
-
-fun QuoteResponse.toQuoteView() = QuoteView(
-    id = id,
-    author = author,
-    en = en
+    quote = quote
 )
