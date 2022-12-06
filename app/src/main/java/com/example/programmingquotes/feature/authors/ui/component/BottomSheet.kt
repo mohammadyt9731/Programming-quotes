@@ -5,7 +5,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,12 +23,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.MutableLiveData
 import com.example.programmingquotes.R
 import com.example.programmingquotes.feature.authors.ui.viewmodel.AuthorViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
 private var isFirstLaunch = mutableStateOf(true)
@@ -58,6 +55,12 @@ fun BottomSheet(
     }
     val scope = rememberCoroutineScope()
     val randomQuote = authorViewModel.randomQuote.collectAsState()
+
+    BackHandler(enabled = bottomSheetState.isVisible) {
+        scope.launch {
+            bottomSheetState.hide()
+        }
+    }
 
     ModalBottomSheetLayout(
         sheetState = bottomSheetState,
@@ -168,7 +171,7 @@ private fun setUpSensorManager(context: Context, authorViewModel: AuthorViewMode
             acceleration = acceleration * 0.9f + delta
 
             if (acceleration > 12) {
-                if(isBottomSheetVisible.value){
+                if (isBottomSheetVisible.value) {
                     isFirstLaunch.value = false
                     authorViewModel.getRandomAuthor()
                 }
