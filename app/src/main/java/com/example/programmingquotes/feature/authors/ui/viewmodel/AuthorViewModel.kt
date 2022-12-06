@@ -32,7 +32,7 @@ class AuthorViewModel @Inject constructor(private val authorRepository: AuthorRe
                 listOf(
                     AuthorView(
                         name = "Mohammad yazdi",
-                        wikiUrl = "",
+                        wikiUrl = "https://en.wikipedia.org/wiki/Edsger W. Dijkstra",
                         quoteCount = 12,
                         emoji = generateRandomEmoji()
                     ),

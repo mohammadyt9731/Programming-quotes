@@ -50,7 +50,7 @@ fun NavGraph(navHostController: NavHostController) {
             )
         ) { entry ->
             QuoteDetailScreen(
-                id = entry.arguments?.getInt(Constants.QUOTE_INDEX_KEY),
+                index = entry.arguments?.getInt(Constants.QUOTE_INDEX_KEY),
                 authorName = entry.arguments?.getString(Constants.AUTHOR_NAME_KEY)
             )
         }

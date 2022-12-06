@@ -8,25 +8,28 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.programmingquotes.R
+import com.example.programmingquotes.core.common.openUri
+import com.example.programmingquotes.core.common.shareText
 import com.example.programmingquotes.feature.quote.ui.component.AutoResizeText
 import com.example.programmingquotes.feature.quote.ui.component.QuoteTopBar
 import com.example.programmingquotes.feature.quote.ui.component.RoundedButton
 import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteDetailViewModel
-import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun QuoteDetailScreen(id: Int? = 0, authorName: String? = "") {
+fun QuoteDetailScreen(index: Int? = 0, authorName: String? = "") {
 
+    val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
-    val pagerState = rememberPagerState(initialPage = id ?: 0)
+    val pagerState = rememberPagerState(initialPage = index ?: 0)
     var emojiState by remember {
         mutableStateOf(0)
     }
@@ -72,14 +75,16 @@ fun QuoteDetailScreen(id: Int? = 0, authorName: String? = "") {
                     modifier = Modifier.weight(1f),
                     text = stringResource(id = R.string.label_share)
                 ) {
-                    //share quote
+                    index?.let {
+                        context.shareText(text = authorWithQuotes.quotes[it].quote)
+                    }
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 RoundedButton(
                     modifier = Modifier.weight(1f),
                     text = stringResource(id = R.string.label_open_wiki_peida)
                 ) {
-                    //open wikipedia link
+                    context.openUri(uri = authorWithQuotes.author.wikiUrl)
                 }
             }
         }
