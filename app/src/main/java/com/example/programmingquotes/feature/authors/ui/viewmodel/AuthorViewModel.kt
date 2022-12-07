@@ -37,7 +37,7 @@ class AuthorViewModel @Inject constructor(private val authorRepository: AuthorRe
                         emoji = generateRandomEmoji()
                     ),
                     AuthorView(
-                        name = "Mohammad yazdi1",
+                        name = "Edsger W. Dijkstra",
                         wikiUrl = "",
                         quoteCount = 22,
                         emoji = generateRandomEmoji()

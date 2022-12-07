@@ -1,5 +1,6 @@
 package com.example.programmingquotes.feature.quote.data.repository
 
+import android.util.Log
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.core.data.network.safeApiCall
 import com.example.programmingquotes.feature.quote.data.datasource.local.QuoteLocalDataSource
@@ -18,12 +19,11 @@ class QuoteRepositoryImpl @Inject constructor(
     private val remoteDataSource: QuoteRemoteDataSource
 ) : QuoteRepository {
 
-    override suspend fun getAuthorQuotesFromApiAndInsertToDb(authorName: String): ResultWrapper<List<QuoteView>?> {
+    override suspend fun fetchAuthorQuotesFromApiAndInsertToDb(authorName: String): ResultWrapper<List<QuoteView>?> {
         return safeApiCall {
-            val response = remoteDataSource.getAuthorQuotes(authorName = authorName)
+            val response = remoteDataSource.getAuthorWithQuotes(authorName = authorName)
 
             response?.let {
-
                 localDataSource.insertAuthorQuotes(
                     quotes = it.quotes.map { quoteResponse ->
                         quoteResponse.toQuoteEntity()

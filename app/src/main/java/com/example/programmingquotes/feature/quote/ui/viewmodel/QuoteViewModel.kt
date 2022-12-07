@@ -1,12 +1,12 @@
 package com.example.programmingquotes.feature.quote.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.feature.authors.ui.model.AuthorView
 import com.example.programmingquotes.feature.quote.data.repository.QuoteRepository
 import com.example.programmingquotes.feature.quote.ui.model.AuthorWithQuotesView
-import com.example.programmingquotes.feature.quote.ui.model.QuoteView
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +27,7 @@ class QuoteViewModel @Inject constructor(
     )
     val authorWithQuotes: StateFlow<AuthorWithQuotesView> = _authorWithQuotes
 
-    init {
+ /*   init {
         var counter = 0
         viewModelScope.launch(Dispatchers.IO) {
             repository.insertQuotes(
@@ -41,22 +41,31 @@ class QuoteViewModel @Inject constructor(
                 )
             )
         }
-    }
+    }*/
 
     fun getQuotes(authorName: String) =
         viewModelScope.launch(Dispatchers.IO) {
+            fetchAuthorQuotesFromApiAndInsertToDb(authorName)
             repository.getAuthorWithQuotes(authorName = authorName).collect { authorWithQuotes ->
                 _authorWithQuotes.value = authorWithQuotes
             }
         }
 
-    private fun getAuthorQuotesFromApiAndInsertToDb(authorName: String) {
+    private fun fetchAuthorQuotesFromApiAndInsertToDb(authorName: String) {
         viewModelScope.launch {
-            when (repository.getAuthorQuotesFromApiAndInsertToDb(authorName = authorName)) {
-                is ResultWrapper.Success -> {}
-                is ResultWrapper.ApplicationError -> {}
-                is ResultWrapper.HttpError -> {}
-                is ResultWrapper.NetworkError -> {}
+            when (repository.fetchAuthorQuotesFromApiAndInsertToDb(authorName = authorName)) {
+                is ResultWrapper.Success -> {
+                    Log.i("Mohammad", "Success")
+                }
+                is ResultWrapper.ApplicationError -> {
+                    Log.i("Mohammad", "app Error")
+                }
+                is ResultWrapper.HttpError -> {
+                    Log.i("Mohammad", "http error")
+                }
+                is ResultWrapper.NetworkError -> {
+                    Log.i("Mohammad", "network error")
+                }
             }
         }
     }

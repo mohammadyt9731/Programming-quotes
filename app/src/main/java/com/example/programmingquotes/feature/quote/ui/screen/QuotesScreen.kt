@@ -25,11 +25,14 @@ fun QuotesScreen(navHostController: NavHostController, authorName: String?) {
     var emojiState by remember {
         mutableStateOf(0)
     }
+    val isFirstLaunch by rememberUpdatedState(newValue = true)
     val quoteViewModel: QuoteViewModel = hiltViewModel()
     val authorWithQuotes = quoteViewModel.authorWithQuotes.collectAsState().value
     emojiState = authorWithQuotes.author.emoji
-    if (authorName != null) {
-        quoteViewModel.getQuotes(authorName)
+    LaunchedEffect(key1 = isFirstLaunch) {
+        if (authorName != null) {
+            quoteViewModel.getQuotes(authorName)
+        }
     }
 
     Scaffold(

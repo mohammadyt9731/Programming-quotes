@@ -24,14 +24,12 @@ abstract class QuoteModule {
         @Provides
         fun provideQuoteApi(
             retrofit: Retrofit
-        ): QuoteApi {
-            return retrofit.create(QuoteApi::class.java)
-        }
+        ): QuoteApi =
+            retrofit.create(QuoteApi::class.java)
 
         @Provides
-        fun provideQuoteDao(appDatabase: AppDatabase): QuoteDao {
-            return appDatabase.quoteDao()
-        }
+        fun provideQuoteDao(appDatabase: AppDatabase): QuoteDao =
+            appDatabase.quoteDao()
     }
 
     @Binds

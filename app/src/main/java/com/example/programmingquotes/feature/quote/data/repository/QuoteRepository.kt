@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface QuoteRepository {
 
-    suspend fun getAuthorQuotesFromApiAndInsertToDb(authorName: String): ResultWrapper<List<QuoteView>?>
+    suspend fun fetchAuthorQuotesFromApiAndInsertToDb(authorName: String): ResultWrapper<List<QuoteView>?>
 
     fun getAuthorWithQuotes(authorName: String): Flow<AuthorWithQuotesView>
 

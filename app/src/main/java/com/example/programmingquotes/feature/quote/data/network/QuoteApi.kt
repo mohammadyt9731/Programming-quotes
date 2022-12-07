@@ -8,5 +8,5 @@ import retrofit2.http.Path
 interface QuoteApi {
 
     @GET("Authors/{authorName}")
-    suspend fun getAuthorQuotes(@Path("authorName") authorName: String): Response<AuthorWithQuotesResponse?>
+    suspend fun getAuthorWithQuotes(@Path("authorName") authorName: String): Response<AuthorWithQuotesResponse?>
 }
