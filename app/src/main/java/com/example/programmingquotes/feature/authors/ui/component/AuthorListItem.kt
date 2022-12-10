@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.programmingquotes.feature.authors.ui.model.AuthorView
@@ -36,10 +37,13 @@ fun AuthorListItem(authorView: AuthorView, onClick: () -> Unit) {
         Emoji(authorView.emoji)
         Spacer(modifier = Modifier.width(4.dp))
         Text(
+            modifier = Modifier
+                .weight(1f),
             text = authorView.name,
-            style = MaterialTheme.typography.body1
+            style = MaterialTheme.typography.body1,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1
         )
-        Box(modifier = Modifier.weight(1f))
         CountCircle(authorView.quoteCount)
     }
 
@@ -49,7 +53,9 @@ fun AuthorListItem(authorView: AuthorView, onClick: () -> Unit) {
 private fun Emoji(emojiCode: Int) {
     Text(
         text = String(Character.toChars(emojiCode)),
-        style = MaterialTheme.typography.subtitle1.copy(fontSize = 30.sp)
+        style = MaterialTheme.typography.subtitle1.copy(
+            fontSize = 30.sp
+        )
     )
 }
 

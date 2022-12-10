@@ -1,6 +1,6 @@
 package com.example.programmingquotes.feature.authors.data.datasource.local
 
-import com.example.programmingquotes.feature.authors.data.db.entity.AuthorDao
+import com.example.programmingquotes.feature.authors.data.db.dao.AuthorDao
 import com.example.programmingquotes.feature.authors.data.db.entity.AuthorEntity
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

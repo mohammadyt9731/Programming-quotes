@@ -33,7 +33,7 @@ object NetModule {
     }
 
     @Provides
-    fun provideBaseUrl() = "https://programming-quotes-api.herokuapp.com"
+    fun provideBaseUrl() = "http://167.235.142.70:5002/"
 
 
     @Provides

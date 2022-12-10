@@ -1,11 +1,20 @@
 package com.example.programmingquotes.feature.authors.data.repository
 
+import com.example.programmingquotes.core.common.ResultWrapper
+import com.example.programmingquotes.feature.authors.data.network.model.AuthorResponse
 import com.example.programmingquotes.feature.authors.ui.model.AuthorView
+import com.example.programmingquotes.feature.quote.ui.model.QuoteView
 import kotlinx.coroutines.flow.Flow
 
 interface AuthorRepository {
 
     suspend fun insertAuthors(authors: List<AuthorView>)
 
+    fun getRandomAuthorWithQuote()
+
+    suspend fun getRandomQuoteFromApi(): ResultWrapper<QuoteView?>
+
     fun getAuthors(): Flow<List<AuthorView>>
+
+    suspend fun getAuthorsFromApiAndInsertToDb(): ResultWrapper<Map<String, AuthorResponse>?>
 }

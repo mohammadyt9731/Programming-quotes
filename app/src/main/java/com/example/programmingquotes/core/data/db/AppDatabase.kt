@@ -2,7 +2,7 @@ package com.example.programmingquotes.core.data.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.example.programmingquotes.feature.authors.data.db.entity.AuthorDao
+import com.example.programmingquotes.feature.authors.data.db.dao.AuthorDao
 import com.example.programmingquotes.feature.authors.data.db.entity.AuthorEntity
 import com.example.programmingquotes.feature.quote.data.db.dao.QuoteDao
 import com.example.programmingquotes.feature.quote.data.db.entity.QuoteEntity

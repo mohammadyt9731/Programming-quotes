@@ -3,6 +3,8 @@ package com.example.programmingquotes.feature.authors.data.db.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.programmingquotes.core.common.generateRandomEmoji
+import com.example.programmingquotes.feature.authors.data.network.model.AuthorResponse
 import com.example.programmingquotes.feature.authors.ui.model.AuthorView
 
 @Entity(tableName = "author")
@@ -22,3 +24,11 @@ fun AuthorView.toAuthorEntity() = AuthorEntity(
     quoteCount = quoteCount,
     emoji = emoji
 )
+
+fun AuthorResponse.toAuthorEntity() = AuthorEntity(
+    name = name,
+    wikiUrl = wikiUrl,
+    quoteCount = quoteCount,
+    emoji = generateRandomEmoji()
+)
+
