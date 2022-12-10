@@ -1,6 +1,6 @@
 package com.example.programmingquotes.feature.quote.data.datasource.local
 
-import com.example.programmingquotes.feature.authors.data.db.entity.AuthorDao
+import com.example.programmingquotes.feature.authors.data.db.dao.AuthorDao
 import com.example.programmingquotes.feature.quote.data.db.dao.QuoteDao
 import com.example.programmingquotes.feature.quote.data.db.entity.QuoteEntity
 import com.example.programmingquotes.feature.quote.data.db.relation.AuthorWithQuotes
