@@ -6,6 +6,6 @@ fun <T> Response<T>.bodyOrThrow(): T? {
     if (this.isSuccessful) {
         return body()
     } else {
-        throw ServerException(code = this.code(), messageError = "Connection error")
+        throw ServerException(code = this.code(), messageError = this.message())
     }
 }

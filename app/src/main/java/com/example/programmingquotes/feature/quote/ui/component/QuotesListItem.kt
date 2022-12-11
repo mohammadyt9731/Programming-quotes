@@ -10,6 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -31,6 +32,8 @@ fun QuoteListItem(
             .then(modifier),
         text = quote,
         style = MaterialTheme.typography.body1,
-        color = MaterialTheme.colors.primary
+        color = MaterialTheme.colors.primary,
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis
     )
 }

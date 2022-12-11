@@ -4,5 +4,5 @@ import com.example.programmingquotes.feature.quote.data.network.model.AuthorWith
 
 interface QuoteRemoteDataSource {
 
-    suspend fun getAuthorQuotes(authorName: String): AuthorWithQuotesResponse?
+    suspend fun getAuthorWithQuotes(authorName: String): AuthorWithQuotesResponse?
 }

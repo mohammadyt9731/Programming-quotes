@@ -6,7 +6,7 @@ import com.example.programmingquotes.feature.quote.data.datasource.local.QuoteLo
 import com.example.programmingquotes.feature.quote.data.datasource.remote.QuoteRemoteDataSource
 import com.example.programmingquotes.feature.quote.data.datasource.remote.QuoteRemoteDataSourceImpl
 import com.example.programmingquotes.feature.quote.data.db.dao.QuoteDao
-import com.example.programmingquotes.feature.quote.data.network.QuoteApi
+import com.example.programmingquotes.feature.quote.data.network.api.QuoteApi
 import com.example.programmingquotes.feature.quote.data.repository.QuoteRepository
 import com.example.programmingquotes.feature.quote.data.repository.QuoteRepositoryImpl
 import dagger.Binds
@@ -24,14 +24,12 @@ abstract class QuoteModule {
         @Provides
         fun provideQuoteApi(
             retrofit: Retrofit
-        ): QuoteApi {
-            return retrofit.create(QuoteApi::class.java)
-        }
+        ): QuoteApi =
+            retrofit.create(QuoteApi::class.java)
 
         @Provides
-        fun provideQuoteDao(appDatabase: AppDatabase): QuoteDao {
-            return appDatabase.quoteDao()
-        }
+        fun provideQuoteDao(appDatabase: AppDatabase): QuoteDao =
+            appDatabase.quoteDao()
     }
 
     @Binds

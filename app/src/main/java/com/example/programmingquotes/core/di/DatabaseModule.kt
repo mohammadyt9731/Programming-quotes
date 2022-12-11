@@ -23,5 +23,4 @@ object DatabaseModule {
             "programming_quotes"
         ).build()
     }
-
 }

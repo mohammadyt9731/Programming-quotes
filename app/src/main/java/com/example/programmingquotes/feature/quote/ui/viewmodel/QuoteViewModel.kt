@@ -1,12 +1,14 @@
 package com.example.programmingquotes.feature.quote.ui.viewmodel
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.programmingquotes.core.common.Constants
 import com.example.programmingquotes.core.common.ResultWrapper
+import com.example.programmingquotes.core.data.network.NetworkConnectivity
 import com.example.programmingquotes.feature.authors.ui.model.AuthorView
 import com.example.programmingquotes.feature.quote.data.repository.QuoteRepository
 import com.example.programmingquotes.feature.quote.ui.model.AuthorWithQuotesView
-import com.example.programmingquotes.feature.quote.ui.model.QuoteView
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +18,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuoteViewModel @Inject constructor(
-    private val repository: QuoteRepository
+    private val repository: QuoteRepository,
+    private val networkConnectivity: NetworkConnectivity,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _authorWithQuotes = MutableStateFlow(
@@ -27,37 +31,30 @@ class QuoteViewModel @Inject constructor(
     )
     val authorWithQuotes: StateFlow<AuthorWithQuotesView> = _authorWithQuotes
 
+    private val _pageState = MutableStateFlow<ResultWrapper<Unit>>(ResultWrapper.Success(Unit))
+    val pageState: StateFlow<ResultWrapper<Unit>> = _pageState
+
     init {
-        var counter = 0
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.insertQuotes(
-                listOf(
-                    QuoteView(id = "${counter++}", "Mohammad yazdi", "AAAAA$counter"),
-                    QuoteView(id = "${counter++}", "Mohammad yazdi", "AAAAA$counter"),
-                    QuoteView(id = "${counter++}", "Mohammad yazdi", "AAAAA$counter"),
-                    QuoteView(id = "${counter++}", "Mohammad yazdi3", "AAAAA$counter"),
-                    QuoteView(id = "${counter++}", "Mohammad yazdi3", "AAAAA$counter"),
-                    QuoteView(id = "${counter++}", "Mohammad yazdi4", "AAAAA$counter"),
-                )
-            )
-        }
+        val authorName = savedStateHandle.get<String>(Constants.AUTHOR_NAME_KEY) ?: ""
+        getQuotes(authorName)
     }
 
-    fun getQuotes(authorName: String) =
+    private fun getQuotes(authorName: String) =
         viewModelScope.launch(Dispatchers.IO) {
+            fetchAuthorQuotesFromApiAndInsertToDb(authorName)
             repository.getAuthorWithQuotes(authorName = authorName).collect { authorWithQuotes ->
                 _authorWithQuotes.value = authorWithQuotes
             }
         }
 
-    private fun getAuthorQuotesFromApiAndInsertToDb(authorName: String) {
-        viewModelScope.launch {
-            when (repository.getAuthorQuotesFromApiAndInsertToDb(authorName = authorName)) {
-                is ResultWrapper.Success -> {}
-                is ResultWrapper.ApplicationError -> {}
-                is ResultWrapper.HttpError -> {}
-                is ResultWrapper.NetworkError -> {}
-            }
+    private suspend fun fetchAuthorQuotesFromApiAndInsertToDb(authorName: String) {
+        if (networkConnectivity.isNetworkConnected()) {
+            _pageState.value = ResultWrapper.Loading
+            val response =
+                repository.fetchAuthorQuotesFromApiAndInsertToDb(authorName = authorName)
+            _pageState.value = response
+        } else {
+            _pageState.value = ResultWrapper.NetworkError
         }
     }
 }

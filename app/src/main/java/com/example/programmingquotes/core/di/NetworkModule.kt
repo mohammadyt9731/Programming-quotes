@@ -1,8 +1,8 @@
 package com.example.programmingquotes.core.di
 
 import android.content.Context
-import com.example.programmingquotes.core.data.network.IsNetwork
 import com.example.programmingquotes.core.data.network.NetworkConnectivity
+import com.example.programmingquotes.core.data.network.NetworkConnectivityImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,38 +16,34 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NetModule {
+object NetworkModule {
 
     @Provides
-    fun provideLoggerInterceptor(): HttpLoggingInterceptor {
-        return HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-    }
+    fun provideLoggerInterceptor(): HttpLoggingInterceptor =
+        HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
 
     @Provides
     fun provideOkHttpClient(
         loggingInterceptor: HttpLoggingInterceptor,
-    ): OkHttpClient {
-        return OkHttpClient.Builder()
+    ): OkHttpClient =
+        OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .build()
-    }
 
     @Provides
-    fun provideBaseUrl() = "https://programming-quotes-api.herokuapp.com"
-
+    fun provideBaseUrl() = "http://167.235.142.70:5002"
 
     @Provides
     @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient, baseUrl: String): Retrofit {
-        return Retrofit.Builder()
+    fun provideRetrofit(okHttpClient: OkHttpClient, baseUrl: String): Retrofit =
+        Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-    }
+
 
     @Provides
-    fun provideNetworkCheck(@ApplicationContext context: Context): IsNetwork {
-        return NetworkConnectivity(context)
-    }
+    fun provideNetworkCheck(@ApplicationContext context: Context): NetworkConnectivity =
+        NetworkConnectivityImpl(context)
 }

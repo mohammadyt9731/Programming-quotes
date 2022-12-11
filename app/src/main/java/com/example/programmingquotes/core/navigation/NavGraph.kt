@@ -29,18 +29,14 @@ fun NavGraph(navHostController: NavHostController) {
                     type = NavType.StringType
                 }
             )
-        ) { entry ->
-            QuotesScreen(
-                navHostController = navHostController,
-                authorName = entry.arguments?.getString(Constants.AUTHOR_NAME_KEY)
-            )
+        ) {
+            QuotesScreen(navHostController = navHostController)
         }
         composable(
             route = Screens.QuoteDetailScreen.route +
                     "/{${Constants.QUOTE_INDEX_KEY}}" +
                     "/{${Constants.AUTHOR_NAME_KEY}}",
             arguments = listOf(
-
                 navArgument(name = Constants.QUOTE_INDEX_KEY) {
                     type = NavType.IntType
                 },
@@ -50,8 +46,7 @@ fun NavGraph(navHostController: NavHostController) {
             )
         ) { entry ->
             QuoteDetailScreen(
-                index = entry.arguments?.getInt(Constants.QUOTE_INDEX_KEY),
-                authorName = entry.arguments?.getString(Constants.AUTHOR_NAME_KEY)
+                index = entry.arguments?.getInt(Constants.QUOTE_INDEX_KEY)
             )
         }
     }
