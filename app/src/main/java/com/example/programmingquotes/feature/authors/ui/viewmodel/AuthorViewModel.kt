@@ -1,83 +1,148 @@
 package com.example.programmingquotes.feature.authors.ui.viewmodel
 
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.programmingquotes.core.common.generateRandomEmoji
+import com.example.programmingquotes.core.common.ResultWrapper
+import com.example.programmingquotes.core.data.network.NetworkConnectivity
 import com.example.programmingquotes.feature.authors.data.repository.AuthorRepository
 import com.example.programmingquotes.feature.authors.ui.model.AuthorView
+import com.example.programmingquotes.feature.quote.ui.model.QuoteView
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.random.Random
 
 @HiltViewModel
-class AuthorViewModel @Inject constructor(private val authorRepository: AuthorRepository) :
+class AuthorViewModel @Inject constructor(
+    private val repository: AuthorRepository,
+    @ApplicationContext context: Context,
+    private val networkConnectivity: NetworkConnectivity
+) :
     ViewModel() {
 
+    private val _pageState = MutableStateFlow<ResultWrapper<Unit>>(ResultWrapper.Success(Unit))
+    val pageState: StateFlow<ResultWrapper<Unit>> = _pageState
     private val _authors = MutableStateFlow<List<AuthorView>>(emptyList())
     val authors: StateFlow<List<AuthorView>> = _authors
 
-    private val _randomQuote = MutableStateFlow<AuthorView>(AuthorView("", "", 0, 0))
-    val randomQuote: StateFlow<AuthorView> = _randomQuote
+    // bottom sheet
+    private var sensorListener: SensorEventListener? = null
+    private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    private val _isShakeAndShowQuote = MutableStateFlow(false)
+    val isShakeAndShowQuote: StateFlow<Boolean> = _isShakeAndShowQuote
+    private var isNextRequestReady = true
+    private val _pageStateBottomSheet =
+        MutableStateFlow<ResultWrapper<QuoteView?>>(
+            ResultWrapper.Success(
+                QuoteView(
+                    id = "",
+                    author = "",
+                    quote = ""
+                )
+            )
+        )
+    val pageStateBottomSheet: StateFlow<ResultWrapper<QuoteView?>> = _pageStateBottomSheet
 
     init {
         getAuthors()
-
-        viewModelScope.launch {
-
-            authorRepository.insertAuthors(
-                listOf(
-                    AuthorView(
-                        name = "Mohammad yazdi",
-                        wikiUrl = "https://en.wikipedia.org/wiki/Edsger W. Dijkstra",
-                        quoteCount = 12,
-                        emoji = generateRandomEmoji()
-                    ),
-                    AuthorView(
-                        name = "Edsger W. Dijkstra",
-                        wikiUrl = "",
-                        quoteCount = 22,
-                        emoji = generateRandomEmoji()
-                    ),
-                    AuthorView(
-                        name = "Mohammad yazdi2",
-                        wikiUrl = "",
-                        quoteCount = 33,
-                        emoji = generateRandomEmoji()
-                    ),
-                    AuthorView(
-                        name = "Mohammad yazdi3",
-                        wikiUrl = "",
-                        quoteCount = 44,
-                        emoji = generateRandomEmoji()
-                    ),
-                    AuthorView(
-                        name = "Mohammad yazdi4",
-                        wikiUrl = "",
-                        quoteCount = 55,
-                        emoji = generateRandomEmoji()
-                    ),
-                    AuthorView(
-                        name = "Mohammad yazdi5",
-                        wikiUrl = "",
-                        quoteCount = 11,
-                        emoji = generateRandomEmoji()
-                    ),
-                )
-            )
-        }
-
     }
 
     private fun getAuthors() = viewModelScope.launch(Dispatchers.IO) {
-        authorRepository.getAuthors().collect {
-            _authors.value = it
+        repository.getAuthors().collect {
+            if (it.isEmpty()) {
+                getAuthorsFromApiAndInsertToDb()
+            } else {
+                _authors.emit(it)
+            }
         }
     }
-    fun getRandomAuthor() = viewModelScope.launch(Dispatchers.IO) {
-        _randomQuote.value = AuthorView(name = "Ali${Random.nextInt(100)}", wikiUrl = "", 99, generateRandomEmoji())
+
+    private fun getAuthorsFromApiAndInsertToDb() {
+        viewModelScope.launch {
+            if (networkConnectivity.isNetworkConnected()) {
+                _pageState.emit(ResultWrapper.Loading)
+
+                _pageState.emit(repository.getAuthorsFromApiAndInsertToDb())
+            } else {
+                _pageState.emit(ResultWrapper.NetworkError)
+            }
+        }
+    }
+
+    fun getRandomQuoteFromApi() = viewModelScope.launch(Dispatchers.IO) {
+        if (networkConnectivity.isNetworkConnected()) {
+            _pageStateBottomSheet.emit(ResultWrapper.Loading)
+            _pageStateBottomSheet.emit(repository.getRandomQuoteFromApi()).also {
+                _isShakeAndShowQuote.emit(true)
+                isNextRequestReady = true
+            }
+        } else {
+            repository.getRandomQuote().collect {
+                it?.let {
+                    _pageStateBottomSheet.emit(ResultWrapper.Success(it)).also {
+                        isNextRequestReady = true
+                        _isShakeAndShowQuote.emit(true)
+                    }
+                }
+            }
+        }
+    }
+
+    fun startSensorManager() {
+        setUpSensorManager()
+    }
+
+    suspend fun stopSensorManager() {
+        sensorManager.unregisterListener(sensorListener)
+        isNextRequestReady = true
+        _isShakeAndShowQuote.emit(false)
+    }
+
+    private fun setUpSensorManager() {
+
+        var acceleration = 0f
+        var currentAcceleration = 0f
+        var lastAcceleration = 0f
+
+        sensorListener = object : SensorEventListener {
+            override fun onSensorChanged(event: SensorEvent) {
+                val x = event.values[0]
+                val y = event.values[1]
+                val z = event.values[2]
+                lastAcceleration = currentAcceleration
+
+                currentAcceleration = StrictMath.sqrt((x * x + y * y + z * z).toDouble()).toFloat()
+                val delta: Float = currentAcceleration - lastAcceleration
+                acceleration = acceleration * 0.9f + delta
+
+                viewModelScope.launch {
+                    if (acceleration > 15) {
+                        if (isNextRequestReady) {
+                            isNextRequestReady = false
+                            getRandomQuoteFromApi()
+                        }
+                    }
+                }
+            }
+
+            override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
+        }
+
+        sensorManager.registerListener(
+            sensorListener,
+            sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+            SensorManager.SENSOR_DELAY_NORMAL
+        )
+        acceleration = 10f
+        currentAcceleration = SensorManager.GRAVITY_EARTH
+        lastAcceleration = SensorManager.GRAVITY_EARTH
     }
 }

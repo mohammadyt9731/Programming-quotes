@@ -1,6 +1,7 @@
-package com.example.programmingquotes.feature.authors.data.db.entity
+package com.example.programmingquotes.feature.authors.data.db.dao
 
 import androidx.room.*
+import com.example.programmingquotes.feature.authors.data.db.entity.AuthorEntity
 import com.example.programmingquotes.feature.quote.data.db.relation.AuthorWithQuotes
 import kotlinx.coroutines.flow.Flow
 

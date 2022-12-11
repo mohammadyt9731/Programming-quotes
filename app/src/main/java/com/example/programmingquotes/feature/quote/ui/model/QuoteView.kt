@@ -14,3 +14,9 @@ fun QuoteEntity.toQuoteView() = QuoteView(
     author = author,
     quote = quote
 )
+
+fun QuoteResponse.toQuoteView() = QuoteView(
+    id = id,
+    author = author,
+    quote = en
+)

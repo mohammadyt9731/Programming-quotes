@@ -1,63 +1,56 @@
 package com.example.programmingquotes.feature.authors.ui.component
 
-import android.content.Context
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
-import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.MutableLiveData
 import com.example.programmingquotes.R
+import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.feature.authors.ui.viewmodel.AuthorViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-
-private var isFirstLaunch = mutableStateOf(true)
-private var isBottomSheetVisible = mutableStateOf(true)
 
 @ExperimentalMaterialApi
 @Composable
 fun BottomSheet(
+    scaffoldState: ScaffoldState,
     content: @Composable (bottomSheetState: ModalBottomSheetState, scope: CoroutineScope) -> Unit
 ) {
 
     val authorViewModel: AuthorViewModel = hiltViewModel()
-    val context = LocalContext.current
-    SideEffect {
-        setUpSensorManager(context, authorViewModel)
-    }
 
     val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
     )
-    LaunchedEffect(key1 = bottomSheetState.currentValue) {
-        if (bottomSheetState.currentValue == ModalBottomSheetValue.Hidden)
-            isFirstLaunch.value = true
 
-        isBottomSheetVisible.value =
-            (bottomSheetState.currentValue == ModalBottomSheetValue.Expanded)
+    LaunchedEffect(key1 = bottomSheetState.isVisible) {
+        if (bottomSheetState.isVisible) {
+            authorViewModel.startSensorManager()
+        } else {
+            authorViewModel.stopSensorManager()
+        }
     }
     val scope = rememberCoroutineScope()
-    val randomQuote = authorViewModel.randomQuote.collectAsState()
+
+    BackHandler(enabled = bottomSheetState.isVisible) {
+        scope.launch {
+            bottomSheetState.hide()
+        }
+    }
 
     ModalBottomSheetLayout(
         sheetState = bottomSheetState,
@@ -65,13 +58,15 @@ fun BottomSheet(
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetElevation = 15.dp,
         sheetContent = {
-            if (isFirstLaunch.value) {
-                SheetContentShake()
-            } else {
+            val isShake = authorViewModel.isShakeAndShowQuote.collectAsState()
+            if (isShake.value) {
                 SheetContentQuote(
-                    title = randomQuote.value.name,
-                    content = "Nine women can't make a baby in one month."
+                    authorViewModel = authorViewModel,
+                    scope = scope,
+                    scaffoldState = scaffoldState
                 )
+            } else {
+                SheetContentShake()
             }
         },
         content = { content(bottomSheetState, scope) }
@@ -109,85 +104,90 @@ private fun SheetContentShake() {
 
 @Composable
 private fun SheetContentQuote(
-    title: String,
-    content: String
+    authorViewModel: AuthorViewModel,
+    scaffoldState: ScaffoldState,
+    scope: CoroutineScope
 ) {
+    val pageState = authorViewModel.pageStateBottomSheet.collectAsState().value
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .defaultMinSize(minHeight = 200.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.Start,
     ) {
-        Text(
-            modifier = Modifier
-                .padding(
-                    top = 32.dp,
-                    start = 32.dp
-                ),
-            text = title,
-            style = MaterialTheme.typography.body1
-        )
-        Text(
-            modifier = Modifier
-                .padding(
-                    top = 32.dp,
-                    start = 24.dp,
-                    end = 24.dp
-                ),
-            text = content,
-            style = MaterialTheme.typography.subtitle1
-        )
-        Text(
-            modifier = Modifier
-                .padding(
-                    top = 32.dp,
-                    bottom = 9.dp,
-                    start = 32.dp
-                ),
-            text = stringResource(id = R.string.label_you_can_shake_again),
-            style = MaterialTheme.typography.overline
-        )
-    }
-}
-
-private fun setUpSensorManager(context: Context, authorViewModel: AuthorViewModel) {
-    var acceleration = 0f
-    var currentAcceleration = 0f
-    var lastAcceleration = 0f
-
-    val sensorListener: SensorEventListener = object : SensorEventListener {
-        override fun onSensorChanged(event: SensorEvent) {
-
-            val x = event.values[0]
-            val y = event.values[1]
-            val z = event.values[2]
-            lastAcceleration = currentAcceleration
-
-            currentAcceleration = StrictMath.sqrt((x * x + y * y + z * z).toDouble()).toFloat()
-            val delta: Float = currentAcceleration - lastAcceleration
-            acceleration = acceleration * 0.9f + delta
-
-            if (acceleration > 12) {
-                if(isBottomSheetVisible.value){
-                    isFirstLaunch.value = false
-                    authorViewModel.getRandomAuthor()
-                }
-
+        when (pageState) {
+            is ResultWrapper.Loading -> {
+                circularProgressIndicator()
             }
+            is ResultWrapper.Success -> {
+                ContentQuote(
+                    title = "${pageState.data?.author}",
+                    content = "${pageState.data?.quote}"
+                )
+            }
+            is ResultWrapper.ApplicationError -> {
+                scope.launch {
+                    pageState.message?.let { scaffoldState.snackbarHostState.showSnackbar(it) }
+                }
+            }
+            is ResultWrapper.HttpError -> {
+                scope.launch {
+                    pageState.message?.let { scaffoldState.snackbarHostState.showSnackbar(it) }
+                }
+            }
+            is ResultWrapper.NetworkError -> {}
         }
-
-        override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
     }
-
-    val sensorManager =
-        context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-
-    sensorManager.registerListener(
-        sensorListener,
-        sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-        SensorManager.SENSOR_DELAY_NORMAL
-    )
-    acceleration = 10f
-    currentAcceleration = SensorManager.GRAVITY_EARTH
-    lastAcceleration = SensorManager.GRAVITY_EARTH
 }
+
+@Composable
+private fun ContentQuote(
+    title: String,
+    content: String,
+) {
+    Text(
+        modifier = Modifier
+            .padding(
+                top = 32.dp,
+                start = 32.dp
+            ),
+        text = title,
+        style = MaterialTheme.typography.body1
+    )
+    Text(
+        modifier = Modifier
+            .padding(
+                top = 32.dp,
+                start = 24.dp,
+                end = 24.dp
+            ),
+        text = content,
+        style = MaterialTheme.typography.subtitle1
+    )
+    Text(
+        modifier = Modifier
+            .padding(
+                top = 32.dp,
+                bottom = 9.dp,
+                start = 32.dp
+            ),
+        text = stringResource(id = R.string.label_you_can_shake_again),
+        style = MaterialTheme.typography.overline
+    )
+}
+
+@Composable
+private fun circularProgressIndicator() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp),
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.align(Alignment.Center)
+        )
+    }
+}
+
+
