@@ -36,7 +36,7 @@ class QuoteDetailViewModel @Inject constructor(
     private fun getQuotes(authorName: String) =
         viewModelScope.launch(Dispatchers.IO) {
             repository.getAuthorWithQuotes(authorName = authorName).collect { authorWithQuotes ->
-                _authorWithQuotes.value = authorWithQuotes
+                _authorWithQuotes.emit(authorWithQuotes)
             }
         }
 }
