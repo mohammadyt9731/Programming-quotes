@@ -14,7 +14,7 @@ fun AutoResizeText(
     text: String,
     style: TextStyle
 ) {
-    var textStyle by remember { mutableStateOf(style.copy(fontSize = 200.sp)) }
+    var textStyle by remember { mutableStateOf(style.copy(fontSize = 100.sp)) }
     var readyToDraw by remember { mutableStateOf(false) }
     Text(
         modifier = modifier

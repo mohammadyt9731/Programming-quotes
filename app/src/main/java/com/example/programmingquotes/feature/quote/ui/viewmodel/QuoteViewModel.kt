@@ -41,20 +41,22 @@ class QuoteViewModel @Inject constructor(
 
     private fun getQuotes(authorName: String) =
         viewModelScope.launch(Dispatchers.IO) {
-            fetchAuthorQuotesFromApiAndInsertToDb(authorName)
             repository.getAuthorWithQuotes(authorName = authorName).collect { authorWithQuotes ->
-                _authorWithQuotes.value = authorWithQuotes
+                if (authorWithQuotes.quotes.isEmpty()) {
+                    fetchAuthorQuotesFromApiAndInsertToDb(authorName)
+                }
+                _authorWithQuotes.emit(authorWithQuotes)
             }
         }
 
     private suspend fun fetchAuthorQuotesFromApiAndInsertToDb(authorName: String) {
         if (networkConnectivity.isNetworkConnected()) {
-            _pageState.value = ResultWrapper.Loading
+            _pageState.emit(ResultWrapper.Loading)
             val response =
                 repository.fetchAuthorQuotesFromApiAndInsertToDb(authorName = authorName)
-            _pageState.value = response
+            _pageState.emit(response)
         } else {
-            _pageState.value = ResultWrapper.NetworkError
+            _pageState.emit(ResultWrapper.NetworkError)
         }
     }
 }
