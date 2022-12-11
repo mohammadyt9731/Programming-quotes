@@ -10,11 +10,11 @@ interface AuthorRepository {
 
     suspend fun insertAuthors(authors: List<AuthorView>)
 
-    fun getRandomAuthorWithQuote()
-
-    suspend fun getRandomQuoteFromApi(): ResultWrapper<QuoteView?>
+    fun getRandomQuote(): Flow<QuoteView>
 
     fun getAuthors(): Flow<List<AuthorView>>
+
+    suspend fun getRandomQuoteFromApi(): ResultWrapper<QuoteView?>
 
     suspend fun getAuthorsFromApiAndInsertToDb(): ResultWrapper<Map<String, AuthorResponse>?>
 }

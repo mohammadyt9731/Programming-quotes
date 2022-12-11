@@ -1,6 +1,7 @@
 package com.example.programmingquotes.feature.authors.data.repository
 
 import com.example.programmingquotes.core.common.ResultWrapper
+import com.example.programmingquotes.core.data.network.IsNetwork
 import com.example.programmingquotes.core.data.network.safeApiCall
 import com.example.programmingquotes.feature.authors.data.datasource.local.AuthorLocalDataSource
 import com.example.programmingquotes.feature.authors.data.datasource.remote.AuthorRemoteDataSource
@@ -16,39 +17,47 @@ import javax.inject.Inject
 
 class AuthorRepositoryImpl @Inject constructor(
     private val localDataSource: AuthorLocalDataSource,
-    private val remoteDataSource: AuthorRemoteDataSource
+    private val remoteDataSource: AuthorRemoteDataSource,
+    private val isNetwork: IsNetwork
 ) :
     AuthorRepository {
 
     override suspend fun insertAuthors(authors: List<AuthorView>) =
         localDataSource.insertAuthors(authors.map { it.toAuthorEntity() })
 
-    override fun getRandomAuthorWithQuote() {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getRandomQuoteFromApi(): ResultWrapper<QuoteView?> {
-        return safeApiCall {
-            remoteDataSource.getRandomQuote()?.toQuoteView()
-        }
-    }
+    override fun getRandomQuote(): Flow<QuoteView> =
+        localDataSource.getRandomQuote().map { it.toQuoteView() }
 
     override fun getAuthors(): Flow<List<AuthorView>> =
         localDataSource.getAuthors()
             .map { it.map { authorEntity -> authorEntity.toAuthorView() } }
 
-    override suspend fun getAuthorsFromApiAndInsertToDb(): ResultWrapper<Map<String, AuthorResponse>?> {
-        return safeApiCall {
-            val response = remoteDataSource.getAuthors()
-
-            response?.let {
-                localDataSource.insertAuthors(
-                    it.values.toList().map { authorResponse ->
-                        authorResponse.toAuthorEntity()
-                    })
-
-                it
+    override suspend fun getRandomQuoteFromApi(): ResultWrapper<QuoteView?> {
+        return if (isNetwork.getNetworkConnection()) {
+            safeApiCall {
+                remoteDataSource.getRandomQuote()?.toQuoteView()
             }
+        } else {
+            ResultWrapper.NetworkError()
+        }
+    }
+
+    override suspend fun getAuthorsFromApiAndInsertToDb(): ResultWrapper<Map<String, AuthorResponse>?> {
+        return if (isNetwork.getNetworkConnection()) {
+            safeApiCall {
+                val response = remoteDataSource.getAuthors()
+
+                response?.let {
+                    localDataSource.insertAuthors(
+                        it.values.toList().map { authorResponse ->
+                            authorResponse.toAuthorEntity()
+                        })
+
+                    it
+                }
+            }
+        } else {
+            ResultWrapper.NetworkError()
         }
     }
 }
