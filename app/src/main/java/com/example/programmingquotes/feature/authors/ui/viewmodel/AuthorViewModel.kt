@@ -15,7 +15,6 @@ import com.example.programmingquotes.feature.quote.ui.model.QuoteView
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -30,10 +29,12 @@ class AuthorViewModel @Inject constructor(
 
     private var sensorListener: SensorEventListener? = null
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    private val _isShake = MutableStateFlow(false)
-    val isShake: StateFlow<Boolean> = _isShake
+    private val _isShakeAndShowQuote = MutableStateFlow(false)
+    val isShakeAndShowQuote: StateFlow<Boolean> = _isShakeAndShowQuote
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
+    private val _isLoadingBottomSheet = MutableStateFlow(false)
+    val isLoadingBottomSheet: StateFlow<Boolean> = _isLoadingBottomSheet
     private val _authors = MutableStateFlow<List<AuthorView>>(emptyList())
     val authors: StateFlow<List<AuthorView>> = _authors
 
@@ -68,7 +69,7 @@ class AuthorViewModel @Inject constructor(
                     Log.i("TAG", "getAuthorsFromApiAndInsertToDb: http error")
                 }
                 is ResultWrapper.NetworkError -> {
-                    Log.i("TAG", "getAuthorsFromApiAndInsertToDb: net error")
+                    _isLoading.value = false
                 }
             }
         }
@@ -83,13 +84,21 @@ class AuthorViewModel @Inject constructor(
     fun getRandomQuoteFromApi() = viewModelScope.launch(Dispatchers.IO) {
         when (val response = repository.getRandomQuoteFromApi()) {
             is ResultWrapper.Success -> {
+                _isLoadingBottomSheet.value = false
+                _isShakeAndShowQuote.value = true
                 response.data?.let {
                     _randomQuote.value = it
                 }
             }
             is ResultWrapper.HttpError -> {}
             is ResultWrapper.ApplicationError -> {}
-            is ResultWrapper.NetworkError -> {}
+            is ResultWrapper.NetworkError -> {
+                _isLoadingBottomSheet.value = false
+                _isShakeAndShowQuote.value = true
+                repository.getRandomQuote().collect {
+                    _randomQuote.value = it
+                }
+            }
         }
     }
 
@@ -99,7 +108,7 @@ class AuthorViewModel @Inject constructor(
 
     fun stopSensorManager() {
         sensorManager.unregisterListener(sensorListener)
-        _isShake.value = false
+        _isShakeAndShowQuote.value = false
     }
 
     private fun setUpSensorManager() {
@@ -121,15 +130,10 @@ class AuthorViewModel @Inject constructor(
 
                 viewModelScope.launch {
                     if (acceleration > 35) {
-                        Log.i("TAG", "onSensorChanged: shaaaaaaaaaaaaaaaaa 111111111111111")
-                        _isShake.value = true
-                        Log.i("TAG", "onSensorChanged: shaaaaaaaaaaaaaaaaa 2222222222222")
-                        getRandomQuoteFromApi()
-                        delay(2000)
-//                    if (isBottomSheetVisible.value) {
-//                        isFirstLaunch.value = false
-//                    }
-
+                        if (!_isLoadingBottomSheet.value) {
+                            _isLoadingBottomSheet.value = true
+                            getRandomQuoteFromApi()
+                        }
                     }
                 }
             }
