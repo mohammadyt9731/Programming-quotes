@@ -18,5 +18,5 @@ class AuthorLocalDataSourceImpl @Inject constructor(
     override fun getAuthors(): Flow<List<AuthorEntity>> =
         authorDao.getAuthors()
 
-    override fun getRandomQuote(): Flow<QuoteEntity> = quoteDao.getRandomQuote()
+    override fun getRandomQuote(): Flow<QuoteEntity?> = quoteDao.getRandomQuote()
 }

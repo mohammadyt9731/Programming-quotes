@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.programmingquotes.R
+import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.feature.authors.ui.viewmodel.AuthorViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -26,6 +27,7 @@ import kotlinx.coroutines.launch
 @ExperimentalMaterialApi
 @Composable
 fun BottomSheet(
+    scaffoldState: ScaffoldState,
     content: @Composable (bottomSheetState: ModalBottomSheetState, scope: CoroutineScope) -> Unit
 ) {
 
@@ -43,7 +45,6 @@ fun BottomSheet(
         }
     }
     val scope = rememberCoroutineScope()
-    val randomQuote = authorViewModel.randomQuote.collectAsState()
 
     BackHandler(enabled = bottomSheetState.isVisible) {
         scope.launch {
@@ -58,12 +59,11 @@ fun BottomSheet(
         sheetElevation = 15.dp,
         sheetContent = {
             val isShake = authorViewModel.isShakeAndShowQuote.collectAsState()
-            val isLoadingBottomSheet = authorViewModel.isLoadingBottomSheet.collectAsState()
             if (isShake.value) {
                 SheetContentQuote(
-                    title = randomQuote.value.author,
-                    content = randomQuote.value.quote,
-                    isLoadingBottomSheet = isLoadingBottomSheet.value
+                    authorViewModel = authorViewModel,
+                    scope = scope,
+                    scaffoldState = scaffoldState
                 )
             } else {
                 SheetContentShake()
@@ -104,10 +104,11 @@ private fun SheetContentShake() {
 
 @Composable
 private fun SheetContentQuote(
-    title: String,
-    content: String,
-    isLoadingBottomSheet: Boolean
+    authorViewModel: AuthorViewModel,
+    scaffoldState: ScaffoldState,
+    scope: CoroutineScope
 ) {
+    val pageState = authorViewModel.pageStateBottomSheet.collectAsState().value
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -115,40 +116,65 @@ private fun SheetContentQuote(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.Start,
     ) {
-        if (isLoadingBottomSheet) {
-            circularProgressIndicator()
-        } else {
-            Text(
-                modifier = Modifier
-                    .padding(
-                        top = 32.dp,
-                        start = 32.dp
-                    ),
-                text = title,
-                style = MaterialTheme.typography.body1
-            )
-            Text(
-                modifier = Modifier
-                    .padding(
-                        top = 32.dp,
-                        start = 24.dp,
-                        end = 24.dp
-                    ),
-                text = content,
-                style = MaterialTheme.typography.subtitle1
-            )
-            Text(
-                modifier = Modifier
-                    .padding(
-                        top = 32.dp,
-                        bottom = 9.dp,
-                        start = 32.dp
-                    ),
-                text = stringResource(id = R.string.label_you_can_shake_again),
-                style = MaterialTheme.typography.overline
-            )
+        when (pageState) {
+            is ResultWrapper.Loading -> {
+                circularProgressIndicator()
+            }
+            is ResultWrapper.Success -> {
+                ContentQuote(
+                    title = "${pageState.data?.author}",
+                    content = "${pageState.data?.quote}"
+                )
+            }
+            is ResultWrapper.ApplicationError -> {
+                scope.launch {
+                    pageState.message?.let { scaffoldState.snackbarHostState.showSnackbar(it) }
+                }
+            }
+            is ResultWrapper.HttpError -> {
+                scope.launch {
+                    pageState.message?.let { scaffoldState.snackbarHostState.showSnackbar(it) }
+                }
+            }
+            is ResultWrapper.NetworkError -> {}
         }
     }
+}
+
+@Composable
+private fun ContentQuote(
+    title: String,
+    content: String,
+) {
+    Text(
+        modifier = Modifier
+            .padding(
+                top = 32.dp,
+                start = 32.dp
+            ),
+        text = title,
+        style = MaterialTheme.typography.body1
+    )
+    Text(
+        modifier = Modifier
+            .padding(
+                top = 32.dp,
+                start = 24.dp,
+                end = 24.dp
+            ),
+        text = content,
+        style = MaterialTheme.typography.subtitle1
+    )
+    Text(
+        modifier = Modifier
+            .padding(
+                top = 32.dp,
+                bottom = 9.dp,
+                start = 32.dp
+            ),
+        text = stringResource(id = R.string.label_you_can_shake_again),
+        style = MaterialTheme.typography.overline
+    )
 }
 
 @Composable

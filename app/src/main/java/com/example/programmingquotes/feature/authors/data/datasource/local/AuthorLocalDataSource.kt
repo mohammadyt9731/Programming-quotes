@@ -10,5 +10,5 @@ interface AuthorLocalDataSource {
 
     fun getAuthors(): Flow<List<AuthorEntity>>
 
-    fun getRandomQuote(): Flow<QuoteEntity>
+    fun getRandomQuote(): Flow<QuoteEntity?>
 }
