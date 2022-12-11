@@ -24,7 +24,7 @@ import com.example.programmingquotes.feature.quote.ui.component.QuoteTopBar
 import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteViewModel
 
 @Composable
-fun QuotesScreen(navHostController: NavHostController, authorName: String?) {
+fun QuotesScreen(navHostController: NavHostController) {
     val scaffoldState = rememberScaffoldState()
     val quoteViewModel: QuoteViewModel = hiltViewModel()
     val authorWithQuotes = quoteViewModel.authorWithQuotes.collectAsState().value
@@ -73,7 +73,7 @@ fun QuotesScreen(navHostController: NavHostController, authorName: String?) {
                         navHostController.navigate(
                             Screens.QuoteDetailScreen.withArg(
                                 "$index",
-                                "$authorName"
+                                authorWithQuotes.author.name
                             )
                         )
                     }

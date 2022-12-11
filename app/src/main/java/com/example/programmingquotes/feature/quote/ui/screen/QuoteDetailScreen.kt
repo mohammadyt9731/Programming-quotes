@@ -26,7 +26,7 @@ import com.google.accompanist.pager.rememberPagerState
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun QuoteDetailScreen(index: Int? = 0, authorName: String? = "") {
+fun QuoteDetailScreen(index: Int? = 0) {
 
     val scaffoldState = rememberScaffoldState()
     val pagerState = rememberPagerState(initialPage = index ?: 0)
