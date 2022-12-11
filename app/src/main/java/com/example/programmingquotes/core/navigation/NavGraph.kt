@@ -40,7 +40,6 @@ fun NavGraph(navHostController: NavHostController) {
                     "/{${Constants.QUOTE_INDEX_KEY}}" +
                     "/{${Constants.AUTHOR_NAME_KEY}}",
             arguments = listOf(
-
                 navArgument(name = Constants.QUOTE_INDEX_KEY) {
                     type = NavType.IntType
                 },

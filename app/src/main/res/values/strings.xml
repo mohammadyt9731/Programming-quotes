@@ -10,4 +10,5 @@
     <string name="label_shake_your_phone_to_see_magic">Shake your phone to see magic</string>
     <string name="label_you_can_shake_again">Tip:You can shake again.</string>
     <string name="label_share_with">Share with ...</string>
+    <string name="msg_no_internet">No Internet connection</string>
 </resources>

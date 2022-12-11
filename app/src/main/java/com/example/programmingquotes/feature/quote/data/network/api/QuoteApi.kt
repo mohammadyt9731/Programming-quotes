@@ -1,4 +1,4 @@
-package com.example.programmingquotes.feature.quote.data.network
+package com.example.programmingquotes.feature.quote.data.network.api
 
 import com.example.programmingquotes.feature.quote.data.network.model.AuthorWithQuotesResponse
 import retrofit2.Response

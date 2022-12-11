@@ -1,15 +1,15 @@
 package com.example.programmingquotes.feature.quote.data.datasource.remote
 
 import com.example.programmingquotes.core.data.network.bodyOrThrow
-import com.example.programmingquotes.feature.quote.data.network.QuoteApi
+import com.example.programmingquotes.feature.quote.data.network.api.QuoteApi
 import com.example.programmingquotes.feature.quote.data.network.model.AuthorWithQuotesResponse
 import javax.inject.Inject
 
 class QuoteRemoteDataSourceImpl @Inject constructor(
-    private val quoteApi: QuoteApi
+    private val api: QuoteApi
 ) : QuoteRemoteDataSource {
 
     override suspend fun getAuthorWithQuotes(authorName: String): AuthorWithQuotesResponse? {
-        return quoteApi.getAuthorWithQuotes(authorName = authorName).bodyOrThrow()
+        return api.getAuthorWithQuotes(authorName = authorName).bodyOrThrow()
     }
 }

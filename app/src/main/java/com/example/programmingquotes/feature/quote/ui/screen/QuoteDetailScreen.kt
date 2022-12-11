@@ -5,7 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -27,18 +28,12 @@ import com.google.accompanist.pager.rememberPagerState
 @Composable
 fun QuoteDetailScreen(index: Int? = 0, authorName: String? = "") {
 
-    val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
     val pagerState = rememberPagerState(initialPage = index ?: 0)
-    var emojiState by remember {
-        mutableStateOf(0)
-    }
+    val context = LocalContext.current
     val quoteDetailViewModel: QuoteDetailViewModel = hiltViewModel()
     val authorWithQuotes = quoteDetailViewModel.authorWithQuotes.collectAsState().value
-    emojiState = authorWithQuotes.author.emoji
-    if (authorName != null) {
-        quoteDetailViewModel.getQuotes(authorName)
-    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -47,8 +42,8 @@ fun QuoteDetailScreen(index: Int? = 0, authorName: String? = "") {
         scaffoldState = scaffoldState,
         topBar = {
             QuoteTopBar(
-                emojiCode = emojiState,
-                authorName = authorName ?: ""
+                emojiCode = authorWithQuotes.author.emoji,
+                authorName = authorWithQuotes.author.name
             )
         }
     ) {

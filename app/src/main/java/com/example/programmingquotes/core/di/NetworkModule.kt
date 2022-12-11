@@ -1,8 +1,8 @@
 package com.example.programmingquotes.core.di
 
 import android.content.Context
-import com.example.programmingquotes.core.data.network.IsNetwork
 import com.example.programmingquotes.core.data.network.NetworkConnectivity
+import com.example.programmingquotes.core.data.network.NetworkConnectivityImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,6 +44,6 @@ object NetworkModule {
 
 
     @Provides
-    fun provideNetworkCheck(@ApplicationContext context: Context): IsNetwork =
-        NetworkConnectivity(context)
+    fun provideNetworkCheck(@ApplicationContext context: Context): NetworkConnectivity =
+        NetworkConnectivityImpl(context)
 }

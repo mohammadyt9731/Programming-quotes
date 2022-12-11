@@ -1,8 +1,6 @@
 package com.example.programmingquotes.core.data.network
 
-import android.util.Log
 import com.example.programmingquotes.core.common.ResultWrapper
-
 
 suspend fun <T> safeApiCall(apiCall: suspend () -> T): ResultWrapper<T> {
     return try {
