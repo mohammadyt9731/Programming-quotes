@@ -7,6 +7,8 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.programmingquotes.R
+import com.example.programmingquotes.core.common.ErrorType
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.core.data.network.NetworkConnectivity
 import com.example.programmingquotes.feature.authors.data.repository.AuthorRepository
@@ -72,7 +74,12 @@ class AuthorViewModel @Inject constructor(
 
                 _pageState.emit(repository.getAuthorsFromApiAndInsertToDb())
             } else {
-                _pageState.emit(ResultWrapper.NetworkError)
+                _pageState.emit(
+                    ResultWrapper.Error(
+                        type = ErrorType.NETWORK,
+                        stringResId = R.string.msg_no_internet
+                    )
+                )
             }
         }
     }

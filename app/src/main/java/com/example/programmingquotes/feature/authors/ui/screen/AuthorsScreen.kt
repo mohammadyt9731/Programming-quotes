@@ -13,7 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.programmingquotes.R
+import com.example.programmingquotes.core.common.ErrorType
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.core.navigation.Screens
 import com.example.programmingquotes.feature.authors.ui.component.AppBar
@@ -67,18 +67,13 @@ private fun Body(
     val swipeState = rememberSwipeRefreshState(isRefreshing = isLoading)
 
     LaunchedEffect(key1 = pageState) {
-        isLoading = (pageState is ResultWrapper.Loading)
-        when (pageState) {
-            is ResultWrapper.HttpError -> {
-                pageState.message?.let { scaffoldState.snackbarHostState.showSnackbar(it) }
-            }
-            is ResultWrapper.ApplicationError -> {
-                pageState.message?.let { scaffoldState.snackbarHostState.showSnackbar(it) }
-            }
-            is ResultWrapper.NetworkError -> {
-                if (authors.isEmpty()) {
-                    scaffoldState.snackbarHostState.showSnackbar(context.getString(R.string.msg_no_internet))
+        if (pageState is ResultWrapper.Error) {
+            if (authors.isEmpty() && pageState.type == ErrorType.NETWORK) {
+                pageState.stringResId?.let {
+                    scaffoldState.snackbarHostState.showSnackbar(context.getString(it))
                 }
+            } else {
+                pageState.message?.let { scaffoldState.snackbarHostState.showSnackbar(it) }
             }
         }
     }

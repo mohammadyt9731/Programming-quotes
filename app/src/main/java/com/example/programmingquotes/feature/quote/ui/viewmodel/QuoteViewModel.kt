@@ -3,7 +3,9 @@ package com.example.programmingquotes.feature.quote.ui.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.programmingquotes.R
 import com.example.programmingquotes.core.common.Constants
+import com.example.programmingquotes.core.common.ErrorType
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.core.data.network.NetworkConnectivity
 import com.example.programmingquotes.feature.authors.ui.model.AuthorView
@@ -32,7 +34,7 @@ class QuoteViewModel @Inject constructor(
     )
     val authorWithQuotes: StateFlow<AuthorWithQuotesView> = _authorWithQuotes
 
-    private val _pageState = MutableStateFlow<ResultWrapper<Unit>>(ResultWrapper.Success(Unit))
+    private val _pageState = MutableStateFlow<ResultWrapper<Unit>>(ResultWrapper.UnInitialize)
     val pageState: StateFlow<ResultWrapper<Unit>> = _pageState
 
     init {
@@ -58,7 +60,12 @@ class QuoteViewModel @Inject constructor(
                     repository.fetchAuthorQuotesFromApiAndInsertToDb(authorName = name)
                 _pageState.emit(response)
             } else {
-                _pageState.emit(ResultWrapper.NetworkError)
+                _pageState.emit(
+                    ResultWrapper.Error(
+                        type = ErrorType.NETWORK,
+                        stringResId = R.string.msg_no_internet
+                    )
+                )
             }
         }
     }
