@@ -21,7 +21,10 @@ import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.core.navigation.Screens
 import com.example.programmingquotes.feature.quote.ui.component.QuoteListItem
 import com.example.programmingquotes.feature.quote.ui.component.QuoteTopBar
+import com.example.programmingquotes.feature.quote.ui.model.AuthorWithQuotesView
 import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteViewModel
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
 fun QuotesScreen(navHostController: NavHostController) {
@@ -29,6 +32,8 @@ fun QuotesScreen(navHostController: NavHostController) {
     val quoteViewModel: QuoteViewModel = hiltViewModel()
     val authorWithQuotes = quoteViewModel.authorWithQuotes.collectAsState().value
     val pageState = quoteViewModel.pageState.collectAsState().value
+    val swipeRefreshState =
+        rememberSwipeRefreshState(isRefreshing = false)
     val context = LocalContext.current
 
     LaunchedEffect(key1 = pageState) {
@@ -65,21 +70,35 @@ fun QuotesScreen(navHostController: NavHostController) {
                 CircularProgressIndicator()
             }
         else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(authorWithQuotes.quotes.size) { index ->
-                    QuoteListItem(quote = authorWithQuotes.quotes[index].quote) {
-                        navHostController.navigate(
-                            Screens.QuoteDetailScreen.withArg(
-                                "$index",
-                                authorWithQuotes.author.name
-                            )
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
+            SwipeRefresh(
+                state = swipeRefreshState,
+                onRefresh = {
+                    quoteViewModel.fetchAuthorQuotesFromApiAndInsertToDb()
+                }) {
+                ContentLazyColumn(authorWithQuotes, navHostController)
             }
+        }
+    }
+}
+
+@Composable
+private fun ContentLazyColumn(
+    authorWithQuotes: AuthorWithQuotesView,
+    navHostController: NavHostController
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(authorWithQuotes.quotes.size) { index ->
+            QuoteListItem(quote = authorWithQuotes.quotes[index].quote) {
+                navHostController.navigate(
+                    Screens.QuoteDetailScreen.withArg(
+                        "$index",
+                        authorWithQuotes.author.name
+                    )
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
