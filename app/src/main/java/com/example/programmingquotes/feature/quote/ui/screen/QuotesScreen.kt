@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.programmingquotes.core.common.ErrorType
 import com.example.programmingquotes.core.common.ResultWrapper
@@ -27,11 +26,13 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
-fun QuotesScreen(navHostController: NavHostController) {
+fun QuotesScreen(
+    navHostController: NavHostController,
+    viewModel: QuoteViewModel
+) {
     val scaffoldState = rememberScaffoldState()
-    val quoteViewModel: QuoteViewModel = hiltViewModel()
-    val authorWithQuotes = quoteViewModel.authorWithQuotes.collectAsState().value
-    val pageState = quoteViewModel.pageState.collectAsState().value
+    val authorWithQuotes = viewModel.authorWithQuotes.collectAsState().value
+    val pageState = viewModel.pageState.collectAsState().value
     val swipeRefreshState =
         rememberSwipeRefreshState(isRefreshing = false)
     val context = LocalContext.current
@@ -70,7 +71,7 @@ fun QuotesScreen(navHostController: NavHostController) {
             SwipeRefresh(
                 state = swipeRefreshState,
                 onRefresh = {
-                    quoteViewModel.fetchAuthorQuotesFromApiAndInsertToDb()
+                    viewModel.fetchAuthorQuotesFromApiAndInsertToDb()
                 }) {
                 ContentLazyColumn(authorWithQuotes, navHostController)
             }

@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.programmingquotes.R
 import com.example.programmingquotes.core.common.openUri
 import com.example.programmingquotes.core.common.shareText
@@ -26,13 +25,15 @@ import com.google.accompanist.pager.rememberPagerState
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun QuoteDetailScreen(index: Int? = 0) {
+fun QuoteDetailScreen(
+    index: Int? = 0,
+    viewModel: QuoteDetailViewModel
+) {
 
     val scaffoldState = rememberScaffoldState()
     val pagerState = rememberPagerState(initialPage = index ?: 0)
     val context = LocalContext.current
-    val quoteDetailViewModel: QuoteDetailViewModel = hiltViewModel()
-    val authorWithQuotes = quoteDetailViewModel.authorWithQuotes.collectAsState().value
+    val authorWithQuotes = viewModel.authorWithQuotes.collectAsState().value
 
     Scaffold(
         modifier = Modifier

@@ -58,7 +58,7 @@ fun BottomSheet(
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetElevation = 15.dp,
         sheetContent = {
-            val isShake = authorViewModel.isShakeAndShowQuote.collectAsState()
+            val isShake = authorViewModel.isShakePhone.collectAsState()
             if (isShake.value) {
                 SheetContentQuote(
                     authorViewModel = authorViewModel,

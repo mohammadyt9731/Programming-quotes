@@ -30,7 +30,7 @@ class AuthorViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-    private val _pageState = MutableStateFlow<ResultWrapper<Unit>>(ResultWrapper.Success(Unit))
+    private val _pageState = MutableStateFlow<ResultWrapper<Unit>>(ResultWrapper.UnInitialize)
     val pageState: StateFlow<ResultWrapper<Unit>> = _pageState
     private val _authors = MutableStateFlow<List<AuthorView>>(emptyList())
     val authors: StateFlow<List<AuthorView>> = _authors
@@ -38,8 +38,8 @@ class AuthorViewModel @Inject constructor(
     // bottom sheet
     private var sensorListener: SensorEventListener? = null
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    private val _isShakeAndShowQuote = MutableStateFlow(false)
-    val isShakeAndShowQuote: StateFlow<Boolean> = _isShakeAndShowQuote
+    private val _isShakePhone = MutableStateFlow(false)
+    val isShakePhone: StateFlow<Boolean> = _isShakePhone
     private var isNextRequestReady = true
     private val _pageStateBottomSheet =
         MutableStateFlow<ResultWrapper<QuoteView?>>(
@@ -88,7 +88,7 @@ class AuthorViewModel @Inject constructor(
         if (networkConnectivity.isNetworkConnected()) {
             _pageStateBottomSheet.emit(ResultWrapper.Loading)
             _pageStateBottomSheet.emit(repository.getRandomQuoteFromApi()).also {
-                _isShakeAndShowQuote.emit(true)
+                _isShakePhone.emit(true)
                 isNextRequestReady = true
             }
         } else {
@@ -96,7 +96,7 @@ class AuthorViewModel @Inject constructor(
                 it?.let {
                     _pageStateBottomSheet.emit(ResultWrapper.Success(it)).also {
                         isNextRequestReady = true
-                        _isShakeAndShowQuote.emit(true)
+                        _isShakePhone.emit(true)
                     }
                 }
             }
@@ -110,7 +110,7 @@ class AuthorViewModel @Inject constructor(
     suspend fun stopSensorManager() {
         sensorManager.unregisterListener(sensorListener)
         isNextRequestReady = true
-        _isShakeAndShowQuote.emit(false)
+        _isShakePhone.emit(false)
     }
 
     private fun setUpSensorManager() {
