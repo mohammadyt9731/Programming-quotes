@@ -22,8 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthorViewModel @Inject constructor(
-    private val repository: AuthorRepository,
     @ApplicationContext context: Context,
+    private val repository: AuthorRepository,
     private val networkConnectivity: NetworkConnectivity
 ) :
     ViewModel() {
@@ -65,7 +65,7 @@ class AuthorViewModel @Inject constructor(
         }
     }
 
-    private fun getAuthorsFromApiAndInsertToDb() {
+    fun getAuthorsFromApiAndInsertToDb() {
         viewModelScope.launch {
             if (networkConnectivity.isNetworkConnected()) {
                 _pageState.emit(ResultWrapper.Loading)

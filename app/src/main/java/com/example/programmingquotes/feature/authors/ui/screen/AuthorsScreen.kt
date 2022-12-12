@@ -6,9 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -23,6 +21,8 @@ import com.example.programmingquotes.feature.authors.ui.component.AuthorListItem
 import com.example.programmingquotes.feature.authors.ui.component.BottomSheet
 import com.example.programmingquotes.feature.authors.ui.component.GenerateRandomButton
 import com.example.programmingquotes.feature.authors.ui.viewmodel.AuthorViewModel
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -60,10 +60,14 @@ private fun Body(
     scaffoldState: ScaffoldState
 ) {
     val authorViewModel: AuthorViewModel = hiltViewModel()
-    val authors = authorViewModel.authors.collectAsState()
+    val authors by authorViewModel.authors.collectAsState()
     val pageState = authorViewModel.pageState.collectAsState().value
     val context = LocalContext.current
+    var isLoading by mutableStateOf(false)
+    val swipeState = rememberSwipeRefreshState(isRefreshing = isLoading)
+
     LaunchedEffect(key1 = pageState) {
+        isLoading = (pageState is ResultWrapper.Loading)
         when (pageState) {
             is ResultWrapper.HttpError -> {
                 pageState.message?.let { scaffoldState.snackbarHostState.showSnackbar(it) }
@@ -72,34 +76,38 @@ private fun Body(
                 pageState.message?.let { scaffoldState.snackbarHostState.showSnackbar(it) }
             }
             is ResultWrapper.NetworkError -> {
-                if (authors.value.isEmpty()) {
+                if (authors.isEmpty()) {
                     scaffoldState.snackbarHostState.showSnackbar(context.getString(R.string.msg_no_internet))
                 }
             }
         }
     }
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        if (pageState == ResultWrapper.Loading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        } else {
-            LazyColumn(contentPadding = PaddingValues(bottom = 80.dp)) {
-                items(authors.value) { author ->
-                    AuthorListItem(author) {
-                        navController.navigate(Screens.QuotesScreen.withArg(author.name))
+
+    SwipeRefresh(state = swipeState,
+        onRefresh = { authorViewModel.getAuthorsFromApiAndInsertToDb() }) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            } else {
+                LazyColumn(contentPadding = PaddingValues(bottom = 80.dp)) {
+                    items(authors) { author ->
+                        AuthorListItem(author) {
+                            navController.navigate(Screens.QuotesScreen.withArg(author.name))
+                        }
                     }
                 }
             }
-        }
-        GenerateRandomButton(
-            modifier = Modifier
-                .align(Alignment.BottomCenter),
-            onClick = {
-                scope.launch {
-                    bottomSheetState.show()
+            GenerateRandomButton(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter),
+                onClick = {
+                    scope.launch {
+                        bottomSheetState.show()
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 }

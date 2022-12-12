@@ -1,4 +1,4 @@
-package com.example.programmingquotes.feature.authors.data.network
+package com.example.programmingquotes.feature.authors.data.network.api
 
 import com.example.programmingquotes.feature.authors.data.network.model.AuthorResponse
 import com.example.programmingquotes.feature.quote.data.network.model.QuoteResponse
@@ -8,7 +8,7 @@ import retrofit2.http.GET
 interface AuthorApi {
 
     @GET("Quotes/random")
-    suspend fun getRandomQuote(): Response<QuoteResponse?>
+    suspend fun getRandomQuote(): Response<QuoteResponse>
 
     @GET("Authors")
     suspend fun getAuthors(): Response<Map<String, AuthorResponse>>

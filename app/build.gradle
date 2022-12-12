@@ -99,4 +99,6 @@ dependencies {
 
     //hiltNavigatoinCompose
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
+    //swipe refresh
+    implementation 'com.google.accompanist:accompanist-swiperefresh:0.24.13-rc'
 }
