@@ -109,6 +109,11 @@ private fun SheetContentQuote(
     scope: CoroutineScope
 ) {
     val pageState = authorViewModel.pageStateBottomSheet.collectAsState().value
+    LaunchedEffect(key1 = pageState) {
+        if (pageState is ResultWrapper.Error) {
+            pageState.message?.let { scaffoldState.snackbarHostState.showSnackbar(it) }
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -116,27 +121,14 @@ private fun SheetContentQuote(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.Start,
     ) {
-        when (pageState) {
-            is ResultWrapper.Loading -> {
-                circularProgressIndicator()
-            }
-            is ResultWrapper.Success -> {
-                ContentQuote(
-                    title = "${pageState.data?.author}",
-                    content = "${pageState.data?.quote}"
-                )
-            }
-            is ResultWrapper.ApplicationError -> {
-                scope.launch {
-                    pageState.message?.let { scaffoldState.snackbarHostState.showSnackbar(it) }
-                }
-            }
-            is ResultWrapper.HttpError -> {
-                scope.launch {
-                    pageState.message?.let { scaffoldState.snackbarHostState.showSnackbar(it) }
-                }
-            }
-            is ResultWrapper.NetworkError -> {}
+
+        if (pageState is ResultWrapper.Loading) {
+            circularProgressIndicator()
+        } else if (pageState is ResultWrapper.Success) {
+            ContentQuote(
+                title = "${pageState.data?.author}",
+                content = "${pageState.data?.quote}"
+            )
         }
     }
 }

@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.programmingquotes.R
+import com.example.programmingquotes.core.common.ErrorType
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.core.navigation.Screens
 import com.example.programmingquotes.feature.quote.ui.component.QuoteListItem
@@ -37,17 +37,14 @@ fun QuotesScreen(navHostController: NavHostController) {
     val context = LocalContext.current
 
     LaunchedEffect(key1 = pageState) {
-        when (pageState) {
-            is ResultWrapper.NetworkError -> {
-                if (authorWithQuotes.quotes.isEmpty())
-                    scaffoldState.snackbarHostState.showSnackbar(context.getString(R.string.msg_no_internet))
-            }
-            is ResultWrapper.HttpError -> {
-                pageState.message?.let {
-                    scaffoldState.snackbarHostState.showSnackbar(pageState.message)
+        if (pageState is ResultWrapper.Error) {
+            if (authorWithQuotes.quotes.isEmpty() && pageState.type == ErrorType.NETWORK) {
+                pageState.stringResId?.let {
+                    scaffoldState.snackbarHostState.showSnackbar(context.getString(it))
                 }
+            } else {
+                pageState.message?.let { scaffoldState.snackbarHostState.showSnackbar(it) }
             }
-            else -> {}
         }
     }
 
