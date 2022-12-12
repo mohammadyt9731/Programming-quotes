@@ -5,7 +5,7 @@ import com.example.programmingquotes.feature.authors.data.datasource.local.Autho
 import com.example.programmingquotes.feature.authors.data.datasource.local.AuthorLocalDataSourceImpl
 import com.example.programmingquotes.feature.authors.data.datasource.remote.AuthorRemoteDataSource
 import com.example.programmingquotes.feature.authors.data.datasource.remote.AuthorRemoteDataSourceImpl
-import com.example.programmingquotes.feature.authors.data.network.AuthorApi
+import com.example.programmingquotes.feature.authors.data.network.api.AuthorApi
 import com.example.programmingquotes.feature.authors.data.repository.AuthorRepository
 import com.example.programmingquotes.feature.authors.data.repository.AuthorRepositoryImpl
 import dagger.Binds
