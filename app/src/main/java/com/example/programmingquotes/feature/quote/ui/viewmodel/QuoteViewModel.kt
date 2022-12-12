@@ -23,6 +23,7 @@ class QuoteViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    private var authorName: String = ""
     private val _authorWithQuotes = MutableStateFlow(
         AuthorWithQuotesView(
             AuthorView("", "", 0, 0),
@@ -35,28 +36,30 @@ class QuoteViewModel @Inject constructor(
     val pageState: StateFlow<ResultWrapper<Unit>> = _pageState
 
     init {
-        val authorName = savedStateHandle.get<String>(Constants.AUTHOR_NAME_KEY) ?: ""
-        getQuotes(authorName)
+        authorName = savedStateHandle.get<String>(Constants.AUTHOR_NAME_KEY) ?: ""
+        getQuotes()
     }
 
-    private fun getQuotes(authorName: String) =
+    private fun getQuotes(name: String = authorName) =
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getAuthorWithQuotes(authorName = authorName).collect { authorWithQuotes ->
+            repository.getAuthorWithQuotes(authorName = name).collect { authorWithQuotes ->
                 if (authorWithQuotes.quotes.isEmpty()) {
-                    fetchAuthorQuotesFromApiAndInsertToDb(authorName)
+                    fetchAuthorQuotesFromApiAndInsertToDb(name)
                 }
                 _authorWithQuotes.emit(authorWithQuotes)
             }
         }
 
-    private suspend fun fetchAuthorQuotesFromApiAndInsertToDb(authorName: String) {
-        if (networkConnectivity.isNetworkConnected()) {
-            _pageState.emit(ResultWrapper.Loading)
-            val response =
-                repository.fetchAuthorQuotesFromApiAndInsertToDb(authorName = authorName)
-            _pageState.emit(response)
-        } else {
-            _pageState.emit(ResultWrapper.NetworkError)
+    fun fetchAuthorQuotesFromApiAndInsertToDb(name: String = authorName) {
+        viewModelScope.launch {
+            if (networkConnectivity.isNetworkConnected()) {
+                _pageState.emit(ResultWrapper.Loading)
+                val response =
+                    repository.fetchAuthorQuotesFromApiAndInsertToDb(authorName = name)
+                _pageState.emit(response)
+            } else {
+                _pageState.emit(ResultWrapper.NetworkError)
+            }
         }
     }
 }
