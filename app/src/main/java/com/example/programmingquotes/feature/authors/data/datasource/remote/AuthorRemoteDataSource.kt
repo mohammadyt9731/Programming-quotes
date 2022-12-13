@@ -5,7 +5,7 @@ import com.example.programmingquotes.feature.quote.data.network.model.QuoteRespo
 
 interface AuthorRemoteDataSource {
 
-    suspend fun getAuthors(): Map<String, AuthorResponse>?
+    suspend fun fetchAuthors(): Map<String, AuthorResponse>?
 
-    suspend fun getRandomQuote(): QuoteResponse?
+    suspend fun fetchRandomQuote(): QuoteResponse?
 }

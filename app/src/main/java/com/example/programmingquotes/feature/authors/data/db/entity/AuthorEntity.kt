@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.programmingquotes.feature.authors.data.network.model.AuthorResponse
-import com.example.programmingquotes.feature.authors.ui.model.AuthorView
 
 @Entity(tableName = "author")
 data class AuthorEntity(
@@ -15,13 +14,6 @@ data class AuthorEntity(
     @ColumnInfo(name = "quote_count")
     val quoteCount: Int,
     val emoji: Int
-)
-
-fun AuthorView.toAuthorEntity() = AuthorEntity(
-    name = name,
-    wikiUrl = wikiUrl,
-    quoteCount = quoteCount,
-    emoji = emoji
 )
 
 fun AuthorResponse.toAuthorEntity() = AuthorEntity(

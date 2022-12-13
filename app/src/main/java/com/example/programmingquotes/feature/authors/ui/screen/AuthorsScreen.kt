@@ -1,8 +1,6 @@
 package com.example.programmingquotes.feature.authors.ui.screen
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
@@ -13,15 +11,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.programmingquotes.R
 import com.example.programmingquotes.core.common.ErrorType
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.core.navigation.Screens
+import com.example.programmingquotes.core.ui.component.CustomButton
 import com.example.programmingquotes.feature.authors.ui.component.AppBar
 import com.example.programmingquotes.feature.authors.ui.component.AuthorListItem
 import com.example.programmingquotes.feature.authors.ui.component.BottomSheet
-import com.example.programmingquotes.feature.authors.ui.component.GenerateRandomButton
 import com.example.programmingquotes.feature.authors.ui.viewmodel.AuthorViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -36,7 +36,8 @@ fun AuthorsScreen(
 ) {
     val scaffoldState = rememberScaffoldState()
     BottomSheet(
-        scaffoldState = scaffoldState
+        scaffoldState = scaffoldState,
+        viewModel = viewModel
     ) { bottomSheetState, scope ->
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -69,7 +70,7 @@ private fun Body(
     val authors by viewModel.authors.collectAsState()
     val pageState = viewModel.pageState.collectAsState().value
     val context = LocalContext.current
-    val swipeState = rememberSwipeRefreshState(isRefreshing = false)
+    val swipeState = rememberSwipeRefreshState(isRefreshing = pageState is ResultWrapper.Loading)
 
     LaunchedEffect(key1 = pageState) {
         if (pageState is ResultWrapper.Error) {
@@ -90,7 +91,7 @@ private fun Body(
         } else {
             SwipeRefresh(
                 state = swipeState,
-                onRefresh = { viewModel.getAuthorsFromApiAndInsertToDb() }) {
+                onRefresh = { viewModel.fetchAuthorsAndInsertToDb() }) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(bottom = 80.dp)
@@ -103,14 +104,18 @@ private fun Body(
                 }
             }
         }
-        GenerateRandomButton(
+        CustomButton(
             modifier = Modifier
-                .align(Alignment.BottomCenter),
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp)
+                .width(188.dp)
+                .height(48.dp),
             onClick = {
                 scope.launch {
                     bottomSheetState.show()
                 }
-            }
+            },
+            title = stringResource(id = R.string.label_generate_random)
         )
     }
 }

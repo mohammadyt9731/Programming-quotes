@@ -15,9 +15,9 @@ import androidx.compose.ui.unit.dp
 import com.example.programmingquotes.R
 import com.example.programmingquotes.core.common.openUri
 import com.example.programmingquotes.core.common.shareText
+import com.example.programmingquotes.core.ui.component.CustomButton
 import com.example.programmingquotes.feature.quote.ui.component.AutoResizeText
 import com.example.programmingquotes.feature.quote.ui.component.QuoteTopBar
-import com.example.programmingquotes.feature.quote.ui.component.RoundedButton
 import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteDetailViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -67,21 +67,23 @@ fun QuoteDetailScreen(
                     .padding(bottom = 16.dp)
                     .align(Alignment.BottomCenter)
             ) {
-                RoundedButton(
+                CustomButton(
                     modifier = Modifier.weight(1f),
-                    text = stringResource(id = R.string.label_share)
-                ) {
-                    index?.let {
-                        context.shareText(text = authorWithQuotes.quotes[it].quote)
+                    title = stringResource(id = R.string.label_share),
+                    onClick = {
+                        index?.let {
+                            context.shareText(text = authorWithQuotes.quotes[it].quote)
+                        }
                     }
-                }
+                )
                 Spacer(modifier = Modifier.width(16.dp))
-                RoundedButton(
+                CustomButton(
                     modifier = Modifier.weight(1f),
-                    text = stringResource(id = R.string.label_open_wiki_peida)
-                ) {
-                    context.openUri(uri = authorWithQuotes.author.wikiUrl)
-                }
+                    title = stringResource(id = R.string.label_open_wiki_peida),
+                    onClick = {
+                        context.openUri(uri = authorWithQuotes.author.wikiUrl)
+                    }
+                )
             }
         }
     }

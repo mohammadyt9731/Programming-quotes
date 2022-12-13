@@ -1,6 +1,5 @@
 package com.example.programmingquotes.feature.authors.ui.viewmodel
 
-import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -15,7 +14,6 @@ import com.example.programmingquotes.feature.authors.data.repository.AuthorRepos
 import com.example.programmingquotes.feature.authors.ui.model.AuthorView
 import com.example.programmingquotes.feature.quote.ui.model.QuoteView
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,33 +22,25 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthorViewModel @Inject constructor(
-    @ApplicationContext context: Context,
     private val repository: AuthorRepository,
-    private val networkConnectivity: NetworkConnectivity
-) :
-    ViewModel() {
+    private val networkConnectivity: NetworkConnectivity,
+    private val sensorManager: SensorManager
+) : ViewModel() {
 
-    private val _pageState = MutableStateFlow<ResultWrapper<Unit>>(ResultWrapper.UnInitialize)
+    private val _pageState =
+        MutableStateFlow<ResultWrapper<Unit>>(ResultWrapper.UnInitialize)
     val pageState: StateFlow<ResultWrapper<Unit>> = _pageState
-    private val _authors = MutableStateFlow<List<AuthorView>>(emptyList())
+    private val _authors =
+        MutableStateFlow<List<AuthorView>>(emptyList())
     val authors: StateFlow<List<AuthorView>> = _authors
 
     // bottom sheet
     private var sensorListener: SensorEventListener? = null
-    private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private val _isShakePhone = MutableStateFlow(false)
     val isShakePhone: StateFlow<Boolean> = _isShakePhone
     private var isNextRequestReady = true
     private val _pageStateBottomSheet =
-        MutableStateFlow<ResultWrapper<QuoteView?>>(
-            ResultWrapper.Success(
-                QuoteView(
-                    id = "",
-                    author = "",
-                    quote = ""
-                )
-            )
-        )
+        MutableStateFlow<ResultWrapper<QuoteView?>>(ResultWrapper.UnInitialize)
     val pageStateBottomSheet: StateFlow<ResultWrapper<QuoteView?>> = _pageStateBottomSheet
 
     init {
@@ -60,19 +50,19 @@ class AuthorViewModel @Inject constructor(
     private fun getAuthors() = viewModelScope.launch(Dispatchers.IO) {
         repository.getAuthors().collect {
             if (it.isEmpty()) {
-                getAuthorsFromApiAndInsertToDb()
+                fetchAuthorsAndInsertToDb()
             } else {
                 _authors.emit(it)
             }
         }
     }
 
-    fun getAuthorsFromApiAndInsertToDb() {
-        viewModelScope.launch {
+    fun fetchAuthorsAndInsertToDb() {
+        viewModelScope.launch(Dispatchers.IO) {
             if (networkConnectivity.isNetworkConnected()) {
                 _pageState.emit(ResultWrapper.Loading)
 
-                _pageState.emit(repository.getAuthorsFromApiAndInsertToDb())
+                _pageState.emit(repository.fetchAuthorsAndInsertToDb())
             } else {
                 _pageState.emit(
                     ResultWrapper.Error(
@@ -84,14 +74,20 @@ class AuthorViewModel @Inject constructor(
         }
     }
 
-    fun getRandomQuoteFromApi() = viewModelScope.launch(Dispatchers.IO) {
+    private fun fetchRandomQuote() = viewModelScope.launch(Dispatchers.IO) {
         if (networkConnectivity.isNetworkConnected()) {
             _pageStateBottomSheet.emit(ResultWrapper.Loading)
-            _pageStateBottomSheet.emit(repository.getRandomQuoteFromApi()).also {
+            _pageStateBottomSheet.emit(repository.fetchRandomQuote()).also {
                 _isShakePhone.emit(true)
                 isNextRequestReady = true
             }
         } else {
+            _pageStateBottomSheet.emit(
+                ResultWrapper.Error(
+                    type = ErrorType.NETWORK,
+                    stringResId = R.string.msg_no_internet
+                )
+            )
             repository.getRandomQuote().collect {
                 it?.let {
                     _pageStateBottomSheet.emit(ResultWrapper.Success(it)).also {
@@ -103,9 +99,13 @@ class AuthorViewModel @Inject constructor(
         }
     }
 
-    fun startSensorManager() {
-        setUpSensorManager()
+    fun resetPageStateBottomSheet() {
+        viewModelScope.launch {
+            _pageStateBottomSheet.emit(ResultWrapper.UnInitialize)
+        }
     }
+
+    fun startSensorManager() = setUpSensorManager()
 
     suspend fun stopSensorManager() {
         sensorManager.unregisterListener(sensorListener)
@@ -134,7 +134,7 @@ class AuthorViewModel @Inject constructor(
                     if (acceleration > 15) {
                         if (isNextRequestReady) {
                             isNextRequestReady = false
-                            getRandomQuoteFromApi()
+                            fetchRandomQuote()
                         }
                     }
                 }

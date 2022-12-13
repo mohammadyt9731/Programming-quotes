@@ -7,13 +7,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthorRepository {
 
-    suspend fun insertAuthors(authors: List<AuthorView>)
-
     fun getRandomQuote(): Flow<QuoteView?>
 
     fun getAuthors(): Flow<List<AuthorView>>
 
-    suspend fun getRandomQuoteFromApi(): ResultWrapper<QuoteView?>
+    suspend fun fetchRandomQuote(): ResultWrapper<QuoteView?>
 
-    suspend fun getAuthorsFromApiAndInsertToDb(): ResultWrapper<Unit>
+    suspend fun fetchAuthorsAndInsertToDb(): ResultWrapper<Unit>
 }
