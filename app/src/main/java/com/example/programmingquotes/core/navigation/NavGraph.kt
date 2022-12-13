@@ -19,7 +19,10 @@ import com.example.programmingquotes.feature.splash.ui.screen.SplashScreen
 @Composable
 fun NavGraph(navHostController: NavHostController) {
 
-    NavHost(navController = navHostController, startDestination = Screens.SplashScreen.route) {
+    NavHost(
+        navController = navHostController,
+        startDestination = Screens.SplashScreen.route
+    ) {
 
         composable(route = Screens.SplashScreen.route) {
             SplashScreen(navController = navHostController)

@@ -62,7 +62,6 @@ fun BottomSheet(
             if (isShake.value) {
                 SheetContentQuote(
                     authorViewModel = authorViewModel,
-                    scope = scope,
                     scaffoldState = scaffoldState
                 )
             } else {
@@ -105,8 +104,7 @@ private fun SheetContentShake() {
 @Composable
 private fun SheetContentQuote(
     authorViewModel: AuthorViewModel,
-    scaffoldState: ScaffoldState,
-    scope: CoroutineScope
+    scaffoldState: ScaffoldState
 ) {
     val pageState = authorViewModel.pageStateBottomSheet.collectAsState().value
     LaunchedEffect(key1 = pageState) {

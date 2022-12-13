@@ -117,7 +117,7 @@ class AuthorViewModel @Inject constructor(
 
         var acceleration = 0f
         var currentAcceleration = 0f
-        var lastAcceleration = 0f
+        var lastAcceleration: Float
 
         sensorListener = object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent) {

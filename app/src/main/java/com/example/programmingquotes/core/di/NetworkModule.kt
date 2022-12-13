@@ -1,8 +1,10 @@
 package com.example.programmingquotes.core.di
 
 import android.content.Context
+import android.net.ConnectivityManager
 import com.example.programmingquotes.core.data.network.NetworkConnectivity
 import com.example.programmingquotes.core.data.network.NetworkConnectivityImpl
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,34 +18,39 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NetworkModule {
+abstract class NetworkModule {
 
-    @Provides
-    fun provideLoggerInterceptor(): HttpLoggingInterceptor =
-        HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+    companion object {
+        @Provides
+        fun provideLoggerInterceptor(): HttpLoggingInterceptor =
+            HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
 
-    @Provides
-    fun provideOkHttpClient(
-        loggingInterceptor: HttpLoggingInterceptor,
-    ): OkHttpClient =
-        OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
-            .build()
+        @Provides
+        fun provideOkHttpClient(
+            loggingInterceptor: HttpLoggingInterceptor,
+        ): OkHttpClient =
+            OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build()
 
-    @Provides
-    fun provideBaseUrl() = "http://167.235.142.70:5002"
+        @Provides
+        fun provideBaseUrl() = "http://167.235.142.70:5002"
 
-    @Provides
-    @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient, baseUrl: String): Retrofit =
-        Retrofit.Builder()
-            .client(okHttpClient)
-            .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        @Provides
+        @Singleton
+        fun provideRetrofit(okHttpClient: OkHttpClient, baseUrl: String): Retrofit =
+            Retrofit.Builder()
+                .client(okHttpClient)
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+
+        @Provides
+        fun provideConnectivityManager(@ApplicationContext context: Context): ConnectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    }
 
 
-    @Provides
-    fun provideNetworkCheck(@ApplicationContext context: Context): NetworkConnectivity =
-        NetworkConnectivityImpl(context)
+    @Binds
+    abstract fun bindNetworkConnectivity(impl: NetworkConnectivityImpl): NetworkConnectivity
 }
