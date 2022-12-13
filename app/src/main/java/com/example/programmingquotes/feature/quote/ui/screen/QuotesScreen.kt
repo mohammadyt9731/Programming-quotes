@@ -1,10 +1,8 @@
 package com.example.programmingquotes.feature.quote.ui.screen
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
@@ -34,7 +32,7 @@ fun QuotesScreen(
     val authorWithQuotes = viewModel.authorWithQuotes.collectAsState().value
     val pageState = viewModel.pageState.collectAsState().value
     val swipeRefreshState =
-        rememberSwipeRefreshState(isRefreshing = false)
+        rememberSwipeRefreshState(isRefreshing = pageState is ResultWrapper.Loading)
     val context = LocalContext.current
 
     LaunchedEffect(key1 = pageState) {
@@ -52,12 +50,10 @@ fun QuotesScreen(
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.background)
             .padding(horizontal = 16.dp),
         scaffoldState = scaffoldState,
         topBar = {
             QuoteTopBar(
-                modifier = Modifier.padding(horizontal = 8.dp),
                 emojiCode = authorWithQuotes.author.emoji,
                 authorName = authorWithQuotes.author.name
             )
@@ -74,8 +70,9 @@ fun QuotesScreen(
             SwipeRefresh(
                 state = swipeRefreshState,
                 onRefresh = {
-                    viewModel.fetchAuthorQuotesFromApiAndInsertToDb()
-                }) {
+                    viewModel.fetchAuthorQuotesAndInsertToDb()
+                }
+            ) {
                 ContentLazyColumn(authorWithQuotes, navHostController)
             }
         }

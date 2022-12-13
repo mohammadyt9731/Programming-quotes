@@ -46,18 +46,18 @@ class QuoteViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             repository.getAuthorWithQuotes(authorName = name).collect { authorWithQuotes ->
                 if (authorWithQuotes.quotes.isEmpty()) {
-                    fetchAuthorQuotesFromApiAndInsertToDb(name)
+                    fetchAuthorQuotesAndInsertToDb(name)
                 }
                 _authorWithQuotes.emit(authorWithQuotes)
             }
         }
 
-    fun fetchAuthorQuotesFromApiAndInsertToDb(name: String = authorName) {
+    fun fetchAuthorQuotesAndInsertToDb(name: String = authorName) {
         viewModelScope.launch {
             if (networkConnectivity.isNetworkConnected()) {
                 _pageState.emit(ResultWrapper.Loading)
                 val response =
-                    repository.fetchAuthorQuotesFromApiAndInsertToDb(authorName = name)
+                    repository.fetchAuthorQuotesAndInsertToDb(authorName = name)
                 _pageState.emit(response)
             } else {
                 _pageState.emit(

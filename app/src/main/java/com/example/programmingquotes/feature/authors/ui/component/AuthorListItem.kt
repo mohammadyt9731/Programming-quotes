@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.programmingquotes.core.common.createEmojiWithDecimalCode
 import com.example.programmingquotes.feature.authors.ui.model.AuthorView
 
 @Composable
@@ -55,7 +56,7 @@ fun AuthorListItem(authorView: AuthorView, onClick: () -> Unit) {
 @Composable
 private fun Emoji(emojiCode: Int) {
     Text(
-        text = String(Character.toChars(emojiCode)),
+        text = createEmojiWithDecimalCode(emojiCode),
         style = MaterialTheme.typography.subtitle1.copy(
             fontSize = 30.sp
         )

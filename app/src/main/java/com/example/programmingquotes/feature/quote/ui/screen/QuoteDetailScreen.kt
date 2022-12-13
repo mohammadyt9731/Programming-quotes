@@ -1,6 +1,5 @@
 package com.example.programmingquotes.feature.quote.ui.screen
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -38,7 +37,6 @@ fun QuoteDetailScreen(
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.background)
             .padding(horizontal = 16.dp),
         scaffoldState = scaffoldState,
         topBar = {
@@ -48,7 +46,9 @@ fun QuoteDetailScreen(
             )
         }
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
             HorizontalPager(
                 modifier = Modifier
                     .fillMaxSize()
@@ -61,30 +61,45 @@ fun QuoteDetailScreen(
                     style = MaterialTheme.typography.h1
                 )
             }
-            Row(
+            ButtonsSection(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp)
-                    .align(Alignment.BottomCenter)
-            ) {
-                CustomButton(
-                    modifier = Modifier.weight(1f),
-                    title = stringResource(id = R.string.label_share),
-                    onClick = {
-                        index?.let {
-                            context.shareText(text = authorWithQuotes.quotes[it].quote)
-                        }
+                    .align(Alignment.BottomCenter),
+                onClickShare = {
+                    index?.let {
+                        context.shareText(text = authorWithQuotes.quotes[it].quote)
                     }
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                CustomButton(
-                    modifier = Modifier.weight(1f),
-                    title = stringResource(id = R.string.label_open_wiki_peida),
-                    onClick = {
-                        context.openUri(uri = authorWithQuotes.author.wikiUrl)
-                    }
-                )
-            }
+                },
+                onClickUri = {
+                    context.openUri(uri = authorWithQuotes.author.wikiUrl)
+                }
+            )
         }
+    }
+}
+
+@Composable
+private fun ButtonsSection(
+    modifier: Modifier = Modifier,
+    onClickShare: () -> Unit,
+    onClickUri: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
+            .then(modifier)
+    ) {
+        CustomButton(
+            modifier = Modifier.weight(1f),
+            title = stringResource(id = R.string.label_share),
+            onClick = onClickShare
+
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        CustomButton(
+            modifier = Modifier.weight(1f),
+            title = stringResource(id = R.string.label_open_wiki_peida),
+            onClick = onClickUri
+        )
     }
 }

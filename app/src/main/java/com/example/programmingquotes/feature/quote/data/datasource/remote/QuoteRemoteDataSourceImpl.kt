@@ -9,7 +9,7 @@ class QuoteRemoteDataSourceImpl @Inject constructor(
     private val api: QuoteApi
 ) : QuoteRemoteDataSource {
 
-    override suspend fun getAuthorWithQuotes(authorName: String): AuthorWithQuotesResponse? {
+    override suspend fun fetchAuthorWithQuotes(authorName: String): AuthorWithQuotesResponse? {
         return api.getAuthorWithQuotes(authorName = authorName).bodyOrThrow()
     }
 }

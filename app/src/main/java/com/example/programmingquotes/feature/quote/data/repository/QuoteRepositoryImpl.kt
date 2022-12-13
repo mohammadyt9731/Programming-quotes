@@ -16,15 +16,16 @@ class QuoteRepositoryImpl @Inject constructor(
     private val remoteDataSource: QuoteRemoteDataSource
 ) : QuoteRepository {
 
-    override suspend fun fetchAuthorQuotesFromApiAndInsertToDb(authorName: String): ResultWrapper<Unit> {
+    override suspend fun fetchAuthorQuotesAndInsertToDb(authorName: String): ResultWrapper<Unit> {
         return safeApiCall {
-            val response = remoteDataSource.getAuthorWithQuotes(authorName = authorName)
+            val response = remoteDataSource.fetchAuthorWithQuotes(authorName = authorName)
 
             response?.let {
                 localDataSource.insertAuthorQuotes(
                     quotes = it.quotes.map { quoteResponse ->
                         quoteResponse.toQuoteEntity()
-                    })
+                    }
+                )
             }
         }
     }
