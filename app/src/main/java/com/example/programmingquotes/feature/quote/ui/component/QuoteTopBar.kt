@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.programmingquotes.core.common.createEmojiWithDecimalCode
 
 @Composable
 fun QuoteTopBar(
@@ -15,12 +16,14 @@ fun QuoteTopBar(
     emojiCode: Int,
     authorName: String
 ) {
-    val emoji = String(Character.toChars(emojiCode))
     Text(
         modifier = Modifier
-            .padding(vertical = 16.dp)
+            .padding(
+                vertical = 16.dp,
+                horizontal = 8.dp
+            )
             .then(modifier),
-        text = "$emoji $authorName",
+        text = "${createEmojiWithDecimalCode(emojiCode)} $authorName",
         textAlign = TextAlign.Start,
         style = MaterialTheme.typography.subtitle1,
         color = MaterialTheme.colors.onSurface,

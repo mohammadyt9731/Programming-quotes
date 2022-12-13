@@ -14,13 +14,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.programmingquotes.R
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.feature.authors.ui.viewmodel.AuthorViewModel
+import com.example.programmingquotes.feature.quote.ui.model.QuoteView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -28,23 +29,38 @@ import kotlinx.coroutines.launch
 @Composable
 fun BottomSheet(
     scaffoldState: ScaffoldState,
+    viewModel: AuthorViewModel,
     content: @Composable (bottomSheetState: ModalBottomSheetState, scope: CoroutineScope) -> Unit
 ) {
-
-    val authorViewModel: AuthorViewModel = hiltViewModel()
 
     val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
     )
+    val pageStateBottomSheet = viewModel.pageStateBottomSheet.collectAsState().value
+    val isShakePhone = viewModel.isShakePhone.collectAsState()
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = bottomSheetState.isVisible) {
         if (bottomSheetState.isVisible) {
-            authorViewModel.startSensorManager()
+            viewModel.startSensorManager()
         } else {
-            authorViewModel.stopSensorManager()
+            viewModel.stopSensorManager()
         }
     }
-    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = pageStateBottomSheet) {
+        if (bottomSheetState.isVisible && pageStateBottomSheet is ResultWrapper.Error) {
+            if (!isShakePhone.value) {
+                bottomSheetState.hide()
+                pageStateBottomSheet.stringResId?.let {
+                    scaffoldState.snackbarHostState.showSnackbar(context.getString(it)).also {
+                        viewModel.resetPageStateBottomSheet()
+                    }
+                }
+            }
+        }
+    }
 
     BackHandler(enabled = bottomSheetState.isVisible) {
         scope.launch {
@@ -58,15 +74,12 @@ fun BottomSheet(
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetElevation = 15.dp,
         sheetContent = {
-            val isShake = authorViewModel.isShakeAndShowQuote.collectAsState()
-            if (isShake.value) {
-                SheetContentQuote(
-                    authorViewModel = authorViewModel,
-                    scope = scope,
-                    scaffoldState = scaffoldState
+            if (isShakePhone.value) {
+                SheetContentShaken(
+                    pageStateBottomSheet = pageStateBottomSheet
                 )
             } else {
-                SheetContentShake()
+                SheetContentNotShaken()
             }
         },
         content = { content(bottomSheetState, scope) }
@@ -75,8 +88,7 @@ fun BottomSheet(
 }
 
 @Composable
-private fun SheetContentShake() {
-
+private fun SheetContentNotShaken() {
     Column(
         modifier = Modifier
             .fillMaxWidth(),
@@ -103,17 +115,9 @@ private fun SheetContentShake() {
 }
 
 @Composable
-private fun SheetContentQuote(
-    authorViewModel: AuthorViewModel,
-    scaffoldState: ScaffoldState,
-    scope: CoroutineScope
+private fun SheetContentShaken(
+    pageStateBottomSheet: ResultWrapper<QuoteView?>
 ) {
-    val pageState = authorViewModel.pageStateBottomSheet.collectAsState().value
-    LaunchedEffect(key1 = pageState) {
-        if (pageState is ResultWrapper.Error) {
-            pageState.message?.let { scaffoldState.snackbarHostState.showSnackbar(it) }
-        }
-    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -121,20 +125,19 @@ private fun SheetContentQuote(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.Start,
     ) {
-
-        if (pageState is ResultWrapper.Loading) {
+        if (pageStateBottomSheet is ResultWrapper.Loading) {
             circularProgressIndicator()
-        } else if (pageState is ResultWrapper.Success) {
-            ContentQuote(
-                title = "${pageState.data?.author}",
-                content = "${pageState.data?.quote}"
+        } else if (pageStateBottomSheet is ResultWrapper.Success) {
+            QuoteContent(
+                title = "${pageStateBottomSheet.data?.author}",
+                content = "${pageStateBottomSheet.data?.quote}"
             )
         }
     }
 }
 
 @Composable
-private fun ContentQuote(
+private fun QuoteContent(
     title: String,
     content: String,
 ) {

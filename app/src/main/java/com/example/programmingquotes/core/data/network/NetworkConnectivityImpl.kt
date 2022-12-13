@@ -1,15 +1,15 @@
 package com.example.programmingquotes.core.data.network
 
-import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import javax.inject.Inject
 
-class NetworkConnectivityImpl(private val context: Context) : NetworkConnectivity {
+class NetworkConnectivityImpl @Inject constructor(
+    private val connectivityManager: ConnectivityManager
+) : NetworkConnectivity {
 
     override fun isNetworkConnected(): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val capabilities =

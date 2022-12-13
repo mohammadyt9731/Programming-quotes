@@ -12,11 +12,11 @@ class AuthorLocalDataSourceImpl @Inject constructor(
     private val quoteDao: QuoteDao,
 ) :
     AuthorLocalDataSource {
+
     override suspend fun insertAuthors(authors: List<AuthorEntity>) =
         authorDao.insertAuthors(authors)
 
-    override fun getAuthors(): Flow<List<AuthorEntity>> =
-        authorDao.getAuthors()
+    override fun getAuthors(): Flow<List<AuthorEntity>> = authorDao.getAuthors()
 
     override fun getRandomQuote(): Flow<QuoteEntity?> = quoteDao.getRandomQuote()
 }

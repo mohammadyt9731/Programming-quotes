@@ -12,7 +12,7 @@ fun Context.openUri(uri: String) {
             Intent(Intent.ACTION_VIEW, Uri.parse(uri))
         startActivity(intent)
     } catch (e: Exception) {
-        Toast.makeText(this, "Invalid uri", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.msg_invalid_uri), Toast.LENGTH_SHORT).show()
     }
 }
 

@@ -11,4 +11,5 @@
     <string name="label_you_can_shake_again">Tip:You can shake again.</string>
     <string name="label_share_with">Share with ...</string>
     <string name="msg_no_internet">No Internet connection</string>
+    <string name="msg_invalid_uri">Invalid uri</string>
 </resources>

@@ -1,11 +1,11 @@
 package com.example.programmingquotes.feature.authors.ui.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.programmingquotes.core.common.createEmojiWithDecimalCode
 import com.example.programmingquotes.feature.authors.ui.model.AuthorView
 
 @Composable
@@ -23,7 +24,10 @@ fun AuthorListItem(authorView: AuthorView, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .height(98.dp)
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(
+                horizontal = 16.dp,
+                vertical = 8.dp
+            )
             .border(
                 1.dp,
                 shape = MaterialTheme.shapes.medium,
@@ -44,7 +48,7 @@ fun AuthorListItem(authorView: AuthorView, onClick: () -> Unit) {
             overflow = TextOverflow.Ellipsis,
             maxLines = 1
         )
-        CountCircle(authorView.quoteCount)
+        QuoteCountCircle(authorView.quoteCount)
     }
 
 }
@@ -52,7 +56,7 @@ fun AuthorListItem(authorView: AuthorView, onClick: () -> Unit) {
 @Composable
 private fun Emoji(emojiCode: Int) {
     Text(
-        text = String(Character.toChars(emojiCode)),
+        text = createEmojiWithDecimalCode(emojiCode),
         style = MaterialTheme.typography.subtitle1.copy(
             fontSize = 30.sp
         )
@@ -60,16 +64,15 @@ private fun Emoji(emojiCode: Int) {
 }
 
 @Composable
-private fun CountCircle(quoteCount: Int) {
-    Surface(
-        modifier = Modifier.size(26.dp),
-        shape = CircleShape,
-        color = MaterialTheme.colors.primary
-    ) {
-        Text(
-            text = quoteCount.toString(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.button
-        )
-    }
+private fun QuoteCountCircle(quoteCount: Int) {
+    Text(
+        modifier = Modifier
+            .size(26.dp)
+            .clip(shape = CircleShape)
+            .background(color = MaterialTheme.colors.primary),
+        text = quoteCount.toString(),
+        textAlign = TextAlign.Center,
+        style = MaterialTheme.typography.button,
+        color = MaterialTheme.colors.onPrimary
+    )
 }

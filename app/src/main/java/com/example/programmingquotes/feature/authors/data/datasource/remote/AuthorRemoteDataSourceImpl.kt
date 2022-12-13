@@ -10,11 +10,10 @@ class AuthorRemoteDataSourceImpl @Inject constructor(
     private val authorApi: AuthorApi
 ) : AuthorRemoteDataSource {
 
-    override suspend fun getAuthors(): Map<String, AuthorResponse>? {
-        return authorApi.getAuthors().bodyOrThrow()
-    }
+    override suspend fun fetchAuthors(): Map<String, AuthorResponse>? =
+        authorApi.getAuthors().bodyOrThrow()
 
-    override suspend fun getRandomQuote(): QuoteResponse? {
-        return authorApi.getRandomQuote().bodyOrThrow()
-    }
+    override suspend fun fetchRandomQuote(): QuoteResponse? =
+        authorApi.getRandomQuote().bodyOrThrow()
+
 }

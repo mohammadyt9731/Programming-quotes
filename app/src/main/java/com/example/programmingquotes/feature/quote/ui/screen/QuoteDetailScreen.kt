@@ -1,6 +1,5 @@
 package com.example.programmingquotes.feature.quote.ui.screen
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -12,13 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.programmingquotes.R
 import com.example.programmingquotes.core.common.openUri
 import com.example.programmingquotes.core.common.shareText
+import com.example.programmingquotes.core.ui.component.CustomButton
 import com.example.programmingquotes.feature.quote.ui.component.AutoResizeText
 import com.example.programmingquotes.feature.quote.ui.component.QuoteTopBar
-import com.example.programmingquotes.feature.quote.ui.component.RoundedButton
 import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteDetailViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -26,18 +24,19 @@ import com.google.accompanist.pager.rememberPagerState
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun QuoteDetailScreen(index: Int? = 0) {
+fun QuoteDetailScreen(
+    index: Int? = 0,
+    viewModel: QuoteDetailViewModel
+) {
 
     val scaffoldState = rememberScaffoldState()
     val pagerState = rememberPagerState(initialPage = index ?: 0)
     val context = LocalContext.current
-    val quoteDetailViewModel: QuoteDetailViewModel = hiltViewModel()
-    val authorWithQuotes = quoteDetailViewModel.authorWithQuotes.collectAsState().value
+    val authorWithQuotes = viewModel.authorWithQuotes.collectAsState().value
 
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.background)
             .padding(horizontal = 16.dp),
         scaffoldState = scaffoldState,
         topBar = {
@@ -47,7 +46,9 @@ fun QuoteDetailScreen(index: Int? = 0) {
             )
         }
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
             HorizontalPager(
                 modifier = Modifier
                     .fillMaxSize()
@@ -60,28 +61,45 @@ fun QuoteDetailScreen(index: Int? = 0) {
                     style = MaterialTheme.typography.h1
                 )
             }
-            Row(
+            ButtonsSection(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp)
-                    .align(Alignment.BottomCenter)
-            ) {
-                RoundedButton(
-                    modifier = Modifier.weight(1f),
-                    text = stringResource(id = R.string.label_share)
-                ) {
+                    .align(Alignment.BottomCenter),
+                onClickShare = {
                     index?.let {
                         context.shareText(text = authorWithQuotes.quotes[it].quote)
                     }
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                RoundedButton(
-                    modifier = Modifier.weight(1f),
-                    text = stringResource(id = R.string.label_open_wiki_peida)
-                ) {
+                },
+                onClickUri = {
                     context.openUri(uri = authorWithQuotes.author.wikiUrl)
                 }
-            }
+            )
         }
+    }
+}
+
+@Composable
+private fun ButtonsSection(
+    modifier: Modifier = Modifier,
+    onClickShare: () -> Unit,
+    onClickUri: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
+            .then(modifier)
+    ) {
+        CustomButton(
+            modifier = Modifier.weight(1f),
+            title = stringResource(id = R.string.label_share),
+            onClick = onClickShare
+
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        CustomButton(
+            modifier = Modifier.weight(1f),
+            title = stringResource(id = R.string.label_open_wiki_peida),
+            onClick = onClickUri
+        )
     }
 }

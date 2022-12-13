@@ -15,6 +15,6 @@ interface AuthorDao {
     fun getAuthors(): Flow<List<AuthorEntity>>
 
     @Transaction
-    @Query("SELECT * FROM author WHERE name=:authorName")
+    @Query("SELECT * FROM author WHERE name = (:authorName)")
     fun getAuthorWithQuotes(authorName: String): Flow<AuthorWithQuotes>
 }

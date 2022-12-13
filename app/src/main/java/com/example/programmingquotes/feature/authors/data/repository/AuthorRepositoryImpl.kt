@@ -19,32 +19,32 @@ class AuthorRepositoryImpl @Inject constructor(
 ) :
     AuthorRepository {
 
-    override suspend fun insertAuthors(authors: List<AuthorView>) =
-        localDataSource.insertAuthors(authors.map { it.toAuthorEntity() })
-
     override fun getRandomQuote(): Flow<QuoteView?> =
         localDataSource.getRandomQuote().map { it?.toQuoteView() }
 
     override fun getAuthors(): Flow<List<AuthorView>> =
-        localDataSource.getAuthors()
-            .map { it.map { authorEntity -> authorEntity.toAuthorView() } }
+        localDataSource.getAuthors().map {
+            it.map { authorEntity ->
+                authorEntity.toAuthorView()
+            }
+        }
 
-    override suspend fun getRandomQuoteFromApi(): ResultWrapper<QuoteView?> {
+    override suspend fun fetchRandomQuote(): ResultWrapper<QuoteView?> {
         return safeApiCall {
-            remoteDataSource.getRandomQuote()?.toQuoteView()
+            remoteDataSource.fetchRandomQuote()?.toQuoteView()
         }
     }
 
-    override suspend fun getAuthorsFromApiAndInsertToDb(): ResultWrapper<Unit> {
+    override suspend fun fetchAuthorsAndInsertToDb(): ResultWrapper<Unit> {
         return safeApiCall {
-            val response = remoteDataSource.getAuthors()
+            val response = remoteDataSource.fetchAuthors()
 
             response?.let {
                 localDataSource.insertAuthors(
                     it.values.toList().map { authorResponse ->
                         authorResponse.toAuthorEntity()
-                    })
-
+                    }
+                )
             }
         }
     }
