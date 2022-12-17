@@ -5,7 +5,7 @@ import com.example.programmingquotes.feature.quote.data.network.model.QuoteRespo
 import retrofit2.Response
 import retrofit2.http.GET
 
-interface AuthorApi {
+internal interface AuthorApi {
 
     @GET("Quotes/random")
     suspend fun getRandomQuote(): Response<QuoteResponse>

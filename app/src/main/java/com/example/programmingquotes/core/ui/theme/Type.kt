@@ -8,7 +8,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.programmingquotes.R
 
-val Typography = Typography(
+internal val Typography = Typography(
 
     h1 = TextStyle(
         fontFamily = FontFamily(Font(R.font.firacode_medium)),

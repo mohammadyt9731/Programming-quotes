@@ -15,7 +15,7 @@ import com.example.programmingquotes.core.navigation.Screens
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(navController: NavController) {
+internal fun SplashScreen(navController: NavController) {
     LaunchedEffect(key1 = true) {
         delay(1000)
         navController.navigate(Screens.AuthorsScreen.route) {

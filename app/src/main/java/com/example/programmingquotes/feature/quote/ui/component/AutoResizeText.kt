@@ -9,7 +9,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun AutoResizeText(
+internal fun AutoResizeText(
     modifier: Modifier = Modifier,
     text: String,
     style: TextStyle

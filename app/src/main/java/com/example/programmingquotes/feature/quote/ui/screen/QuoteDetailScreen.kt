@@ -24,7 +24,7 @@ import com.google.accompanist.pager.rememberPagerState
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun QuoteDetailScreen(
+internal fun QuoteDetailScreen(
     index: Int? = 0,
     viewModel: QuoteDetailViewModel
 ) {

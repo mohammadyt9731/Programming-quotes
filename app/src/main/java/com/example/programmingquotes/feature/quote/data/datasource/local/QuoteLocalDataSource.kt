@@ -4,7 +4,7 @@ import com.example.programmingquotes.feature.quote.data.db.entity.QuoteEntity
 import com.example.programmingquotes.feature.quote.data.db.relation.AuthorWithQuotes
 import kotlinx.coroutines.flow.Flow
 
-interface QuoteLocalDataSource {
+internal interface QuoteLocalDataSource {
 
     suspend fun insertAuthorQuotes(quotes: List<QuoteEntity>)
 

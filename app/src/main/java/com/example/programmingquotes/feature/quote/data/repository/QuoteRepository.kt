@@ -4,7 +4,7 @@ import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.feature.quote.ui.model.AuthorWithQuotesView
 import kotlinx.coroutines.flow.Flow
 
-interface QuoteRepository {
+internal interface QuoteRepository {
 
     suspend fun fetchAuthorQuotesAndInsertToDb(authorName: String): ResultWrapper<Unit>
 

@@ -8,7 +8,7 @@ import com.example.programmingquotes.feature.quote.data.db.dao.QuoteDao
 import com.example.programmingquotes.feature.quote.data.db.entity.QuoteEntity
 
 @Database(entities = [AuthorEntity::class, QuoteEntity::class], version = 1)
-abstract class AppDatabase : RoomDatabase() {
+internal abstract class AppDatabase : RoomDatabase() {
 
     abstract fun authorDao(): AuthorDao
     abstract fun quoteDao(): QuoteDao

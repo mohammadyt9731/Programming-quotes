@@ -21,7 +21,7 @@ import retrofit2.Retrofit
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class AuthorModule {
+internal abstract class AuthorModule {
 
     @Binds
     abstract fun bindAuthorLocalDataSource(impl: AuthorLocalDataSourceImpl): AuthorLocalDataSource

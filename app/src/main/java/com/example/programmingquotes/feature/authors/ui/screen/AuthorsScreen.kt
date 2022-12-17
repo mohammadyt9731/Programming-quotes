@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AuthorsScreen(
+internal fun AuthorsScreen(
     navController: NavController,
     viewModel: AuthorViewModel
 ) {

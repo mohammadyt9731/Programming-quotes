@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class QuoteDetailViewModel @Inject constructor(
+internal class QuoteDetailViewModel @Inject constructor(
     private val repository: QuoteRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {

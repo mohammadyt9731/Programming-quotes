@@ -19,7 +19,7 @@ import com.example.programmingquotes.core.common.createEmojiWithDecimalCode
 import com.example.programmingquotes.feature.authors.ui.model.AuthorView
 
 @Composable
-fun AuthorListItem(authorView: AuthorView, onClick: () -> Unit) {
+internal fun AuthorListItem(authorView: AuthorView, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

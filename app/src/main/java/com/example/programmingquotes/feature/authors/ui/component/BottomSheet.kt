@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 
 @ExperimentalMaterialApi
 @Composable
-fun BottomSheet(
+internal fun BottomSheet(
     scaffoldState: ScaffoldState,
     viewModel: AuthorViewModel,
     content: @Composable (bottomSheetState: ModalBottomSheetState, scope: CoroutineScope) -> Unit
