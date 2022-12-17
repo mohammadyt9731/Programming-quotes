@@ -4,16 +4,13 @@ import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.core.data.network.safeApiCall
 import com.example.programmingquotes.feature.authors.data.datasource.local.AuthorLocalDataSource
 import com.example.programmingquotes.feature.authors.data.datasource.remote.AuthorRemoteDataSource
-import com.example.programmingquotes.feature.authors.data.db.entity.toAuthorEntity
 import com.example.programmingquotes.feature.authors.ui.model.AuthorView
-import com.example.programmingquotes.feature.authors.ui.model.toAuthorView
 import com.example.programmingquotes.feature.quote.ui.model.QuoteView
-import com.example.programmingquotes.feature.quote.ui.model.toQuoteView
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class AuthorRepositoryImpl @Inject constructor(
+internal class AuthorRepositoryImpl @Inject constructor(
     private val localDataSource: AuthorLocalDataSource,
     private val remoteDataSource: AuthorRemoteDataSource,
 ) :
@@ -29,23 +26,21 @@ class AuthorRepositoryImpl @Inject constructor(
             }
         }
 
-    override suspend fun fetchRandomQuote(): ResultWrapper<QuoteView?> {
+    override suspend fun fetchRandomQuote(): ResultWrapper<QuoteView> {
         return safeApiCall {
-            remoteDataSource.fetchRandomQuote()?.toQuoteView()
+            remoteDataSource.fetchRandomQuote().toQuoteView()
         }
     }
 
     override suspend fun fetchAuthorsAndInsertToDb(): ResultWrapper<Unit> {
         return safeApiCall {
             val response = remoteDataSource.fetchAuthors()
+            localDataSource.insertAuthors(
+                response.values.toList().map { authorResponse ->
+                    authorResponse.toAuthorEntity()
+                }
+            )
 
-            response?.let {
-                localDataSource.insertAuthors(
-                    it.values.toList().map { authorResponse ->
-                        authorResponse.toAuthorEntity()
-                    }
-                )
-            }
         }
     }
 }

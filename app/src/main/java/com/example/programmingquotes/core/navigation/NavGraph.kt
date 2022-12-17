@@ -17,7 +17,7 @@ import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteViewModel
 import com.example.programmingquotes.feature.splash.ui.screen.SplashScreen
 
 @Composable
-fun NavGraph(navHostController: NavHostController) {
+internal fun NavGraph(navHostController: NavHostController) {
 
     NavHost(
         navController = navHostController,

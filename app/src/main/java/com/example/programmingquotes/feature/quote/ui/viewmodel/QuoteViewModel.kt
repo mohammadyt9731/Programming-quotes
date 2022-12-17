@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class QuoteViewModel @Inject constructor(
+internal class QuoteViewModel @Inject constructor(
     private val repository: QuoteRepository,
     private val networkConnectivity: NetworkConnectivity,
     savedStateHandle: SavedStateHandle

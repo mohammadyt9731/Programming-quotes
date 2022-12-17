@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthorViewModel @Inject constructor(
+internal class AuthorViewModel @Inject constructor(
     private val repository: AuthorRepository,
     private val networkConnectivity: NetworkConnectivity,
     private val sensorManager: SensorManager

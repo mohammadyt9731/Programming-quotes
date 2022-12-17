@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.example.programmingquotes.core.common.createEmojiWithDecimalCode
 
 @Composable
-fun QuoteTopBar(
+internal fun QuoteTopBar(
     modifier: Modifier = Modifier,
     emojiCode: Int,
     authorName: String

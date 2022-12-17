@@ -6,7 +6,7 @@ import android.net.Uri
 import android.widget.Toast
 import com.example.programmingquotes.R
 
-fun Context.openUri(uri: String) {
+internal fun Context.openUri(uri: String) {
     try {
         val intent =
             Intent(Intent.ACTION_VIEW, Uri.parse(uri))
@@ -16,7 +16,7 @@ fun Context.openUri(uri: String) {
     }
 }
 
-fun Context.shareText(text: String) {
+internal fun Context.shareText(text: String) {
     val intent = Intent(Intent.ACTION_SEND)
     intent.type = "text/plain"
     intent.putExtra(Intent.EXTRA_TEXT, text)

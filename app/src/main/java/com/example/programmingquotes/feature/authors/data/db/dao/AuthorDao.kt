@@ -6,7 +6,7 @@ import com.example.programmingquotes.feature.quote.data.db.relation.AuthorWithQu
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface AuthorDao {
+internal interface AuthorDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAuthors(authors: List<AuthorEntity>)

@@ -24,7 +24,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
-fun QuotesScreen(
+internal fun QuotesScreen(
     navHostController: NavHostController,
     viewModel: QuoteViewModel
 ) {

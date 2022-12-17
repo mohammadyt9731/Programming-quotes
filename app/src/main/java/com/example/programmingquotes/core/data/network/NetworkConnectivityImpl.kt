@@ -5,7 +5,7 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import javax.inject.Inject
 
-class NetworkConnectivityImpl @Inject constructor(
+internal class NetworkConnectivityImpl @Inject constructor(
     private val connectivityManager: ConnectivityManager
 ) : NetworkConnectivity {
 

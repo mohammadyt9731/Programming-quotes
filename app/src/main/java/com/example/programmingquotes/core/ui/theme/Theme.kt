@@ -25,7 +25,7 @@ private val LightColorPalette = lightColors(
 )
 
 @Composable
-fun ProgrammingQuotesTheme(
+internal fun ProgrammingQuotesTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {

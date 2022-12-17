@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.example.programmingquotes.R
 
 @Composable
-fun AppBar() {
+internal fun AppBar() {
     TopAppBar(
         backgroundColor = MaterialTheme.colors.background,
         elevation = 0.dp,
