@@ -27,3 +27,11 @@ internal fun Context.shareText(text: String) {
         )
     )
 }
+
+internal fun Context.getMessageFromStringOrStringId(msg: String): String {
+    return try {
+        getString(msg.toInt())
+    } catch (e: Exception) {
+        msg
+    }
+}

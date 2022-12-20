@@ -1,19 +1,21 @@
 package com.example.programmingquotes.feature.quote.ui.screen
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.programmingquotes.core.common.ErrorType
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.core.navigation.Screens
 import com.example.programmingquotes.feature.quote.ui.component.QuoteListItem
@@ -29,23 +31,23 @@ internal fun QuotesScreen(
     viewModel: QuoteViewModel
 ) {
     val scaffoldState = rememberScaffoldState()
-    val authorWithQuotes = viewModel.authorWithQuotes.collectAsState().value
+    val authorWithQuotes by viewModel.authorWithQuotes.collectAsState()
     val pageState = viewModel.pageState.collectAsState().value
     val swipeRefreshState =
         rememberSwipeRefreshState(isRefreshing = pageState is ResultWrapper.Loading)
     val context = LocalContext.current
 
-    LaunchedEffect(key1 = pageState) {
-        if (pageState is ResultWrapper.Error) {
-            if (authorWithQuotes.quotes.isEmpty() && pageState.type == ErrorType.NETWORK) {
-                pageState.stringResId?.let {
-                    scaffoldState.snackbarHostState.showSnackbar(context.getString(it))
-                }
-            } else {
-                pageState.message?.let { scaffoldState.snackbarHostState.showSnackbar(it) }
-            }
-        }
-    }
+    /* LaunchedEffect(key1 = pageState) {
+         if (pageState is ResultWrapper.Error) {
+             if (authorWithQuotes.quotes.isEmpty() && pageState.type == ErrorType.NETWORK) {
+                 pageState.stringResId?.let {
+                     scaffoldState.snackbarHostState.showSnackbar(context.getString(it))
+                 }
+             } else {
+                 pageState.message?.let { scaffoldState.snackbarHostState.showSnackbar(it) }
+             }
+         }
+     }*/
 
     Scaffold(
         modifier = Modifier
@@ -85,7 +87,8 @@ private fun ContentLazyColumn(
     navHostController: NavHostController
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(authorWithQuotes.quotes.size) { index ->
             QuoteListItem(quote = authorWithQuotes.quotes[index].quote) {
@@ -96,7 +99,6 @@ private fun ContentLazyColumn(
                     )
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

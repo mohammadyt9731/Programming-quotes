@@ -6,10 +6,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.programmingquotes.R
-import com.example.programmingquotes.core.common.ErrorType
 import com.example.programmingquotes.core.common.ResultWrapper
-import com.example.programmingquotes.core.data.network.NetworkConnectivity
 import com.example.programmingquotes.feature.authors.data.repository.AuthorRepository
 import com.example.programmingquotes.feature.authors.ui.model.AuthorView
 import com.example.programmingquotes.feature.quote.ui.model.QuoteView
@@ -23,16 +20,12 @@ import javax.inject.Inject
 @HiltViewModel
 internal class AuthorViewModel @Inject constructor(
     private val repository: AuthorRepository,
-    private val networkConnectivity: NetworkConnectivity,
     private val sensorManager: SensorManager
 ) : ViewModel() {
 
     private val _pageState =
-        MutableStateFlow<ResultWrapper<Unit>>(ResultWrapper.UnInitialize)
-    val pageState: StateFlow<ResultWrapper<Unit>> = _pageState
-    private val _authors =
-        MutableStateFlow<List<AuthorView>>(emptyList())
-    val authors: StateFlow<List<AuthorView>> = _authors
+        MutableStateFlow<ResultWrapper<List<AuthorView>>>(ResultWrapper.UnInitialize)
+    val pageState: StateFlow<ResultWrapper<List<AuthorView>>> = _pageState
 
     // bottom sheet
     private var sensorListener: SensorEventListener? = null
@@ -47,56 +40,37 @@ internal class AuthorViewModel @Inject constructor(
         getAuthors()
     }
 
-    private fun getAuthors() = viewModelScope.launch(Dispatchers.IO) {
-        repository.getAuthors().collect {
-            if (it.isEmpty()) {
-                fetchAuthorsAndInsertToDb()
-            } else {
-                _authors.emit(it)
-            }
-        }
-    }
-
-    fun fetchAuthorsAndInsertToDb() {
+    fun getAuthors(isRefresh: Boolean = false) {
         viewModelScope.launch(Dispatchers.IO) {
-            if (networkConnectivity.isNetworkConnected()) {
-                _pageState.emit(ResultWrapper.Loading)
-
-                _pageState.emit(repository.fetchAuthorsAndInsertToDb())
-            } else {
-                _pageState.emit(
-                    ResultWrapper.Error(
-                        type = ErrorType.NETWORK,
-                        stringResId = R.string.msg_no_internet
-                    )
-                )
-            }
+            _pageState.emit(ResultWrapper.Loading)
+            repository.getAuthors(isRefresh)
+                .collect {
+                    _pageState.emit(it)
+                }
         }
     }
+
 
     private fun fetchRandomQuote() = viewModelScope.launch(Dispatchers.IO) {
-        if (networkConnectivity.isNetworkConnected()) {
-            _pageStateBottomSheet.emit(ResultWrapper.Loading)
-            _pageStateBottomSheet.emit(repository.fetchRandomQuote()).also {
-                _isShakePhone.emit(true)
-                isNextRequestReady = true
-            }
-        } else {
-            _pageStateBottomSheet.emit(
-                ResultWrapper.Error(
-                    type = ErrorType.NETWORK,
-                    stringResId = R.string.msg_no_internet
-                )
-            )
-            repository.getRandomQuote().collect {
-                it?.let {
-                    _pageStateBottomSheet.emit(ResultWrapper.Success(it)).also {
-                        isNextRequestReady = true
-                        _isShakePhone.emit(true)
-                    }
-                }
-            }
-        }
+        /*  if (networkConnectivity.isNetworkConnected()) {
+              _pageStateBottomSheet.emit(ResultWrapper.Loading)
+              _pageStateBottomSheet.emit(repository.fetchRandomQuote()).also {
+                  _isShakePhone.emit(true)
+                  isNextRequestReady = true
+              }
+          } else {
+              _pageStateBottomSheet.emit(
+                  Errors.Network(stringResId = R.string.msg_no_internet)
+              )
+              repository.getRandomQuote().collect {
+                  it?.let {
+                      _pageStateBottomSheet.emit(ResultWrapper.Success(it)).also {
+                          isNextRequestReady = true
+                          _isShakePhone.emit(true)
+                      }
+                  }
+              }
+          }*/
     }
 
     fun resetPageStateBottomSheet() {

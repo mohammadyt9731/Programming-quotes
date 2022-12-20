@@ -7,7 +7,6 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -15,8 +14,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.programmingquotes.R
-import com.example.programmingquotes.core.common.ErrorType
+import com.example.programmingquotes.core.common.Errors
 import com.example.programmingquotes.core.common.ResultWrapper
+import com.example.programmingquotes.core.common.getMessageFromStringOrStringId
 import com.example.programmingquotes.core.navigation.Screens
 import com.example.programmingquotes.core.ui.component.CustomButton
 import com.example.programmingquotes.feature.authors.ui.component.AppBar
@@ -54,6 +54,19 @@ internal fun AuthorsScreen(
                     viewModel = viewModel
                 )
             },
+            floatingActionButton = {
+                CustomButton(
+                    modifier = Modifier
+                        .width(188.dp),
+                    onClick = {
+                        scope.launch {
+                            bottomSheetState.show()
+                        }
+                    },
+                    title = stringResource(id = R.string.label_generate_random)
+                )
+            },
+            floatingActionButtonPosition = FabPosition.Center
         )
     }
 }
@@ -67,20 +80,15 @@ private fun Body(
     scaffoldState: ScaffoldState,
     viewModel: AuthorViewModel
 ) {
-    val authors by viewModel.authors.collectAsState()
     val pageState = viewModel.pageState.collectAsState().value
     val context = LocalContext.current
     val swipeState = rememberSwipeRefreshState(isRefreshing = pageState is ResultWrapper.Loading)
 
     LaunchedEffect(key1 = pageState) {
-        if (pageState is ResultWrapper.Error) {
-            if (authors.isEmpty() && pageState.type == ErrorType.NETWORK) {
-                pageState.stringResId?.let {
-                    scaffoldState.snackbarHostState.showSnackbar(context.getString(it))
-                }
-            } else {
-                pageState.message?.let { scaffoldState.snackbarHostState.showSnackbar(it) }
-            }
+        if (pageState is Errors) {
+            scaffoldState.snackbarHostState.showSnackbar(
+                context.getMessageFromStringOrStringId(pageState.message)
+            )
         }
     }
     Box(
@@ -91,31 +99,23 @@ private fun Body(
         } else {
             SwipeRefresh(
                 state = swipeState,
-                onRefresh = { viewModel.fetchAuthorsAndInsertToDb() }) {
+                onRefresh = { viewModel.getAuthors(true) }) {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                     contentPadding = PaddingValues(bottom = 80.dp)
                 ) {
-                    items(authors) { author ->
-                        AuthorListItem(author) {
-                            navController.navigate(Screens.QuotesScreen.withArg(author.name))
+                    if (pageState is ResultWrapper.Success) {
+                        items(pageState.data) { authorView ->
+                            AuthorListItem(authorView) {
+                                navController.navigate(Screens.QuotesScreen.withArg(authorView.name))
+                            }
                         }
                     }
                 }
             }
         }
-        CustomButton(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 16.dp)
-                .width(188.dp)
-                .height(48.dp),
-            onClick = {
-                scope.launch {
-                    bottomSheetState.show()
-                }
-            },
-            title = stringResource(id = R.string.label_generate_random)
-        )
     }
 }

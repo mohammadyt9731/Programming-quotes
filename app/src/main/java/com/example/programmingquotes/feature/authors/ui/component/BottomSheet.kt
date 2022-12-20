@@ -53,11 +53,11 @@ internal fun BottomSheet(
         if (bottomSheetState.isVisible && pageStateBottomSheet is ResultWrapper.Error) {
             if (!isShakePhone.value) {
                 bottomSheetState.hide()
-                pageStateBottomSheet.stringResId?.let {
+             /*   pageStateBottomSheet.stringResId?.let {
                     scaffoldState.snackbarHostState.showSnackbar(context.getString(it)).also {
                         viewModel.resetPageStateBottomSheet()
                     }
-                }
+                }*/
             }
         }
     }
