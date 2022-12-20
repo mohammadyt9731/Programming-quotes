@@ -24,10 +24,6 @@ internal fun AuthorListItem(authorView: AuthorView, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .height(98.dp)
-            .padding(
-                horizontal = 16.dp,
-                vertical = 8.dp
-            )
             .border(
                 1.dp,
                 shape = MaterialTheme.shapes.medium,

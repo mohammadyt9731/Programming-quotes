@@ -62,7 +62,7 @@ internal fun NavGraph(navHostController: NavHostController) {
         ) { entry ->
             val viewModel: QuoteDetailViewModel = hiltViewModel()
             QuoteDetailScreen(
-                index = entry.arguments?.getInt(Constants.QUOTE_INDEX_KEY),
+                index = entry.arguments?.getInt(Constants.QUOTE_INDEX_KEY)!!,
                 viewModel = viewModel
             )
         }

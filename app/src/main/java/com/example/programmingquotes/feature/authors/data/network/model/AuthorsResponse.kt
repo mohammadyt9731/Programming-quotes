@@ -2,6 +2,7 @@ package com.example.programmingquotes.feature.authors.data.network.model
 
 import com.example.programmingquotes.core.common.generateRandomEmoji
 import com.example.programmingquotes.feature.authors.data.db.entity.AuthorEntity
+import com.example.programmingquotes.feature.authors.ui.model.AuthorView
 
 internal data class AuthorResponse(
     val name: String,
@@ -10,6 +11,13 @@ internal data class AuthorResponse(
 ) {
 
     fun toAuthorEntity() = AuthorEntity(
+        name = name,
+        wikiUrl = wikiUrl,
+        quoteCount = quoteCount,
+        emoji = generateRandomEmoji()
+    )
+
+    fun toAuthorView() = AuthorView(
         name = name,
         wikiUrl = wikiUrl,
         quoteCount = quoteCount,

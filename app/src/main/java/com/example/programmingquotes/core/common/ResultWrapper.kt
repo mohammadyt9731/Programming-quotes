@@ -4,17 +4,11 @@ internal sealed class ResultWrapper<out T> {
     object UnInitialize : ResultWrapper<Nothing>()
     object Loading : ResultWrapper<Nothing>()
     data class Success<T>(val data: T) : ResultWrapper<T>()
-    data class Error(
-        val type: ErrorType,
-        val message: String? = null,
-        val code: Int? = null,
-        val stringResId: Int? = null
-    ) :
-        ResultWrapper<Nothing>()
+    class Error<T>(msg: String) : Errors<T>(msg)
 }
 
-internal enum class ErrorType {
-    HTTP,
-    APP,
-    NETWORK
+internal sealed class Errors<T>(val message: String) : ResultWrapper<T>() {
+    data class Http<T>(val msg: String, val code: Int) : Errors<T>(msg)
+    data class App<T>(val msg: String) : Errors<T>(msg)
+    data class Network<T>(val msg: String) : Errors<T>(msg)
 }

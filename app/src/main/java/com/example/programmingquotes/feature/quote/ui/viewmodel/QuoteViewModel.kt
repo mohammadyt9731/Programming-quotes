@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.programmingquotes.R
 import com.example.programmingquotes.core.common.Constants
-import com.example.programmingquotes.core.common.ErrorType
+import com.example.programmingquotes.core.common.Errors
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.core.data.network.NetworkConnectivity
 import com.example.programmingquotes.feature.authors.ui.model.AuthorView
@@ -61,10 +61,7 @@ internal class QuoteViewModel @Inject constructor(
                 _pageState.emit(response)
             } else {
                 _pageState.emit(
-                    ResultWrapper.Error(
-                        type = ErrorType.NETWORK,
-                        stringResId = R.string.msg_no_internet
-                    )
+                    Errors.Network(msg = R.string.msg_no_internet.toString())
                 )
             }
         }
