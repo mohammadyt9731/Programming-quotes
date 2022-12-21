@@ -25,21 +25,18 @@ import com.example.programmingquotes.feature.quote.ui.model.QuoteView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@ExperimentalMaterialApi
 @Composable
 internal fun BottomSheet(
-    scaffoldState: ScaffoldState,
     viewModel: AuthorViewModel,
-    content: @Composable (bottomSheetState: ModalBottomSheetState, scope: CoroutineScope) -> Unit
+    bottomSheetState: ModalBottomSheetState,
+    scaffoldState: ScaffoldState,
+    pageStateBottomSheet: () -> ResultWrapper<QuoteView?>
 ) {
 
-    val bottomSheetState = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-    )
-    val pageStateBottomSheet = viewModel.pageStateBottomSheet.collectAsState().value
-    val isShakePhone = viewModel.isShakePhone.collectAsState()
-    val context = LocalContext.current
+//    val isShakePhone = viewModel.isShakePhone.collectAsState()
+    val pageState = pageStateBottomSheet()
     val scope = rememberCoroutineScope()
+
 
     LaunchedEffect(key1 = bottomSheetState.isVisible) {
         if (bottomSheetState.isVisible) {
@@ -49,15 +46,13 @@ internal fun BottomSheet(
         }
     }
 
-    LaunchedEffect(key1 = pageStateBottomSheet) {
-        if (bottomSheetState.isVisible && pageStateBottomSheet is ResultWrapper.Error) {
-            if (!isShakePhone.value) {
-                bottomSheetState.hide()
-             /*   pageStateBottomSheet.stringResId?.let {
-                    scaffoldState.snackbarHostState.showSnackbar(context.getString(it)).also {
-                        viewModel.resetPageStateBottomSheet()
-                    }
-                }*/
+    LaunchedEffect(key1 = pageState) {
+        if (bottomSheetState.isVisible && pageState is ResultWrapper.Error) {
+//            if (!isShakePhone.value) {
+            bottomSheetState.hide()
+            scaffoldState.snackbarHostState.showSnackbar(pageState.message).also {
+                viewModel.resetPageStateBottomSheet()
+//                }
             }
         }
     }
@@ -68,23 +63,13 @@ internal fun BottomSheet(
         }
     }
 
-    ModalBottomSheetLayout(
-        sheetState = bottomSheetState,
-        scrimColor = Color.Transparent,
-        sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-        sheetElevation = 15.dp,
-        sheetContent = {
-            if (isShakePhone.value) {
-                SheetContentShaken(
-                    pageStateBottomSheet = pageStateBottomSheet
-                )
-            } else {
-                SheetContentNotShaken()
-            }
-        },
-        content = { content(bottomSheetState, scope) }
-    )
-
+    if (pageState is ResultWrapper.UnInitialize) {
+        SheetContentNotShaken()
+    } else {
+        SheetContentShaken(
+            pageStateBottomSheet = pageStateBottomSheet()
+        )
+    }
 }
 
 @Composable
