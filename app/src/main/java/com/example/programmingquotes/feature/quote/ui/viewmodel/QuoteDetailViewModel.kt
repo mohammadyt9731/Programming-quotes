@@ -35,8 +35,8 @@ internal class QuoteDetailViewModel @Inject constructor(
 
     private fun getQuotes(authorName: String) =
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getAuthorWithQuotes(authorName = authorName).collect { authorWithQuotes ->
-                _authorWithQuotes.emit(authorWithQuotes)
-            }
+//            repository.getAuthorWithQuotes(authorName = authorName).collect { authorWithQuotes ->
+//                _authorWithQuotes.emit(authorWithQuotes)
+//            }
         }
 }

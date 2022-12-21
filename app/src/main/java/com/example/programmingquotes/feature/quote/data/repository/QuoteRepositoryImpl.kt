@@ -6,7 +6,9 @@ import com.example.programmingquotes.feature.quote.data.datasource.local.QuoteLo
 import com.example.programmingquotes.feature.quote.data.datasource.remote.QuoteRemoteDataSource
 import com.example.programmingquotes.feature.quote.ui.model.AuthorWithQuotesView
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
 internal class QuoteRepositoryImpl @Inject constructor(
@@ -14,7 +16,7 @@ internal class QuoteRepositoryImpl @Inject constructor(
     private val remoteDataSource: QuoteRemoteDataSource
 ) : QuoteRepository {
 
-    override suspend fun fetchAuthorQuotesAndInsertToDb(authorName: String): ResultWrapper<Unit> {
+    private suspend fun fetchAuthorQuotesAndInsertToDb(authorName: String): ResultWrapper<AuthorWithQuotesView> {
         return safeApiCall {
             val response = remoteDataSource.fetchAuthorWithQuotes(authorName = authorName)
 
@@ -22,10 +24,33 @@ internal class QuoteRepositoryImpl @Inject constructor(
                 quotes = response.quotes.map { quoteResponse ->
                     quoteResponse.toQuoteEntity()
                 }
-                )
+            )
+
+            response.toAuthorWithQuotesView()
         }
     }
 
-    override fun getAuthorWithQuotes(authorName: String): Flow<AuthorWithQuotesView> =
+    override fun getAuthorWithQuotes(
+        authorName: String,
+        isRefresh: Boolean
+    ): Flow<ResultWrapper<AuthorWithQuotesView>> =
+        flow {
+            getAuthorWithQuotesFromDb(authorName)
+                .onStart {
+                    if (isRefresh) {
+                        emit(fetchAuthorQuotesAndInsertToDb(authorName))
+                    }
+                }.collect {
+                    emit(ResultWrapper.Success(it))
+                    if (it.quotes.isEmpty()) {
+                        val response = fetchAuthorQuotesAndInsertToDb(authorName)
+                        if (response is ResultWrapper.Error){
+                            emit(response)
+                        }
+                    }
+                }
+        }
+
+    private fun getAuthorWithQuotesFromDb(authorName: String): Flow<AuthorWithQuotesView> =
         localDataSource.getAuthorWithQuotes(authorName).map { it.toAuthorWithQuotesView() }
 }
