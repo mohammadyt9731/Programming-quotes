@@ -7,6 +7,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -22,8 +25,6 @@ import com.example.programmingquotes.feature.quote.ui.component.QuoteListItem
 import com.example.programmingquotes.feature.quote.ui.component.QuoteTopBar
 import com.example.programmingquotes.feature.quote.ui.model.AuthorWithQuotesView
 import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteViewModel
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
 internal fun QuotesScreen(
@@ -33,9 +34,11 @@ internal fun QuotesScreen(
     val scaffoldState = rememberScaffoldState()
     val authorWithQuotes by viewModel.authorWithQuotes.collectAsState()
     val pageState = viewModel.pageState.collectAsState().value
-    val swipeRefreshState =
-        rememberSwipeRefreshState(isRefreshing = pageState is ResultWrapper.Loading)
     val context = LocalContext.current
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = pageState is ResultWrapper.Loading,
+        onRefresh = { viewModel.fetchAuthorQuotesAndInsertToDb() }
+    )
 
     /* LaunchedEffect(key1 = pageState) {
          if (pageState is ResultWrapper.Error) {
@@ -61,22 +64,21 @@ internal fun QuotesScreen(
             )
         }
     ) {
-        if (pageState is ResultWrapper.Loading)
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        else {
-            SwipeRefresh(
-                state = swipeRefreshState,
-                onRefresh = {
-                    viewModel.fetchAuthorQuotesAndInsertToDb()
-                }
-            ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .pullRefresh(pullRefreshState)
+        ) {
+            if (pageState is ResultWrapper.Loading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            } else {
                 ContentLazyColumn(authorWithQuotes, navHostController)
             }
+            PullRefreshIndicator(
+                refreshing = pageState is ResultWrapper.Loading,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
         }
     }
 }

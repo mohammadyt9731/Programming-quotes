@@ -4,6 +4,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,8 +26,6 @@ import com.example.programmingquotes.feature.authors.ui.component.AppBar
 import com.example.programmingquotes.feature.authors.ui.component.AuthorListItem
 import com.example.programmingquotes.feature.authors.ui.component.BottomSheet
 import com.example.programmingquotes.feature.authors.ui.viewmodel.AuthorViewModel
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -80,7 +81,10 @@ private fun Body(
 ) {
     val pageState = viewModel.pageState.collectAsState().value
     val context = LocalContext.current
-    val swipeState = rememberSwipeRefreshState(isRefreshing = pageState is ResultWrapper.Loading)
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = pageState is ResultWrapper.Loading,
+        onRefresh = { viewModel.getAuthors(true) }
+    )
 
     LaunchedEffect(key1 = pageState) {
         if (pageState is Errors) {
@@ -89,31 +93,35 @@ private fun Body(
             )
         }
     }
+
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(state = pullRefreshState)
     ) {
         if (pageState is ResultWrapper.Loading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         } else {
-            SwipeRefresh(
-                state = swipeState,
-                onRefresh = { viewModel.getAuthors(true) }) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    contentPadding = PaddingValues(bottom = 80.dp)
-                ) {
-                    if (pageState is ResultWrapper.Success) {
-                        items(pageState.data) { authorView ->
-                            AuthorListItem(authorView) {
-                                navController.navigate(Screens.QuotesScreen.withArg(authorView.name))
-                            }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(bottom = 80.dp)
+            ) {
+                if (pageState is ResultWrapper.Success) {
+                    items(pageState.data) { authorView ->
+                        AuthorListItem(authorView) {
+                            navController.navigate(Screens.QuotesScreen.withArg(authorView.name))
                         }
                     }
                 }
             }
         }
+        PullRefreshIndicator(
+            refreshing = pageState is ResultWrapper.Loading,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
     }
 }

@@ -1,8 +1,8 @@
 package com.example.programmingquotes.feature.quote.ui.component
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -16,17 +16,18 @@ internal fun QuoteTopBar(
     emojiCode: Int,
     authorName: String
 ) {
-    Text(
-        modifier = Modifier
-            .padding(
-                vertical = 16.dp,
-                horizontal = 8.dp
-            )
-            .then(modifier),
-        text = "${createEmojiWithDecimalCode(emojiCode)} $authorName",
-        textAlign = TextAlign.Start,
-        style = MaterialTheme.typography.subtitle1,
-        color = MaterialTheme.colors.onSurface,
-        overflow = TextOverflow.Ellipsis
-    )
+    TopAppBar(
+        backgroundColor = MaterialTheme.colors.background,
+        elevation = 0.dp,
+    ) {
+        Text(
+            modifier = modifier,
+            text = "${createEmojiWithDecimalCode(emojiCode)} $authorName",
+            textAlign = TextAlign.Start,
+            style = MaterialTheme.typography.subtitle1,
+            color = MaterialTheme.colors.onSurface,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+
 }
