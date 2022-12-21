@@ -36,8 +36,8 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
         freeCompilerArgs += [
-                "-Xuse-experimental=androidx.compose.material.ExperimentalMaterialApi",
-                "-Xuse-experimental=com.google.accompanist.pager.ExperimentalPagerApi",
+                "-Xopt-in=androidx.compose.material.ExperimentalMaterialApi",
+                "-Xopt-in=com.google.accompanist.pager.ExperimentalPagerApi",
         ]
     }
     buildFeatures {
