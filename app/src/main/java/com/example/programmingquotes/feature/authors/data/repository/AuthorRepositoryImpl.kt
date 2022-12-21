@@ -21,29 +21,11 @@ internal class AuthorRepositoryImpl @Inject constructor(
     override fun getRandomQuote(): Flow<QuoteView?> =
         localDataSource.getRandomQuote().map { it?.toQuoteView() }
 
-    override fun getAuthors(): Flow<List<AuthorView>> =
-        localDataSource.getAuthors().map {
-            it.map { authorEntity ->
-                authorEntity.toAuthorView()
-            }
-        }
-
     override suspend fun fetchRandomQuote(): ResultWrapper<QuoteView> {
         return safeApiCall {
             remoteDataSource.fetchRandomQuote().toQuoteView()
         }
     }
-
-    override suspend fun fetchAuthorsAndInsertToDb(): ResultWrapper<List<AuthorView>> =
-        safeApiCall {
-            val response = remoteDataSource.fetchAuthors()
-            localDataSource.insertAuthors(
-                response.values.toList().map { authorResponse ->
-                    authorResponse.toAuthorEntity()
-                }
-            )
-            response.values.map { it.toAuthorView() }
-        }
 
     override suspend fun getAuthors(
         isRefresh: Boolean
@@ -62,7 +44,14 @@ internal class AuthorRepositoryImpl @Inject constructor(
                 }
         }
 
-    override suspend fun fetchAuthors(): ResultWrapper<List<AuthorView>> {
+    private fun getAuthors(): Flow<List<AuthorView>> =
+        localDataSource.getAuthors().map {
+            it.map { authorEntity ->
+                authorEntity.toAuthorView()
+            }
+        }
+
+    private suspend fun fetchAuthors(): ResultWrapper<List<AuthorView>> {
         return safeApiCall {
             val response = remoteDataSource.fetchAuthors()
             localDataSource.insertAuthors(

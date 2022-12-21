@@ -9,13 +9,7 @@ internal interface AuthorRepository {
 
     fun getRandomQuote(): Flow<QuoteView?>
 
-    fun getAuthors(): Flow<List<AuthorView>>
-
     suspend fun getAuthors(isRefresh: Boolean): Flow<ResultWrapper<List<AuthorView>>>
 
-    suspend fun fetchAuthors(): ResultWrapper<List<AuthorView>>
-
     suspend fun fetchRandomQuote(): ResultWrapper<QuoteView>
-
-    suspend fun fetchAuthorsAndInsertToDb(): ResultWrapper<List<AuthorView>>
 }

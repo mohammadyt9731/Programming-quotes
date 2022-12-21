@@ -28,7 +28,6 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 internal fun AuthorsScreen(
     navController: NavController,
@@ -71,7 +70,6 @@ internal fun AuthorsScreen(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun Body(
     bottomSheetState: ModalBottomSheetState,

@@ -19,11 +19,9 @@ import com.example.programmingquotes.core.ui.component.CustomButton
 import com.example.programmingquotes.feature.quote.ui.component.AutoResizeText
 import com.example.programmingquotes.feature.quote.ui.component.QuoteTopBar
 import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteDetailViewModel
-import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 internal fun QuoteDetailScreen(
     index: Int,
