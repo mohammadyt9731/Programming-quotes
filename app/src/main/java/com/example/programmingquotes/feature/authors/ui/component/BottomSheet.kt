@@ -4,17 +4,13 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -22,7 +18,6 @@ import com.example.programmingquotes.R
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.feature.authors.ui.viewmodel.AuthorViewModel
 import com.example.programmingquotes.feature.quote.ui.model.QuoteView
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -32,8 +27,6 @@ internal fun BottomSheet(
     scaffoldState: ScaffoldState,
     pageStateBottomSheet: () -> ResultWrapper<QuoteView?>
 ) {
-
-//    val isShakePhone = viewModel.isShakePhone.collectAsState()
     val pageState = pageStateBottomSheet()
     val scope = rememberCoroutineScope()
 
@@ -48,11 +41,9 @@ internal fun BottomSheet(
 
     LaunchedEffect(key1 = pageState) {
         if (bottomSheetState.isVisible && pageState is ResultWrapper.Error) {
-//            if (!isShakePhone.value) {
             bottomSheetState.hide()
             scaffoldState.snackbarHostState.showSnackbar(pageState.message).also {
                 viewModel.resetPageStateBottomSheet()
-//                }
             }
         }
     }

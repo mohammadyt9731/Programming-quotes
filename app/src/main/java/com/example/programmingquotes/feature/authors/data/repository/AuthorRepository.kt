@@ -7,9 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 internal interface AuthorRepository {
 
-    fun getRandomQuote(): Flow<QuoteView?>
+    fun getRandomQuote(): Flow<ResultWrapper<QuoteView?>>
 
     suspend fun getAuthors(isRefresh: Boolean): Flow<ResultWrapper<List<AuthorView>>>
-
-    suspend fun fetchRandomQuote(): ResultWrapper<QuoteView>
 }

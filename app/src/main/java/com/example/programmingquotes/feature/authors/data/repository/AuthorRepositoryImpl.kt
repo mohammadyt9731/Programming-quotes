@@ -5,11 +5,9 @@ import com.example.programmingquotes.core.data.network.safeApiCall
 import com.example.programmingquotes.feature.authors.data.datasource.local.AuthorLocalDataSource
 import com.example.programmingquotes.feature.authors.data.datasource.remote.AuthorRemoteDataSource
 import com.example.programmingquotes.feature.authors.ui.model.AuthorView
+import com.example.programmingquotes.feature.quote.data.db.entity.QuoteEntity
 import com.example.programmingquotes.feature.quote.ui.model.QuoteView
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 internal class AuthorRepositoryImpl @Inject constructor(
@@ -18,14 +16,29 @@ internal class AuthorRepositoryImpl @Inject constructor(
 ) :
     AuthorRepository {
 
-    override fun getRandomQuote(): Flow<QuoteView?> =
-        localDataSource.getRandomQuote().map { it?.toQuoteView() }
+    override fun getRandomQuote(): Flow<ResultWrapper<QuoteView?>> =
+        flow {
+            val response = fetchRandomQuote()
+            if (response is ResultWrapper.Success) {
+                emit(response)
+            } else {
+                val result = getRandomQuoteFromDb()
+                if (result == null) {
+                    emit(response)
+                    emit(ResultWrapper.UnInitialize)
+                } else {
+                    emit(ResultWrapper.Success(result))
+                }
+            }
+        }
 
-    override suspend fun fetchRandomQuote(): ResultWrapper<QuoteView> {
+    private suspend fun fetchRandomQuote(): ResultWrapper<QuoteView> {
         return safeApiCall {
             remoteDataSource.fetchRandomQuote().toQuoteView()
         }
     }
+
+    private fun getRandomQuoteFromDb(): QuoteView? = localDataSource.getRandomQuote()?.toQuoteView()
 
     override suspend fun getAuthors(
         isRefresh: Boolean

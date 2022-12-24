@@ -4,6 +4,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.programmingquotes.core.common.ResultWrapper
@@ -29,9 +30,6 @@ internal class AuthorViewModel @Inject constructor(
 
     // bottom sheet
     private var sensorListener: SensorEventListener? = null
-    private val _isShakePhone = MutableStateFlow(false)
-    val isShakePhone: StateFlow<Boolean> = _isShakePhone
-    private var isNextRequestReady = true
     private val _pageStateBottomSheet =
         MutableStateFlow<ResultWrapper<QuoteView?>>(ResultWrapper.UnInitialize)
     val pageStateBottomSheet: StateFlow<ResultWrapper<QuoteView?>> = _pageStateBottomSheet
@@ -50,27 +48,10 @@ internal class AuthorViewModel @Inject constructor(
         }
     }
 
-
     private fun fetchRandomQuote() = viewModelScope.launch(Dispatchers.IO) {
-        /*  if (networkConnectivity.isNetworkConnected()) {
-              _pageStateBottomSheet.emit(ResultWrapper.Loading)
-              _pageStateBottomSheet.emit(repository.fetchRandomQuote()).also {
-                  _isShakePhone.emit(true)
-                  isNextRequestReady = true
-              }
-          } else {
-              _pageStateBottomSheet.emit(
-                  Errors.Network(stringResId = R.string.msg_no_internet)
-              )
-              repository.getRandomQuote().collect {
-                  it?.let {
-                      _pageStateBottomSheet.emit(ResultWrapper.Success(it)).also {
-                          isNextRequestReady = true
-                          _isShakePhone.emit(true)
-                      }
-                  }
-              }
-          }*/
+        repository.getRandomQuote().collect {
+            _pageStateBottomSheet.emit(it)
+        }
     }
 
     fun resetPageStateBottomSheet() {
@@ -83,8 +64,7 @@ internal class AuthorViewModel @Inject constructor(
 
     suspend fun stopSensorManager() {
         sensorManager.unregisterListener(sensorListener)
-        isNextRequestReady = true
-        _isShakePhone.emit(false)
+        _pageStateBottomSheet.emit(ResultWrapper.UnInitialize)
     }
 
     private fun setUpSensorManager() {
@@ -105,9 +85,9 @@ internal class AuthorViewModel @Inject constructor(
                 acceleration = acceleration * 0.9f + delta
 
                 viewModelScope.launch {
-                    if (acceleration > 15) {
-                        if (isNextRequestReady) {
-                            isNextRequestReady = false
+                    if (acceleration > 12) {
+                        if (_pageStateBottomSheet.value !is ResultWrapper.Loading) {
+                            _pageStateBottomSheet.emit(ResultWrapper.Loading)
                             fetchRandomQuote()
                         }
                     }
