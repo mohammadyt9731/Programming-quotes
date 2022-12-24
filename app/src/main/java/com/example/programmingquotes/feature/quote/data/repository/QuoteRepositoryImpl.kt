@@ -44,13 +44,13 @@ internal class QuoteRepositoryImpl @Inject constructor(
                     emit(ResultWrapper.Success(it))
                     if (it.quotes.isEmpty()) {
                         val response = fetchAuthorQuotesAndInsertToDb(authorName)
-                        if (response is ResultWrapper.Error){
+                        if (response is ResultWrapper.Error) {
                             emit(response)
                         }
                     }
                 }
         }
 
-    private fun getAuthorWithQuotesFromDb(authorName: String): Flow<AuthorWithQuotesView> =
+    override fun getAuthorWithQuotesFromDb(authorName: String): Flow<AuthorWithQuotesView> =
         localDataSource.getAuthorWithQuotes(authorName).map { it.toAuthorWithQuotesView() }
 }
