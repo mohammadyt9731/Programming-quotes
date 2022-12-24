@@ -18,10 +18,10 @@ internal class QuoteRepositoryImpl @Inject constructor(
 
     private suspend fun fetchAuthorQuotesAndInsertToDb(authorName: String): ResultWrapper<AuthorWithQuotesView> {
         return safeApiCall {
-            val response = remoteDataSource.fetchAuthorWithQuotes(authorName = authorName)
+            val response = remoteDataSource.fetchAuthorWithQuotes(authorName)
 
             localDataSource.insertAuthorQuotes(
-                quotes = response.quotes.map { quoteResponse ->
+                response.quotes.map { quoteResponse ->
                     quoteResponse.toQuoteEntity()
                 }
             )

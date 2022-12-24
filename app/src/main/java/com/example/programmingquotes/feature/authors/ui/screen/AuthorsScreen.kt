@@ -18,7 +18,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.programmingquotes.R
-import com.example.programmingquotes.core.common.Errors
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.core.common.getMessageFromStringOrStringId
 import com.example.programmingquotes.core.navigation.Screens
@@ -127,9 +126,9 @@ private fun Body(
     val state = pageState()
 
     LaunchedEffect(key1 = state) {
-        if (state is Errors) {
+        if (state is ResultWrapper.Error) {
             scaffoldState.snackbarHostState.showSnackbar(
-                context.getMessageFromStringOrStringId(state.message)
+                context.getMessageFromStringOrStringId(state.errors.message)
             )
         }
     }

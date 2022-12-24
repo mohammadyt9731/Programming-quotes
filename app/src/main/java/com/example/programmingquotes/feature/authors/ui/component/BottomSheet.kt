@@ -42,7 +42,7 @@ internal fun BottomSheet(
     LaunchedEffect(key1 = pageState) {
         if (bottomSheetState.isVisible && pageState is ResultWrapper.Error) {
             bottomSheetState.hide()
-            scaffoldState.snackbarHostState.showSnackbar(pageState.message).also {
+            scaffoldState.snackbarHostState.showSnackbar(pageState.errors.message).also {
                 viewModel.resetPageStateBottomSheet()
             }
         }

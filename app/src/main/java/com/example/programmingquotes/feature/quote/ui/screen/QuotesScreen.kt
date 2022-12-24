@@ -14,20 +14,16 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.programmingquotes.core.common.Errors
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.core.common.getMessageFromStringOrStringId
 import com.example.programmingquotes.core.navigation.Screens
 import com.example.programmingquotes.feature.quote.ui.component.QuoteListItem
 import com.example.programmingquotes.feature.quote.ui.component.QuoteTopBar
-import com.example.programmingquotes.feature.quote.ui.model.AuthorWithQuotesView
-import com.example.programmingquotes.feature.quote.ui.model.QuoteView
 import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteViewModel
 
 @Composable
@@ -36,7 +32,6 @@ internal fun QuotesScreen(
     viewModel: QuoteViewModel
 ) {
     val scaffoldState = rememberScaffoldState()
-//    val authorWithQuotes by viewModel.authorWithQuotes.collectAsState()
     val pageState = viewModel.pageState.collectAsState().value
     val context = LocalContext.current
     val pullRefreshState = rememberPullRefreshState(
@@ -45,9 +40,9 @@ internal fun QuotesScreen(
     )
 
     LaunchedEffect(key1 = pageState) {
-        if (pageState is Errors) {
+        if (pageState is ResultWrapper.Error) {
             scaffoldState.snackbarHostState.showSnackbar(
-                context.getMessageFromStringOrStringId(pageState.message)
+                context.getMessageFromStringOrStringId(pageState.errors.message)
             )
         }
     }
@@ -74,41 +69,30 @@ internal fun QuotesScreen(
         ) {
             if (pageState is ResultWrapper.Loading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else if (pageState is ResultWrapper.Success) {
-                ContentLazyColumn(
-                    quotes = pageState.data.quotes,
-                    authorName = pageState.data.author.name,
-                    navHostController = navHostController
-                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    if (pageState is ResultWrapper.Success) {
+                        items(pageState.data.quotes.size) { index ->
+                            QuoteListItem(quote = pageState.data.quotes[index].quote) {
+                                navHostController.navigate(
+                                    Screens.QuoteDetailScreen.withArg(
+                                        "$index",
+                                        pageState.data.author.name
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
             }
             PullRefreshIndicator(
                 refreshing = pageState is ResultWrapper.Loading,
                 state = pullRefreshState,
                 modifier = Modifier.align(Alignment.TopCenter)
             )
-        }
-    }
-}
-
-@Composable
-private fun ContentLazyColumn(
-    quotes: List<QuoteView>,
-    authorName: String,
-    navHostController: NavHostController
-) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(quotes.size) { index ->
-            QuoteListItem(quote = quotes[index].quote) {
-                navHostController.navigate(
-                    Screens.QuoteDetailScreen.withArg(
-                        "$index",
-                        authorName
-                    )
-                )
-            }
         }
     }
 }
