@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.rememberScaffoldState
@@ -24,7 +25,9 @@ import com.example.programmingquotes.core.common.getMessageFromStringOrStringId
 import com.example.programmingquotes.core.navigation.Screens
 import com.example.programmingquotes.feature.quote.ui.component.QuoteListItem
 import com.example.programmingquotes.feature.quote.ui.component.QuoteTopBar
+import com.example.programmingquotes.feature.quote.ui.model.AuthorWithQuotesView
 import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteViewModel
+import kotlinx.coroutines.flow.consumeAsFlow
 
 @Composable
 internal fun QuotesScreen(
@@ -33,17 +36,15 @@ internal fun QuotesScreen(
 ) {
     val scaffoldState = rememberScaffoldState()
     val pageState = viewModel.pageState.collectAsState().value
-    val context = LocalContext.current
     val pullRefreshState = rememberPullRefreshState(
         refreshing = pageState is ResultWrapper.Loading,
         onRefresh = { viewModel.getAuthorWithQuotes(isRefresh = true) }
     )
+    val context = LocalContext.current
 
-    LaunchedEffect(key1 = pageState) {
-        if (pageState is ResultWrapper.Error) {
-            scaffoldState.snackbarHostState.showSnackbar(
-                context.getMessageFromStringOrStringId(pageState.errors.message)
-            )
+    LaunchedEffect(key1 = true) {
+        viewModel.errorChannel.consumeAsFlow().collect {
+            scaffoldState.snackbarHostState.showSnackbar(context.getMessageFromStringOrStringId(it))
         }
     }
 
@@ -61,38 +62,52 @@ internal fun QuotesScreen(
             }
         }
     ) {
+        MainContent(
+            pullRefreshState = { pullRefreshState },
+            pageState = { pageState },
+            navigateToDetail = { index, name ->
+                navHostController.navigate(
+                    Screens.QuoteDetailScreen.withArg(
+                        "$index",
+                        name
+                    )
+                )
+            })
+    }
+}
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .pullRefresh(pullRefreshState)
-        ) {
-            if (pageState is ResultWrapper.Loading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    if (pageState is ResultWrapper.Success) {
-                        items(pageState.data.quotes.size) { index ->
-                            QuoteListItem(quote = pageState.data.quotes[index].quote) {
-                                navHostController.navigate(
-                                    Screens.QuoteDetailScreen.withArg(
-                                        "$index",
-                                        pageState.data.author.name
-                                    )
-                                )
-                            }
+@Composable
+private fun MainContent(
+    pullRefreshState: () -> PullRefreshState,
+    pageState: () -> ResultWrapper<AuthorWithQuotesView>,
+    navigateToDetail: (index: Int, name: String) -> Unit
+) {
+    val state = pageState()
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState())
+    ) {
+        if (state is ResultWrapper.Loading) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                if (state is ResultWrapper.Success) {
+                    items(state.data.quotes.size) { index ->
+                        QuoteListItem(quote = state.data.quotes[index].quote) {
+                            navigateToDetail(index, state.data.author.name)
                         }
                     }
                 }
             }
-            PullRefreshIndicator(
-                refreshing = pageState is ResultWrapper.Loading,
-                state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
         }
+        PullRefreshIndicator(
+            refreshing = state is ResultWrapper.Loading,
+            state = pullRefreshState(),
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
     }
 }

@@ -1,5 +1,7 @@
 package com.example.programmingquotes.feature.authors.ui.screen
 
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,10 +26,10 @@ import com.example.programmingquotes.core.navigation.Screens
 import com.example.programmingquotes.core.ui.component.CustomButton
 import com.example.programmingquotes.feature.authors.ui.component.AppBar
 import com.example.programmingquotes.feature.authors.ui.component.AuthorListItem
-import com.example.programmingquotes.feature.authors.ui.component.BottomSheet
+import com.example.programmingquotes.feature.authors.ui.component.SheetContent
 import com.example.programmingquotes.feature.authors.ui.model.AuthorView
 import com.example.programmingquotes.feature.authors.ui.viewmodel.AuthorViewModel
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 
 @Composable
@@ -46,6 +48,36 @@ internal fun AuthorsScreen(
     val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
     )
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = true) {
+
+        viewModel.errorChannel.consumeAsFlow().collect {
+            if (bottomSheetState.isVisible)
+                Toast.makeText(
+                    context,
+                    context.getMessageFromStringOrStringId(it),
+                    Toast.LENGTH_SHORT
+                ).show()
+            else
+                scaffoldState.snackbarHostState
+                    .showSnackbar(context.getMessageFromStringOrStringId(it))
+        }
+    }
+
+    LaunchedEffect(key1 = bottomSheetState.isVisible) {
+        if (bottomSheetState.isVisible) {
+            viewModel.startSensorManager()
+        } else {
+            viewModel.stopSensorManager()
+        }
+    }
+
+    BackHandler(enabled = bottomSheetState.isVisible) {
+        scope.launch {
+            bottomSheetState.hide()
+        }
+    }
 
     ModalBottomSheetLayout(
         modifier = Modifier.fillMaxSize(),
@@ -53,22 +85,20 @@ internal fun AuthorsScreen(
         scrimColor = Color.Transparent,
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetElevation = 15.dp,
-        sheetContent = {
-            BottomSheet(
-                viewModel = viewModel,
-                pageStateBottomSheet = { pageStateBottomSheet },
-                scaffoldState = scaffoldState,
-                bottomSheetState = bottomSheetState
-            )
-        },
+        sheetContent = { SheetContent { pageStateBottomSheet } },
         content = {
             MainContent(
-                scaffoldState = scaffoldState,
-                navController = navController,
-                pullRefreshState = pullRefreshState,
-                pageState = pageState,
-                scope = scope,
-                bottomSheetState = bottomSheetState
+                scaffoldState = { scaffoldState },
+                pullRefreshState = { pullRefreshState },
+                pageState = { pageState },
+                navigateToQuotes = { name ->
+                    navController.navigate(Screens.QuotesScreen.withArg(name))
+                },
+                showBottomSheet = {
+                    scope.launch {
+                        bottomSheetState.show()
+                    }
+                }
             )
         },
     )
@@ -76,37 +106,31 @@ internal fun AuthorsScreen(
 
 @Composable
 private fun MainContent(
-    scaffoldState: ScaffoldState,
-    navController: NavController,
-    pullRefreshState: PullRefreshState,
-    pageState: ResultWrapper<List<AuthorView>>,
-    scope: CoroutineScope,
-    bottomSheetState: ModalBottomSheetState
+    scaffoldState: () -> ScaffoldState,
+    pullRefreshState: () -> PullRefreshState,
+    pageState: () -> ResultWrapper<List<AuthorView>>,
+    navigateToQuotes: (String) -> Unit,
+    showBottomSheet: () -> Unit
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        scaffoldState = scaffoldState,
+        scaffoldState = scaffoldState(),
         topBar = {
             AppBar()
         },
         content = { padding ->
             Body(
-                navController = navController,
-                scaffoldState = scaffoldState,
                 paddingValues = padding,
                 pullRefreshState = pullRefreshState,
-                pageState = { pageState }
+                navigateToQuotes = navigateToQuotes,
+                pageState = pageState
             )
         },
         floatingActionButton = {
             CustomButton(
                 modifier = Modifier
                     .width(188.dp),
-                onClick = {
-                    scope.launch {
-                        bottomSheetState.show()
-                    }
-                },
+                onClick = showBottomSheet,
                 title = stringResource(id = R.string.label_generate_random)
             )
         },
@@ -116,27 +140,17 @@ private fun MainContent(
 
 @Composable
 private fun Body(
-    navController: NavController,
-    scaffoldState: ScaffoldState,
     paddingValues: PaddingValues,
-    pullRefreshState: PullRefreshState,
-    pageState: () -> ResultWrapper<List<AuthorView>>
+    pullRefreshState: () -> PullRefreshState,
+    pageState: () -> ResultWrapper<List<AuthorView>>,
+    navigateToQuotes: (String) -> Unit
 ) {
-    val context = LocalContext.current
     val state = pageState()
-
-    LaunchedEffect(key1 = state) {
-        if (state is ResultWrapper.Error) {
-            scaffoldState.snackbarHostState.showSnackbar(
-                context.getMessageFromStringOrStringId(state.errors.message)
-            )
-        }
-    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .pullRefresh(state = pullRefreshState)
+            .pullRefresh(state = pullRefreshState())
             .padding(paddingValues)
     ) {
         if (state is ResultWrapper.Loading) {
@@ -152,7 +166,7 @@ private fun Body(
                 if (state is ResultWrapper.Success) {
                     items(state.data) { authorView ->
                         AuthorListItem(authorView) {
-                            navController.navigate(Screens.QuotesScreen.withArg(authorView.name))
+                            navigateToQuotes(authorView.name)
                         }
                     }
                 }
@@ -160,7 +174,7 @@ private fun Body(
         }
         PullRefreshIndicator(
             refreshing = state is ResultWrapper.Loading,
-            state = pullRefreshState,
+            state = pullRefreshState(),
             modifier = Modifier.align(Alignment.TopCenter)
         )
     }

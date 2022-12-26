@@ -4,7 +4,6 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.programmingquotes.core.common.ResultWrapper
@@ -13,6 +12,7 @@ import com.example.programmingquotes.feature.authors.ui.model.AuthorView
 import com.example.programmingquotes.feature.quote.ui.model.QuoteView
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -28,6 +28,10 @@ internal class AuthorViewModel @Inject constructor(
         MutableStateFlow<ResultWrapper<List<AuthorView>>>(ResultWrapper.UnInitialize)
     val pageState: StateFlow<ResultWrapper<List<AuthorView>>> = _pageState
 
+    private var isNextRequestReady = true
+
+    val errorChannel = Channel<String>()
+
     // bottom sheet
     private var sensorListener: SensorEventListener? = null
     private val _pageStateBottomSheet =
@@ -41,24 +45,28 @@ internal class AuthorViewModel @Inject constructor(
     fun getAuthors(isRefresh: Boolean = false) {
         viewModelScope.launch(Dispatchers.IO) {
             _pageState.emit(ResultWrapper.Loading)
-            repository.getAuthors(isRefresh)
-                .collect {
+            repository.getAuthors(isRefresh).collect {
+                if (it is ResultWrapper.Error) {
+                    errorChannel.send(it.errors.message)
+                } else {
                     _pageState.emit(it)
                 }
+            }
         }
     }
 
     private fun fetchRandomQuote() = viewModelScope.launch(Dispatchers.IO) {
-        repository.getRandomQuote().collect {
-            _pageStateBottomSheet.emit(it)
-        }
+        repository.getRandomQuote()
+            .collect {
+                if (it is ResultWrapper.Error) {
+                    errorChannel.send(it.errors.message)
+                } else {
+                    _pageStateBottomSheet.emit(it)
+                }
+                isNextRequestReady = true
+            }
     }
 
-    fun resetPageStateBottomSheet() {
-        viewModelScope.launch {
-            _pageStateBottomSheet.emit(ResultWrapper.UnInitialize)
-        }
-    }
 
     fun startSensorManager() = setUpSensorManager()
 
@@ -86,8 +94,8 @@ internal class AuthorViewModel @Inject constructor(
 
                 viewModelScope.launch {
                     if (acceleration > 12) {
-                        if (_pageStateBottomSheet.value !is ResultWrapper.Loading) {
-                            _pageStateBottomSheet.emit(ResultWrapper.Loading)
+                        if (isNextRequestReady) {
+                            isNextRequestReady = false
                             fetchRandomQuote()
                         }
                     }

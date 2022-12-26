@@ -27,7 +27,7 @@ internal class AuthorRepositoryImpl @Inject constructor(
                 val result = getRandomQuoteFromDb()
                 if (result == null) {
                     emit(response)
-                    emit(ResultWrapper.UnInitialize)
+                   // emit(ResultWrapper.UnInitialize)
                 } else {
                     emit(ResultWrapper.Success(result))
                 }
@@ -49,12 +49,15 @@ internal class AuthorRepositoryImpl @Inject constructor(
             getAuthors()
                 .onStart {
                     if (isRefresh) {
-                        emit(fetchAuthorsAndInsertToDb())
+                        val response = fetchAuthorsAndInsertToDb()
+                        if (response is ResultWrapper.Error) {
+                            emit(response)
+                        }
                     }
                 }
                 .collect {
                     emit(ResultWrapper.Success(it))
-                    if (it.isEmpty()) {
+                    if (it.isEmpty() && !isRefresh) {
                         val response = fetchAuthorsAndInsertToDb()
                         if (response is ResultWrapper.Error) {
                             emit(response)

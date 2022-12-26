@@ -42,7 +42,7 @@ internal abstract class NetworkModule {
         fun provideBaseUrl(): String = "http://167.235.142.70:5002"
 
         @Provides
-        fun provideTimeOut(): Long = 30L
+        fun provideTimeOut(): Long = 3L
 
         @Provides
         @Singleton
