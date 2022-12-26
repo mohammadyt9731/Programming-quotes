@@ -1,14 +1,13 @@
 package com.example.programmingquotes.feature.authors.ui.component
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -16,49 +15,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.programmingquotes.R
 import com.example.programmingquotes.core.common.ResultWrapper
-import com.example.programmingquotes.feature.authors.ui.viewmodel.AuthorViewModel
 import com.example.programmingquotes.feature.quote.ui.model.QuoteView
-import kotlinx.coroutines.launch
 
 @Composable
-internal fun BottomSheet(
-    viewModel: AuthorViewModel,
-    bottomSheetState: ModalBottomSheetState,
-    scaffoldState: ScaffoldState,
+internal fun SheetContent(
     pageStateBottomSheet: () -> ResultWrapper<QuoteView?>
 ) {
     val pageState = pageStateBottomSheet()
-    val scope = rememberCoroutineScope()
-
-
-    LaunchedEffect(key1 = bottomSheetState.isVisible) {
-        if (bottomSheetState.isVisible) {
-            viewModel.startSensorManager()
-        } else {
-            viewModel.stopSensorManager()
-        }
-    }
-
-    LaunchedEffect(key1 = pageState) {
-        if (bottomSheetState.isVisible && pageState is ResultWrapper.Error) {
-            bottomSheetState.hide()
-            scaffoldState.snackbarHostState.showSnackbar(pageState.message).also {
-                viewModel.resetPageStateBottomSheet()
-            }
-        }
-    }
-
-    BackHandler(enabled = bottomSheetState.isVisible) {
-        scope.launch {
-            bottomSheetState.hide()
-        }
-    }
-
     if (pageState is ResultWrapper.UnInitialize) {
         SheetContentNotShaken()
-    } else {
+    } else if (pageState is ResultWrapper.Success) {
         SheetContentShaken(
-            pageStateBottomSheet = pageStateBottomSheet()
+            authorName = "${pageState.data?.author}",
+            quote = "${pageState.data?.quote}"
         )
     }
 }
@@ -92,7 +61,8 @@ private fun SheetContentNotShaken() {
 
 @Composable
 private fun SheetContentShaken(
-    pageStateBottomSheet: ResultWrapper<QuoteView?>
+    authorName: String,
+    quote: String
 ) {
     Column(
         modifier = Modifier
@@ -101,14 +71,10 @@ private fun SheetContentShaken(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.Start,
     ) {
-        if (pageStateBottomSheet is ResultWrapper.Loading) {
-            circularProgressIndicator()
-        } else if (pageStateBottomSheet is ResultWrapper.Success) {
-            QuoteContent(
-                title = "${pageStateBottomSheet.data?.author}",
-                content = "${pageStateBottomSheet.data?.quote}"
-            )
-        }
+        QuoteContent(
+            title = authorName,
+            content = quote
+        )
     }
 }
 

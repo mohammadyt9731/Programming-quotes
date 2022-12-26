@@ -11,13 +11,13 @@ internal suspend fun <T> safeApiCall(apiCall: suspend () -> T): ResultWrapper<T>
     } catch (e: Exception) {
         when (e) {
             is ConnectException -> {
-                Errors.Network(msg = R.string.msg_no_internet.toString())
+                ResultWrapper.Error(Errors.Network(msg = R.string.msg_no_internet.toString()))
             }
             is ServerException -> {
-                Errors.Http(msg = e.messageError, code = e.code)
+                ResultWrapper.Error(Errors.Http(msg = e.messageError, code = e.code))
             }
             else -> {
-                Errors.App(msg = e.message.toString())
+                ResultWrapper.Error(Errors.App(msg = e.message.toString()))
             }
         }
     }

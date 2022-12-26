@@ -8,27 +8,26 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.programmingquotes.core.common.Errors
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.core.common.getMessageFromStringOrStringId
 import com.example.programmingquotes.core.navigation.Screens
 import com.example.programmingquotes.feature.quote.ui.component.QuoteListItem
 import com.example.programmingquotes.feature.quote.ui.component.QuoteTopBar
 import com.example.programmingquotes.feature.quote.ui.model.AuthorWithQuotesView
-import com.example.programmingquotes.feature.quote.ui.model.QuoteView
 import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteViewModel
+import kotlinx.coroutines.flow.consumeAsFlow
 
 @Composable
 internal fun QuotesScreen(
@@ -36,19 +35,16 @@ internal fun QuotesScreen(
     viewModel: QuoteViewModel
 ) {
     val scaffoldState = rememberScaffoldState()
-//    val authorWithQuotes by viewModel.authorWithQuotes.collectAsState()
     val pageState = viewModel.pageState.collectAsState().value
-    val context = LocalContext.current
     val pullRefreshState = rememberPullRefreshState(
         refreshing = pageState is ResultWrapper.Loading,
         onRefresh = { viewModel.getAuthorWithQuotes(isRefresh = true) }
     )
+    val context = LocalContext.current
 
-    LaunchedEffect(key1 = pageState) {
-        if (pageState is Errors) {
-            scaffoldState.snackbarHostState.showSnackbar(
-                context.getMessageFromStringOrStringId(pageState.message)
-            )
+    LaunchedEffect(key1 = true) {
+        viewModel.errorChannel.consumeAsFlow().collect {
+            scaffoldState.snackbarHostState.showSnackbar(context.getMessageFromStringOrStringId(it))
         }
     }
 
@@ -66,49 +62,52 @@ internal fun QuotesScreen(
             }
         }
     ) {
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .pullRefresh(pullRefreshState)
-        ) {
-            if (pageState is ResultWrapper.Loading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else if (pageState is ResultWrapper.Success) {
-                ContentLazyColumn(
-                    quotes = pageState.data.quotes,
-                    authorName = pageState.data.author.name,
-                    navHostController = navHostController
+        MainContent(
+            pullRefreshState = { pullRefreshState },
+            pageState = { pageState },
+            navigateToDetail = { index, name ->
+                navHostController.navigate(
+                    Screens.QuoteDetailScreen.withArg(
+                        "$index",
+                        name
+                    )
                 )
-            }
-            PullRefreshIndicator(
-                refreshing = pageState is ResultWrapper.Loading,
-                state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
-        }
+            })
     }
 }
 
 @Composable
-private fun ContentLazyColumn(
-    quotes: List<QuoteView>,
-    authorName: String,
-    navHostController: NavHostController
+private fun MainContent(
+    pullRefreshState: () -> PullRefreshState,
+    pageState: () -> ResultWrapper<AuthorWithQuotesView>,
+    navigateToDetail: (index: Int, name: String) -> Unit
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+    val state = pageState()
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState())
     ) {
-        items(quotes.size) { index ->
-            QuoteListItem(quote = quotes[index].quote) {
-                navHostController.navigate(
-                    Screens.QuoteDetailScreen.withArg(
-                        "$index",
-                        authorName
-                    )
-                )
+        if (state is ResultWrapper.Loading) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                if (state is ResultWrapper.Success) {
+                    items(state.data.quotes.size) { index ->
+                        QuoteListItem(quote = state.data.quotes[index].quote) {
+                            navigateToDetail(index, state.data.author.name)
+                        }
+                    }
+                }
             }
         }
+        PullRefreshIndicator(
+            refreshing = state is ResultWrapper.Loading,
+            state = pullRefreshState(),
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
     }
 }

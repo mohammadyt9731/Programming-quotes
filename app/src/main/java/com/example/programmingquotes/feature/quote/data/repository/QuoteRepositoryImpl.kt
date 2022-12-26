@@ -18,10 +18,10 @@ internal class QuoteRepositoryImpl @Inject constructor(
 
     private suspend fun fetchAuthorQuotesAndInsertToDb(authorName: String): ResultWrapper<AuthorWithQuotesView> {
         return safeApiCall {
-            val response = remoteDataSource.fetchAuthorWithQuotes(authorName = authorName)
+            val response = remoteDataSource.fetchAuthorWithQuotes(authorName)
 
             localDataSource.insertAuthorQuotes(
-                quotes = response.quotes.map { quoteResponse ->
+                response.quotes.map { quoteResponse ->
                     quoteResponse.toQuoteEntity()
                 }
             )
@@ -38,11 +38,14 @@ internal class QuoteRepositoryImpl @Inject constructor(
             getAuthorWithQuotesFromDb(authorName)
                 .onStart {
                     if (isRefresh) {
-                        emit(fetchAuthorQuotesAndInsertToDb(authorName))
+                        val response = fetchAuthorQuotesAndInsertToDb(authorName)
+                        if (response is ResultWrapper.Error) {
+                            emit(response)
+                        }
                     }
                 }.collect {
                     emit(ResultWrapper.Success(it))
-                    if (it.quotes.isEmpty()) {
+                    if (it.quotes.isEmpty() && !isRefresh) {
                         val response = fetchAuthorQuotesAndInsertToDb(authorName)
                         if (response is ResultWrapper.Error) {
                             emit(response)

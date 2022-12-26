@@ -5,9 +5,11 @@ import com.example.programmingquotes.core.data.network.safeApiCall
 import com.example.programmingquotes.feature.authors.data.datasource.local.AuthorLocalDataSource
 import com.example.programmingquotes.feature.authors.data.datasource.remote.AuthorRemoteDataSource
 import com.example.programmingquotes.feature.authors.ui.model.AuthorView
-import com.example.programmingquotes.feature.quote.data.db.entity.QuoteEntity
 import com.example.programmingquotes.feature.quote.ui.model.QuoteView
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
 internal class AuthorRepositoryImpl @Inject constructor(
@@ -25,7 +27,7 @@ internal class AuthorRepositoryImpl @Inject constructor(
                 val result = getRandomQuoteFromDb()
                 if (result == null) {
                     emit(response)
-                    emit(ResultWrapper.UnInitialize)
+                   // emit(ResultWrapper.UnInitialize)
                 } else {
                     emit(ResultWrapper.Success(result))
                 }
@@ -47,13 +49,20 @@ internal class AuthorRepositoryImpl @Inject constructor(
             getAuthors()
                 .onStart {
                     if (isRefresh) {
-                        emit(fetchAuthors())
+                        val response = fetchAuthorsAndInsertToDb()
+                        if (response is ResultWrapper.Error) {
+                            emit(response)
+                        }
                     }
                 }
                 .collect {
                     emit(ResultWrapper.Success(it))
-                    if (it.isEmpty())
-                        emit(fetchAuthors())
+                    if (it.isEmpty() && !isRefresh) {
+                        val response = fetchAuthorsAndInsertToDb()
+                        if (response is ResultWrapper.Error) {
+                            emit(response)
+                        }
+                    }
                 }
         }
 
@@ -64,7 +73,7 @@ internal class AuthorRepositoryImpl @Inject constructor(
             }
         }
 
-    private suspend fun fetchAuthors(): ResultWrapper<List<AuthorView>> {
+    private suspend fun fetchAuthorsAndInsertToDb(): ResultWrapper<List<AuthorView>> {
         return safeApiCall {
             val response = remoteDataSource.fetchAuthors()
             localDataSource.insertAuthors(
