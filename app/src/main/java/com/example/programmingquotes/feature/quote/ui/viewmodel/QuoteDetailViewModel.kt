@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.programmingquotes.core.common.Constants
-import com.example.programmingquotes.feature.authors.ui.model.AuthorView
+import com.example.programmingquotes.feature.authors.ui.AuthorView
 import com.example.programmingquotes.feature.quote.data.repository.QuoteRepository
 import com.example.programmingquotes.feature.quote.ui.model.AuthorWithQuotesView
 import dagger.hilt.android.lifecycle.HiltViewModel

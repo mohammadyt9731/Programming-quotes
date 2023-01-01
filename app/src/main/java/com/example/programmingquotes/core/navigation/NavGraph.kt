@@ -8,8 +8,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.programmingquotes.core.common.Constants
-import com.example.programmingquotes.feature.authors.ui.screen.AuthorsScreen
-import com.example.programmingquotes.feature.authors.ui.viewmodel.AuthorViewModel
+import com.example.programmingquotes.feature.authors.ui.AuthorViewModel
+import com.example.programmingquotes.feature.authors.ui.AuthorsScreen
 import com.example.programmingquotes.feature.quote.ui.screen.QuoteDetailScreen
 import com.example.programmingquotes.feature.quote.ui.screen.QuotesScreen
 import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteDetailViewModel

@@ -15,20 +15,38 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.programmingquotes.R
 import com.example.programmingquotes.core.common.ResultWrapper
-import com.example.programmingquotes.feature.quote.ui.model.QuoteView
+import com.example.programmingquotes.feature.authors.ui.AuthorViewState
 
 @Composable
 internal fun SheetContent(
-    pageStateBottomSheet: () -> ResultWrapper<QuoteView?>
+    viewState: () -> AuthorViewState
 ) {
-    val pageState = pageStateBottomSheet()
-    if (pageState is ResultWrapper.UnInitialize) {
-        SheetContentNotShaken()
-    } else if (pageState is ResultWrapper.Success) {
-        SheetContentShaken(
-            authorName = "${pageState.data?.author}",
-            quote = "${pageState.data?.quote}"
-        )
+    val state = viewState()
+    when (state.bottomSheetState) {
+        is ResultWrapper.Loading -> {
+            ProgressBar()
+        }
+        is ResultWrapper.Success -> {
+            SheetContentShaken(
+                authorName = state.bottomSheetState.data.author,
+                quote = state.bottomSheetState.data.quote
+            )
+        }
+        else -> {
+            SheetContentNotShaken()
+        }
+    }
+}
+
+@Composable
+private fun ProgressBar() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(300.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
     }
 }
 
@@ -36,7 +54,8 @@ internal fun SheetContent(
 private fun SheetContentNotShaken() {
     Column(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .height(300.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
@@ -112,19 +131,6 @@ private fun QuoteContent(
         text = stringResource(id = R.string.label_you_can_shake_again),
         style = MaterialTheme.typography.overline
     )
-}
-
-@Composable
-private fun circularProgressIndicator() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp),
-    ) {
-        CircularProgressIndicator(
-            modifier = Modifier.align(Alignment.Center)
-        )
-    }
 }
 
 

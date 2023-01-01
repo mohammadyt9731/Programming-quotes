@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.programmingquotes.core.common.createEmojiWithDecimalCode
-import com.example.programmingquotes.feature.authors.ui.model.AuthorView
+import com.example.programmingquotes.feature.authors.ui.AuthorView
 
 @Composable
 internal fun AuthorListItem(authorView: AuthorView, onClick: () -> Unit) {

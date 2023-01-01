@@ -1,4 +1,4 @@
-package com.example.programmingquotes.feature.authors.ui.viewmodel
+package com.example.programmingquotes.feature.authors.ui
 
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -8,13 +8,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.feature.authors.data.repository.AuthorRepository
-import com.example.programmingquotes.feature.authors.ui.model.AuthorView
-import com.example.programmingquotes.feature.quote.ui.model.QuoteView
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,55 +22,70 @@ internal class AuthorViewModel @Inject constructor(
     private val sensorManager: SensorManager
 ) : ViewModel() {
 
-    private val _pageState =
-        MutableStateFlow<ResultWrapper<List<AuthorView>>>(ResultWrapper.UnInitialize)
-    val pageState: StateFlow<ResultWrapper<List<AuthorView>>> = _pageState
-
-    private var isNextRequestReady = true
+    private val _viewState = MutableStateFlow(AuthorViewState())
+    val viewState = _viewState.asStateFlow()
 
     val errorChannel = Channel<String>()
 
-    // bottom sheet
+    private var isNextRequestReady = true
+
     private var sensorListener: SensorEventListener? = null
-    private val _pageStateBottomSheet =
-        MutableStateFlow<ResultWrapper<QuoteView?>>(ResultWrapper.UnInitialize)
-    val pageStateBottomSheet: StateFlow<ResultWrapper<QuoteView?>> = _pageStateBottomSheet
 
     init {
         getAuthors()
     }
 
-    fun getAuthors(isRefresh: Boolean = false) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _pageState.emit(ResultWrapper.Loading)
-            repository.getAuthors(isRefresh).collect {
-                if (it is ResultWrapper.Error) {
-                    errorChannel.send(it.errors.message)
-                } else {
-                    _pageState.emit(it)
-                }
+    fun handleAction(action: AuthorAction) {
+        when (action) {
+            AuthorAction.GetRandomQuote -> {
+                getRandomQuote()
+            }
+            AuthorAction.RefreshAuthors -> {
+                getAuthors(isRefresh = true)
             }
         }
     }
 
-    private fun fetchRandomQuote() = viewModelScope.launch(Dispatchers.IO) {
+    private fun getAuthors(isRefresh: Boolean = false) = viewModelScope.launch(Dispatchers.IO) {
+        _viewState.emit(_viewState.value.copy(pageState = ResultWrapper.Loading))
+        repository.getAuthors(isRefresh).collect {
+            if (it is ResultWrapper.Error) {
+                errorChannel.send(it.errors.message)
+                _viewState.emit(_viewState.value.copy(pageState = ResultWrapper.Error(it.errors)))
+            } else if (it is ResultWrapper.Success) {
+                _viewState.emit(_viewState.value.copy(pageState = ResultWrapper.Success(data = it.data)))
+            }
+        }
+    }
+
+    private fun getRandomQuote() = viewModelScope.launch(Dispatchers.IO) {
+        _viewState.emit(_viewState.value.copy(bottomSheetState = ResultWrapper.Loading))
         repository.getRandomQuote()
             .collect {
                 if (it is ResultWrapper.Error) {
                     errorChannel.send(it.errors.message)
-                } else {
-                    _pageStateBottomSheet.emit(it)
+                } else if (it is ResultWrapper.Success) {
+                    it.data?.let { quoteView ->
+                        _viewState.emit(
+                            _viewState.value.copy(
+                                bottomSheetState = ResultWrapper.Success(
+                                    data = quoteView
+                                )
+                            )
+                        )
+                    }
                 }
-                isNextRequestReady = true
             }
+        isNextRequestReady = true
     }
 
 
+    //sensor
     fun startSensorManager() = setUpSensorManager()
 
     suspend fun stopSensorManager() {
         sensorManager.unregisterListener(sensorListener)
-        _pageStateBottomSheet.emit(ResultWrapper.UnInitialize)
+        _viewState.emit(_viewState.value.copy(bottomSheetState = ResultWrapper.UnInitialize))
     }
 
     private fun setUpSensorManager() {
@@ -96,7 +109,7 @@ internal class AuthorViewModel @Inject constructor(
                     if (acceleration > 12) {
                         if (isNextRequestReady) {
                             isNextRequestReady = false
-                            fetchRandomQuote()
+                            handleAction(AuthorAction.GetRandomQuote)
                         }
                     }
                 }
