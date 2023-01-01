@@ -26,6 +26,7 @@ import com.example.programmingquotes.core.navigation.Screens
 import com.example.programmingquotes.feature.quote.ui.component.QuoteListItem
 import com.example.programmingquotes.feature.quote.ui.component.QuoteTopBar
 import com.example.programmingquotes.feature.quote.ui.model.AuthorWithQuotesView
+import com.example.programmingquotes.feature.quote.ui.action.QuoteAction
 import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteViewModel
 import kotlinx.coroutines.flow.consumeAsFlow
 
@@ -35,10 +36,10 @@ internal fun QuotesScreen(
     viewModel: QuoteViewModel
 ) {
     val scaffoldState = rememberScaffoldState()
-    val pageState = viewModel.pageState.collectAsState().value
+    val viewState = viewModel.viewState.collectAsState().value.pageState
     val pullRefreshState = rememberPullRefreshState(
-        refreshing = pageState is ResultWrapper.Loading,
-        onRefresh = { viewModel.getAuthorWithQuotes(isRefresh = true) }
+        refreshing = viewState is ResultWrapper.Loading,
+        onRefresh = { viewModel.handleAction(QuoteAction.GetAuthorWithQuotesWhenRefresh) }
     )
     val context = LocalContext.current
 
@@ -54,17 +55,17 @@ internal fun QuotesScreen(
             .padding(horizontal = 16.dp),
         scaffoldState = scaffoldState,
         topBar = {
-            if (pageState is ResultWrapper.Success) {
+            if (viewState is ResultWrapper.Success) {
                 QuoteTopBar(
-                    emojiCode = pageState.data.author.emoji,
-                    authorName = pageState.data.author.name
+                    emojiCode = viewState.data.author.emoji,
+                    authorName = viewState.data.author.name
                 )
             }
         }
     ) {
         MainContent(
             pullRefreshState = { pullRefreshState },
-            pageState = { pageState },
+            viewState = { viewState },
             navigateToDetail = { index, name ->
                 navHostController.navigate(
                     Screens.QuoteDetailScreen.withArg(
@@ -72,17 +73,18 @@ internal fun QuotesScreen(
                         name
                     )
                 )
-            })
+            }
+        )
     }
 }
 
 @Composable
 private fun MainContent(
     pullRefreshState: () -> PullRefreshState,
-    pageState: () -> ResultWrapper<AuthorWithQuotesView>,
+    viewState: () -> ResultWrapper<AuthorWithQuotesView>,
     navigateToDetail: (index: Int, name: String) -> Unit
 ) {
-    val state = pageState()
+    val state = viewState()
     Box(
         modifier = Modifier
             .fillMaxSize()

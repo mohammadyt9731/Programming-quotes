@@ -31,7 +31,7 @@ internal fun QuoteDetailScreen(
     val scaffoldState = rememberScaffoldState()
     val pagerState = rememberPagerState(initialPage = index)
     val context = LocalContext.current
-    val authorWithQuotes by viewModel.authorWithQuotes.collectAsState()
+    val viewState by viewModel.viewState.collectAsState()
 
     Scaffold(
         modifier = Modifier
@@ -40,8 +40,8 @@ internal fun QuoteDetailScreen(
         scaffoldState = scaffoldState,
         topBar = {
             QuoteTopBar(
-                emojiCode = authorWithQuotes.author.emoji,
-                authorName = authorWithQuotes.author.name
+                emojiCode = viewState.authorWithQuotes.author.emoji,
+                authorName = viewState.authorWithQuotes.author.name
             )
         }
     ) {
@@ -54,20 +54,20 @@ internal fun QuoteDetailScreen(
                     .fillMaxWidth()
                     .weight(1f)
                     .padding(bottom = 16.dp),
-                count = authorWithQuotes.quotes.size,
+                count = viewState.authorWithQuotes.quotes.size,
                 state = pagerState
             ) { page ->
                 AutoResizeText(
-                    text = authorWithQuotes.quotes[page].quote,
+                    text = viewState.authorWithQuotes.quotes[page].quote,
                     style = MaterialTheme.typography.h1
                 )
             }
             ButtonsSection(
                 onClickShare = {
-                    context.shareText(text = authorWithQuotes.quotes[index].quote)
+                    context.shareText(text = viewState.authorWithQuotes.quotes[index].quote)
                 },
                 onClickUri = {
-                    context.openUri(uri = authorWithQuotes.author.wikiUrl)
+                    context.openUri(uri = viewState.authorWithQuotes.author.wikiUrl)
                 }
             )
         }

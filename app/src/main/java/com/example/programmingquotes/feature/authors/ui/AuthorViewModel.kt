@@ -37,9 +37,6 @@ internal class AuthorViewModel @Inject constructor(
 
     fun handleAction(action: AuthorAction) {
         when (action) {
-            AuthorAction.GetRandomQuote -> {
-                getRandomQuote()
-            }
             AuthorAction.RefreshAuthors -> {
                 getAuthors(isRefresh = true)
             }
@@ -51,10 +48,8 @@ internal class AuthorViewModel @Inject constructor(
         repository.getAuthors(isRefresh).collect {
             if (it is ResultWrapper.Error) {
                 errorChannel.send(it.errors.message)
-                _viewState.emit(_viewState.value.copy(pageState = ResultWrapper.Error(it.errors)))
-            } else if (it is ResultWrapper.Success) {
-                _viewState.emit(_viewState.value.copy(pageState = ResultWrapper.Success(data = it.data)))
             }
+            _viewState.emit(_viewState.value.copy(pageState = it))
         }
     }
 
@@ -64,17 +59,12 @@ internal class AuthorViewModel @Inject constructor(
             .collect {
                 if (it is ResultWrapper.Error) {
                     errorChannel.send(it.errors.message)
-                } else if (it is ResultWrapper.Success) {
-                    it.data?.let { quoteView ->
-                        _viewState.emit(
-                            _viewState.value.copy(
-                                bottomSheetState = ResultWrapper.Success(
-                                    data = quoteView
-                                )
-                            )
-                        )
-                    }
                 }
+                _viewState.emit(
+                    _viewState.value.copy(
+                        bottomSheetState = it
+                    )
+                )
             }
         isNextRequestReady = true
     }
@@ -109,7 +99,7 @@ internal class AuthorViewModel @Inject constructor(
                     if (acceleration > 12) {
                         if (isNextRequestReady) {
                             isNextRequestReady = false
-                            handleAction(AuthorAction.GetRandomQuote)
+                            getRandomQuote()
                         }
                     }
                 }

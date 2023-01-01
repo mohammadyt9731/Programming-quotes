@@ -4,13 +4,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.programmingquotes.core.common.Constants
-import com.example.programmingquotes.feature.authors.ui.AuthorView
 import com.example.programmingquotes.feature.quote.data.repository.QuoteRepository
-import com.example.programmingquotes.feature.quote.ui.model.AuthorWithQuotesView
+import com.example.programmingquotes.feature.quote.ui.viewstate.QuoteDetailViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,13 +19,8 @@ internal class QuoteDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _authorWithQuotes = MutableStateFlow(
-        AuthorWithQuotesView(
-            AuthorView("", "", 0, 0),
-            emptyList()
-        )
-    )
-    val authorWithQuotes: StateFlow<AuthorWithQuotesView> = _authorWithQuotes
+    private val _viewState = MutableStateFlow(QuoteDetailViewState())
+    val viewState = _viewState.asStateFlow()
 
     init {
         val authorName = savedStateHandle.get<String>(Constants.AUTHOR_NAME_KEY) ?: ""
@@ -37,7 +31,7 @@ internal class QuoteDetailViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             repository.getAuthorWithQuotesFromDb(authorName = authorName)
                 .collect { authorWithQuotes ->
-                    _authorWithQuotes.emit(authorWithQuotes)
+                    _viewState.emit(_viewState.value.copy(authorWithQuotes = authorWithQuotes))
                 }
         }
 }

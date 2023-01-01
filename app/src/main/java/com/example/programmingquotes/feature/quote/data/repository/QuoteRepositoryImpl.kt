@@ -44,13 +44,13 @@ internal class QuoteRepositoryImpl @Inject constructor(
                         }
                     }
                 }.collect {
-                    emit(ResultWrapper.Success(it))
                     if (it.quotes.isEmpty() && !isRefresh) {
                         val response = fetchAuthorQuotesAndInsertToDb(authorName)
                         if (response is ResultWrapper.Error) {
                             emit(response)
                         }
                     }
+                    emit(ResultWrapper.Success(it))
                 }
         }
 
