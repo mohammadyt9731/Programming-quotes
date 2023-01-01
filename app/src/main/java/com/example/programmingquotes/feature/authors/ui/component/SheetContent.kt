@@ -27,10 +27,12 @@ internal fun SheetContent(
             ProgressBar()
         }
         is ResultWrapper.Success -> {
-            SheetContentShaken(
-                authorName = state.bottomSheetState.data.author,
-                quote = state.bottomSheetState.data.quote
-            )
+            state.bottomSheetState.data?.let {
+                SheetContentShaken(
+                    authorName = it.author,
+                    quote = state.bottomSheetState.data.quote
+                )
+            }
         }
         else -> {
             SheetContentNotShaken()
