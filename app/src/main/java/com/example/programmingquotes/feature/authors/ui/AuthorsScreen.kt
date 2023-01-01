@@ -1,4 +1,4 @@
-package com.example.programmingquotes.feature.authors.ui.screen
+package com.example.programmingquotes.feature.authors.ui
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -27,8 +27,6 @@ import com.example.programmingquotes.core.ui.component.CustomButton
 import com.example.programmingquotes.feature.authors.ui.component.AppBar
 import com.example.programmingquotes.feature.authors.ui.component.AuthorListItem
 import com.example.programmingquotes.feature.authors.ui.component.SheetContent
-import com.example.programmingquotes.feature.authors.ui.model.AuthorView
-import com.example.programmingquotes.feature.authors.ui.viewmodel.AuthorViewModel
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 
@@ -39,11 +37,10 @@ internal fun AuthorsScreen(
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
-    val pageStateBottomSheet by viewModel.pageStateBottomSheet.collectAsState()
-    val pageState by viewModel.pageState.collectAsState()
+    val viewState by viewModel.viewState.collectAsState()
     val pullRefreshState = rememberPullRefreshState(
-        refreshing = pageState is ResultWrapper.Loading,
-        onRefresh = { viewModel.getAuthors(true) }
+        refreshing = viewState.pageState is ResultWrapper.Loading,
+        onRefresh = { viewModel.handleAction(AuthorAction.RefreshAuthors) }
     )
     val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -51,7 +48,6 @@ internal fun AuthorsScreen(
     val context = LocalContext.current
 
     LaunchedEffect(key1 = true) {
-
         viewModel.errorChannel.consumeAsFlow().collect {
             if (bottomSheetState.isVisible)
                 Toast.makeText(
@@ -85,12 +81,12 @@ internal fun AuthorsScreen(
         scrimColor = Color.Transparent,
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         sheetElevation = 15.dp,
-        sheetContent = { SheetContent { pageStateBottomSheet } },
+        sheetContent = { SheetContent { viewState } },
         content = {
             MainContent(
                 scaffoldState = { scaffoldState },
                 pullRefreshState = { pullRefreshState },
-                pageState = { pageState },
+                viewState = { viewState },
                 navigateToQuotes = { name ->
                     navController.navigate(Screens.QuotesScreen.withArg(name))
                 },
@@ -108,7 +104,7 @@ internal fun AuthorsScreen(
 private fun MainContent(
     scaffoldState: () -> ScaffoldState,
     pullRefreshState: () -> PullRefreshState,
-    pageState: () -> ResultWrapper<List<AuthorView>>,
+    viewState: () -> AuthorViewState,
     navigateToQuotes: (String) -> Unit,
     showBottomSheet: () -> Unit
 ) {
@@ -123,7 +119,7 @@ private fun MainContent(
                 paddingValues = padding,
                 pullRefreshState = pullRefreshState,
                 navigateToQuotes = navigateToQuotes,
-                pageState = pageState
+                viewState = viewState
             )
         },
         floatingActionButton = {
@@ -142,10 +138,10 @@ private fun MainContent(
 private fun Body(
     paddingValues: PaddingValues,
     pullRefreshState: () -> PullRefreshState,
-    pageState: () -> ResultWrapper<List<AuthorView>>,
+    viewState: () -> AuthorViewState,
     navigateToQuotes: (String) -> Unit
 ) {
-    val state = pageState()
+    val state = viewState()
 
     Box(
         modifier = Modifier
@@ -153,7 +149,7 @@ private fun Body(
             .pullRefresh(state = pullRefreshState())
             .padding(paddingValues)
     ) {
-        if (state is ResultWrapper.Loading) {
+        if (state.pageState is ResultWrapper.Loading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         } else {
             LazyColumn(
@@ -163,17 +159,18 @@ private fun Body(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(bottom = 80.dp)
             ) {
-                if (state is ResultWrapper.Success) {
-                    items(state.data) { authorView ->
+                if (state.pageState is ResultWrapper.Success) {
+                    items(state.pageState.data) { authorView ->
                         AuthorListItem(authorView) {
                             navigateToQuotes(authorView.name)
                         }
                     }
                 }
+
             }
         }
         PullRefreshIndicator(
-            refreshing = state is ResultWrapper.Loading,
+            refreshing = state.pageState is ResultWrapper.Loading,
             state = pullRefreshState(),
             modifier = Modifier.align(Alignment.TopCenter)
         )

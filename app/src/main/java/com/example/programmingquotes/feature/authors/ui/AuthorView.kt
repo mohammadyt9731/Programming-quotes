@@ -1,4 +1,4 @@
-package com.example.programmingquotes.feature.authors.ui.model
+package com.example.programmingquotes.feature.authors.ui
 
 internal data class AuthorView(
     val name: String,

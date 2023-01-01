@@ -4,7 +4,7 @@ import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.core.data.network.safeApiCall
 import com.example.programmingquotes.feature.authors.data.datasource.local.AuthorLocalDataSource
 import com.example.programmingquotes.feature.authors.data.datasource.remote.AuthorRemoteDataSource
-import com.example.programmingquotes.feature.authors.ui.model.AuthorView
+import com.example.programmingquotes.feature.authors.ui.AuthorView
 import com.example.programmingquotes.feature.quote.ui.model.QuoteView
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
