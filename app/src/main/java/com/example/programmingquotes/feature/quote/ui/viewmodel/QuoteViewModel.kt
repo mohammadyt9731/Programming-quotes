@@ -6,12 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.programmingquotes.core.common.Constants
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.feature.quote.data.repository.QuoteRepository
-import com.example.programmingquotes.feature.quote.ui.model.AuthorWithQuotesView
+import com.example.programmingquotes.feature.quote.ui.action.QuoteAction
+import com.example.programmingquotes.feature.quote.ui.viewstate.QuoteViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,9 +23,9 @@ internal class QuoteViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var authorName: String
-    private val _pageState =
-        MutableStateFlow<ResultWrapper<AuthorWithQuotesView>>(ResultWrapper.UnInitialize)
-    val pageState: StateFlow<ResultWrapper<AuthorWithQuotesView>> = _pageState
+
+    private val _viewState = MutableStateFlow(QuoteViewState())
+    val viewState = _viewState.asStateFlow()
 
     val errorChannel = Channel<String>()
 
@@ -33,16 +34,21 @@ internal class QuoteViewModel @Inject constructor(
         getAuthorWithQuotes()
     }
 
+    fun handleAction(action: QuoteAction) {
+        when (action) {
+            is QuoteAction.GetAuthorWithQuotesWhenRefresh -> getAuthorWithQuotes(isRefresh = true)
+        }
+    }
+
     fun getAuthorWithQuotes(name: String = authorName, isRefresh: Boolean = false) =
         viewModelScope.launch(Dispatchers.IO) {
-            _pageState.emit(ResultWrapper.Loading)
+            _viewState.emit(_viewState.value.copy(pageState = ResultWrapper.Loading))
             repository.getAuthorWithQuotes(authorName = name, isRefresh = isRefresh)
                 .collect {
                     if (it is ResultWrapper.Error) {
                         errorChannel.send(it.errors.message)
-                    } else {
-                        _pageState.emit(it)
                     }
+                    _viewState.emit(_viewState.value.copy(pageState = it))
                 }
         }
 }
