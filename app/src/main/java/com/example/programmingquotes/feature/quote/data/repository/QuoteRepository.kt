@@ -4,9 +4,12 @@ import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.feature.quote.ui.model.AuthorWithQuotesView
 import kotlinx.coroutines.flow.Flow
 
-interface QuoteRepository {
+internal interface QuoteRepository {
 
-    suspend fun fetchAuthorQuotesAndInsertToDb(authorName: String): ResultWrapper<Unit>
+    fun getAuthorWithQuotes(
+        authorName: String,
+        isRefresh: Boolean
+    ): Flow<ResultWrapper<AuthorWithQuotesView>>
 
-    fun getAuthorWithQuotes(authorName: String): Flow<AuthorWithQuotesView>
+    fun getAuthorWithQuotesFromDb(authorName: String): Flow<AuthorWithQuotesView>
 }

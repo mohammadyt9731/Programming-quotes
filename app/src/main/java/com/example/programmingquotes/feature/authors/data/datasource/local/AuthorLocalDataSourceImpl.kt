@@ -7,7 +7,7 @@ import com.example.programmingquotes.feature.quote.data.db.entity.QuoteEntity
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class AuthorLocalDataSourceImpl @Inject constructor(
+internal class AuthorLocalDataSourceImpl @Inject constructor(
     private val authorDao: AuthorDao,
     private val quoteDao: QuoteDao,
 ) :
@@ -18,5 +18,5 @@ class AuthorLocalDataSourceImpl @Inject constructor(
 
     override fun getAuthors(): Flow<List<AuthorEntity>> = authorDao.getAuthors()
 
-    override fun getRandomQuote(): Flow<QuoteEntity?> = quoteDao.getRandomQuote()
+    override fun getRandomQuote(): QuoteEntity? = quoteDao.getRandomQuote()
 }

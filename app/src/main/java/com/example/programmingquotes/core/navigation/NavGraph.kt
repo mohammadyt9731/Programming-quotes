@@ -8,8 +8,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.programmingquotes.core.common.Constants
-import com.example.programmingquotes.feature.authors.ui.screen.AuthorsScreen
-import com.example.programmingquotes.feature.authors.ui.viewmodel.AuthorViewModel
+import com.example.programmingquotes.feature.authors.ui.AuthorViewModel
+import com.example.programmingquotes.feature.authors.ui.AuthorsScreen
 import com.example.programmingquotes.feature.quote.ui.screen.QuoteDetailScreen
 import com.example.programmingquotes.feature.quote.ui.screen.QuotesScreen
 import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteDetailViewModel
@@ -17,7 +17,7 @@ import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteViewModel
 import com.example.programmingquotes.feature.splash.ui.screen.SplashScreen
 
 @Composable
-fun NavGraph(navHostController: NavHostController) {
+internal fun NavGraph(navHostController: NavHostController) {
 
     NavHost(
         navController = navHostController,
@@ -62,7 +62,7 @@ fun NavGraph(navHostController: NavHostController) {
         ) { entry ->
             val viewModel: QuoteDetailViewModel = hiltViewModel()
             QuoteDetailScreen(
-                index = entry.arguments?.getInt(Constants.QUOTE_INDEX_KEY),
+                index = entry.arguments?.getInt(Constants.QUOTE_INDEX_KEY)!!,
                 viewModel = viewModel
             )
         }

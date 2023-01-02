@@ -1,5 +1,5 @@
 package com.example.programmingquotes.core.data.network
 
-interface NetworkConnectivity {
+internal interface NetworkConnectivity {
     fun isNetworkConnected(): Boolean
 }

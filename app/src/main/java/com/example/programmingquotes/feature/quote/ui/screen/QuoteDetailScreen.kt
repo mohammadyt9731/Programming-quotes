@@ -6,6 +6,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -18,21 +19,19 @@ import com.example.programmingquotes.core.ui.component.CustomButton
 import com.example.programmingquotes.feature.quote.ui.component.AutoResizeText
 import com.example.programmingquotes.feature.quote.ui.component.QuoteTopBar
 import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteDetailViewModel
-import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
-fun QuoteDetailScreen(
-    index: Int? = 0,
+internal fun QuoteDetailScreen(
+    index: Int,
     viewModel: QuoteDetailViewModel
 ) {
 
     val scaffoldState = rememberScaffoldState()
-    val pagerState = rememberPagerState(initialPage = index ?: 0)
+    val pagerState = rememberPagerState(initialPage = index)
     val context = LocalContext.current
-    val authorWithQuotes = viewModel.authorWithQuotes.collectAsState().value
+    val viewState by viewModel.viewState.collectAsState()
 
     Scaffold(
         modifier = Modifier
@@ -41,36 +40,34 @@ fun QuoteDetailScreen(
         scaffoldState = scaffoldState,
         topBar = {
             QuoteTopBar(
-                emojiCode = authorWithQuotes.author.emoji,
-                authorName = authorWithQuotes.author.name
+                emojiCode = viewState.authorWithQuotes.author.emoji,
+                authorName = viewState.authorWithQuotes.author.name
             )
         }
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             HorizontalPager(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = 80.dp),
-                count = authorWithQuotes.quotes.size,
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(bottom = 16.dp),
+                count = viewState.authorWithQuotes.quotes.size,
                 state = pagerState
             ) { page ->
                 AutoResizeText(
-                    text = authorWithQuotes.quotes[page].quote,
+                    text = viewState.authorWithQuotes.quotes[page].quote,
                     style = MaterialTheme.typography.h1
                 )
             }
             ButtonsSection(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter),
                 onClickShare = {
-                    index?.let {
-                        context.shareText(text = authorWithQuotes.quotes[it].quote)
-                    }
+                    context.shareText(text = viewState.authorWithQuotes.quotes[index].quote)
                 },
                 onClickUri = {
-                    context.openUri(uri = authorWithQuotes.author.wikiUrl)
+                    context.openUri(uri = viewState.authorWithQuotes.author.wikiUrl)
                 }
             )
         }

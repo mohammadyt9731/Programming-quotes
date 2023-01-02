@@ -18,7 +18,7 @@ import retrofit2.Retrofit
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class QuoteModule {
+internal abstract class QuoteModule {
 
     companion object {
         @Provides

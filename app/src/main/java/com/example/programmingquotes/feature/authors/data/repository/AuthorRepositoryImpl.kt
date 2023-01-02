@@ -4,48 +4,84 @@ import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.core.data.network.safeApiCall
 import com.example.programmingquotes.feature.authors.data.datasource.local.AuthorLocalDataSource
 import com.example.programmingquotes.feature.authors.data.datasource.remote.AuthorRemoteDataSource
-import com.example.programmingquotes.feature.authors.data.db.entity.toAuthorEntity
-import com.example.programmingquotes.feature.authors.ui.model.AuthorView
-import com.example.programmingquotes.feature.authors.ui.model.toAuthorView
+import com.example.programmingquotes.feature.authors.ui.AuthorView
 import com.example.programmingquotes.feature.quote.ui.model.QuoteView
-import com.example.programmingquotes.feature.quote.ui.model.toQuoteView
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
-class AuthorRepositoryImpl @Inject constructor(
+internal class AuthorRepositoryImpl @Inject constructor(
     private val localDataSource: AuthorLocalDataSource,
     private val remoteDataSource: AuthorRemoteDataSource,
 ) :
     AuthorRepository {
 
-    override fun getRandomQuote(): Flow<QuoteView?> =
-        localDataSource.getRandomQuote().map { it?.toQuoteView() }
+    override fun getRandomQuote(): Flow<ResultWrapper<QuoteView?>> =
+        flow {
+            val response = fetchRandomQuote()
+            if (response is ResultWrapper.Success) {
+                emit(response)
+            } else {
+                val result = getRandomQuoteFromDb()
+                if (result == null) {
+                    emit(response)
+                    emit(ResultWrapper.UnInitialize)
+                } else {
+                    emit(ResultWrapper.Success(result))
+                }
+            }
+        }
 
-    override fun getAuthors(): Flow<List<AuthorView>> =
+    private suspend fun fetchRandomQuote(): ResultWrapper<QuoteView> {
+        return safeApiCall {
+            remoteDataSource.fetchRandomQuote().toQuoteView()
+        }
+    }
+
+    private fun getRandomQuoteFromDb(): QuoteView? = localDataSource.getRandomQuote()?.toQuoteView()
+
+    override suspend fun getAuthors(
+        isRefresh: Boolean
+    ): Flow<ResultWrapper<List<AuthorView>>> =
+        flow {
+            getAuthors()
+                .onStart {
+                    if (isRefresh) {
+                        val response = fetchAuthorsAndInsertToDb()
+                        if (response is ResultWrapper.Error) {
+                            emit(response)
+                        }
+                    }
+                }
+                .collect {
+                    if (it.isEmpty() && !isRefresh) {
+                        val response = fetchAuthorsAndInsertToDb()
+                        if (response is ResultWrapper.Error) {
+                            emit(response)
+                        }
+                    }
+                    emit(ResultWrapper.Success(it))
+                }
+        }
+
+    private fun getAuthors(): Flow<List<AuthorView>> =
         localDataSource.getAuthors().map {
             it.map { authorEntity ->
                 authorEntity.toAuthorView()
             }
         }
 
-    override suspend fun fetchRandomQuote(): ResultWrapper<QuoteView?> {
-        return safeApiCall {
-            remoteDataSource.fetchRandomQuote()?.toQuoteView()
-        }
-    }
-
-    override suspend fun fetchAuthorsAndInsertToDb(): ResultWrapper<Unit> {
+    private suspend fun fetchAuthorsAndInsertToDb(): ResultWrapper<List<AuthorView>> {
         return safeApiCall {
             val response = remoteDataSource.fetchAuthors()
-
-            response?.let {
-                localDataSource.insertAuthors(
-                    it.values.toList().map { authorResponse ->
-                        authorResponse.toAuthorEntity()
-                    }
-                )
-            }
+            localDataSource.insertAuthors(
+                response.values.toList().map { authorResponse ->
+                    authorResponse.toAuthorEntity()
+                }
+            )
+            response.values.map { it.toAuthorView() }
         }
     }
 }

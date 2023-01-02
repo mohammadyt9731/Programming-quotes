@@ -16,18 +16,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.programmingquotes.core.common.createEmojiWithDecimalCode
-import com.example.programmingquotes.feature.authors.ui.model.AuthorView
+import com.example.programmingquotes.feature.authors.ui.AuthorView
 
 @Composable
-fun AuthorListItem(authorView: AuthorView, onClick: () -> Unit) {
+internal fun AuthorListItem(authorView: AuthorView, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(98.dp)
-            .padding(
-                horizontal = 16.dp,
-                vertical = 8.dp
-            )
             .border(
                 1.dp,
                 shape = MaterialTheme.shapes.medium,

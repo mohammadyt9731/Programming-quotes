@@ -7,7 +7,7 @@ import com.example.programmingquotes.feature.quote.data.db.relation.AuthorWithQu
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class QuoteLocalDataSourceImpl @Inject constructor(
+internal class QuoteLocalDataSourceImpl @Inject constructor(
     private val quoteDao: QuoteDao,
     private val authorDao: AuthorDao
 ) : QuoteLocalDataSource {
