@@ -16,7 +16,7 @@ internal class QuoteRepositoryImpl @Inject constructor(
     private val remoteDataSource: QuoteRemoteDataSource
 ) : QuoteRepository {
 
-    private suspend fun fetchAuthorQuotesAndInsertToDb(authorName: String): ResultWrapper<AuthorWithQuotesView> {
+    override suspend fun fetchAuthorQuotesAndInsertToDb(authorName: String): ResultWrapper<Unit> {
         return safeApiCall {
             val response = remoteDataSource.fetchAuthorWithQuotes(authorName)
 
@@ -30,30 +30,6 @@ internal class QuoteRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getAuthorWithQuotes(
-        authorName: String,
-        isRefresh: Boolean
-    ): Flow<ResultWrapper<AuthorWithQuotesView>> =
-        flow {
-            getAuthorWithQuotesFromDb(authorName)
-                .onStart {
-                    if (isRefresh) {
-                        val response = fetchAuthorQuotesAndInsertToDb(authorName)
-                        if (response is ResultWrapper.Error) {
-                            emit(response)
-                        }
-                    }
-                }.collect {
-                    if (it.quotes.isEmpty() && !isRefresh) {
-                        val response = fetchAuthorQuotesAndInsertToDb(authorName)
-                        if (response is ResultWrapper.Error) {
-                            emit(response)
-                        }
-                    }
-                    emit(ResultWrapper.Success(it))
-                }
-        }
-
-    override fun getAuthorWithQuotesFromDb(authorName: String): Flow<AuthorWithQuotesView> =
+    override fun getAuthorWithQuotes(authorName: String): Flow<AuthorWithQuotesView> =
         localDataSource.getAuthorWithQuotes(authorName).map { it.toAuthorWithQuotesView() }
 }

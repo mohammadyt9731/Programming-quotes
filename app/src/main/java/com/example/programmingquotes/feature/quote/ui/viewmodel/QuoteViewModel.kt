@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,19 +37,37 @@ internal class QuoteViewModel @Inject constructor(
 
     fun handleAction(action: QuoteAction) {
         when (action) {
-            is QuoteAction.GetAuthorWithQuotesWhenRefresh -> getAuthorWithQuotes(isRefresh = true)
+            is QuoteAction.GetAuthorWithQuotesWhenRefresh -> fetchAuthorWithQuotes()
         }
     }
 
-    fun getAuthorWithQuotes(name: String = authorName, isRefresh: Boolean = false) =
-        viewModelScope.launch(Dispatchers.IO) {
-            _viewState.emit(_viewState.value.copy(pageState = ResultWrapper.Loading))
-            repository.getAuthorWithQuotes(authorName = name, isRefresh = isRefresh)
-                .collect {
-                    if (it is ResultWrapper.Error) {
-                        errorChannel.send(it.errors.message)
-                    }
-                    _viewState.emit(_viewState.value.copy(pageState = it))
+    fun getAuthorWithQuotes(name: String = authorName) = viewModelScope.launch {
+        _viewState.emit(_viewState.value.copy(authorWithQuotesState = ResultWrapper.Loading))
+        repository.getAuthorWithQuotes(name)
+            .catch { errorChannel.send(it.message.toString()) }
+            .collect {
+                if (it.quotes.isEmpty()) {
+                    fetchAuthorWithQuotes()
                 }
+                _viewState.emit(
+                    _viewState.value.copy(
+                        authorWithQuotesState = ResultWrapper.Success(
+                            it
+                        )
+                    )
+                )
+            }
+    }
+
+    private fun fetchAuthorWithQuotes(name: String = authorName) =
+        viewModelScope.launch(Dispatchers.IO) {
+            _viewState.emit(_viewState.value.copy(updateState = ResultWrapper.Loading))
+            val response = repository.fetchAuthorQuotesAndInsertToDb(authorName = name)
+
+            _viewState.emit(_viewState.value.copy(updateState = response))
+
+            if (response is ResultWrapper.Error) {
+                errorChannel.send(response.errors.message)
+            }
         }
 }

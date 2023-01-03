@@ -6,10 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 internal interface QuoteRepository {
 
-    fun getAuthorWithQuotes(
-        authorName: String,
-        isRefresh: Boolean
-    ): Flow<ResultWrapper<AuthorWithQuotesView>>
+    suspend fun fetchAuthorQuotesAndInsertToDb(authorName: String): ResultWrapper<Unit>
 
-    fun getAuthorWithQuotesFromDb(authorName: String): Flow<AuthorWithQuotesView>
+    fun getAuthorWithQuotes(authorName: String): Flow<AuthorWithQuotesView>
 }
