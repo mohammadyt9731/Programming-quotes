@@ -1,5 +1,6 @@
 package com.example.programmingquotes.feature.quote.ui.component
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -12,7 +13,7 @@ import com.example.programmingquotes.core.common.createEmojiWithDecimalCode
 
 @Composable
 internal fun QuoteTopBar(
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.padding(horizontal = 16.dp),
     emojiCode: Int,
     authorName: String
 ) {

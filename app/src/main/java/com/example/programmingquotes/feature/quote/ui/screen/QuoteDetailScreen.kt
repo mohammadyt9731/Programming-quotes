@@ -34,9 +34,7 @@ internal fun QuoteDetailScreen(
     val viewState by viewModel.viewState.collectAsState()
 
     Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
+        modifier = Modifier.fillMaxSize(),
         scaffoldState = scaffoldState,
         topBar = {
             QuoteTopBar(
@@ -83,7 +81,7 @@ private fun ButtonsSection(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 16.dp)
+            .padding(bottom = 16.dp, start = 16.dp, end = 16.dp)
             .then(modifier)
     ) {
         CustomButton(

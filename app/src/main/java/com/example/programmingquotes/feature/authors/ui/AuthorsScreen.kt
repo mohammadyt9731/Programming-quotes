@@ -156,10 +156,14 @@ private fun Body(
         } else {
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
+                    .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(bottom = 80.dp)
+                contentPadding = PaddingValues(
+                    bottom = 80.dp,
+                    top = 8.dp,
+                    start = 16.dp,
+                    end = 16.dp
+                )
             ) {
                 if (state.authorsState is ResultWrapper.Success) {
                     items(state.authorsState.data) { authorView ->
