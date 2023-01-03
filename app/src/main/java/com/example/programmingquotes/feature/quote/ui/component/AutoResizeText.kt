@@ -1,11 +1,13 @@
 package com.example.programmingquotes.feature.quote.ui.component
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
@@ -18,6 +20,7 @@ internal fun AutoResizeText(
     var readyToDraw by remember { mutableStateOf(false) }
     Text(
         modifier = modifier
+            .padding(horizontal = 16.dp)
             .drawWithContent {
                 if (readyToDraw) {
                     drawContent()

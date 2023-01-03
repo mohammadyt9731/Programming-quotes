@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,18 +39,32 @@ internal class AuthorViewModel @Inject constructor(
     fun handleAction(action: AuthorAction) {
         when (action) {
             AuthorAction.RefreshAuthors -> {
-                getAuthors(isRefresh = true)
+                updateAuthors()
             }
         }
     }
 
-    private fun getAuthors(isRefresh: Boolean = false) = viewModelScope.launch(Dispatchers.IO) {
-        _viewState.emit(_viewState.value.copy(pageState = ResultWrapper.Loading))
-        repository.getAuthors(isRefresh).collect {
-            if (it is ResultWrapper.Error) {
-                errorChannel.send(it.errors.message)
+    private fun getAuthors() = viewModelScope.launch(Dispatchers.IO) {
+        _viewState.emit(_viewState.value.copy(authorsState = ResultWrapper.Loading))
+        repository.getAuthors()
+            .catch { errorChannel.send(it.message.toString()) }
+            .collect {
+                if (it.isEmpty()) {
+                    updateAuthors()
+                }
+                _viewState.emit(
+                    _viewState.value.copy(authorsState = ResultWrapper.Success(it))
+                )
             }
-            _viewState.emit(_viewState.value.copy(pageState = it))
+    }
+
+    private fun updateAuthors() = viewModelScope.launch {
+        _viewState.emit(_viewState.value.copy(updateState = ResultWrapper.Loading))
+        val response = repository.fetchAuthorsAndInsertToDb()
+        _viewState.emit(_viewState.value.copy(updateState = response))
+        if (response is ResultWrapper.Error) {
+            errorChannel.send(response.errors.message)
+
         }
     }
 
@@ -61,14 +76,11 @@ internal class AuthorViewModel @Inject constructor(
                     errorChannel.send(it.errors.message)
                 }
                 _viewState.emit(
-                    _viewState.value.copy(
-                        bottomSheetState = it
-                    )
+                    _viewState.value.copy(bottomSheetState = it)
                 )
             }
         isNextRequestReady = true
     }
-
 
     //sensor
     fun startSensorManager() = setUpSensorManager()
