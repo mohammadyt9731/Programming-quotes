@@ -2,8 +2,8 @@ package com.example.programmingquotes.feature.quote.ui.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
@@ -24,13 +24,11 @@ import androidx.navigation.NavHostController
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.core.common.getMessageFromStringOrStringId
 import com.example.programmingquotes.core.navigation.Screens
+import com.example.programmingquotes.feature.quote.ui.action.QuoteAction
 import com.example.programmingquotes.feature.quote.ui.component.QuoteListItem
 import com.example.programmingquotes.feature.quote.ui.component.QuoteTopBar
-import com.example.programmingquotes.feature.quote.ui.model.AuthorWithQuotesView
-import com.example.programmingquotes.feature.quote.ui.action.QuoteAction
 import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteViewModel
 import com.example.programmingquotes.feature.quote.ui.viewstate.QuoteViewState
-import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 
 @Composable
@@ -55,8 +53,7 @@ internal fun QuotesScreen(
 
     Scaffold(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
+            .fillMaxSize(),
         scaffoldState = scaffoldState,
         topBar = {
             if (authorWithQuotesState is ResultWrapper.Success) {
@@ -99,7 +96,8 @@ private fun MainContent(
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(all = 16.dp)
             ) {
                 if (state.authorWithQuotesState is ResultWrapper.Success) {
                     items(state.authorWithQuotesState.data.quotes.size) { index ->
