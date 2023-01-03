@@ -9,7 +9,6 @@ import com.example.programmingquotes.feature.quote.ui.model.QuoteView
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
 internal class AuthorRepositoryImpl @Inject constructor(
@@ -42,46 +41,15 @@ internal class AuthorRepositoryImpl @Inject constructor(
 
     private fun getRandomQuoteFromDb(): QuoteView? = localDataSource.getRandomQuote()?.toQuoteView()
 
-    override suspend fun getAuthors(
-        isRefresh: Boolean
-    ): Flow<ResultWrapper<List<AuthorView>>> =
-        flow {
-            getAuthors()
-                .onStart {
-                    if (isRefresh) {
-                        val response = fetchAuthorsAndInsertToDb()
-                        if (response is ResultWrapper.Error) {
-                            emit(response)
-                        }
-                    }
-                }
-                .collect {
-                    if (it.isEmpty() && !isRefresh) {
-                        val response = fetchAuthorsAndInsertToDb()
-                        if (response is ResultWrapper.Error) {
-                            emit(response)
-                        }
-                    }
-                    emit(ResultWrapper.Success(it))
-                }
-        }
+    override fun getAuthors(): Flow<List<AuthorView>> =
+        localDataSource.getAuthors().map { it.map { authorEntity -> authorEntity.toAuthorView() } }
 
-    private fun getAuthors(): Flow<List<AuthorView>> =
-        localDataSource.getAuthors().map {
-            it.map { authorEntity ->
-                authorEntity.toAuthorView()
-            }
-        }
-
-    private suspend fun fetchAuthorsAndInsertToDb(): ResultWrapper<List<AuthorView>> {
+    override suspend fun fetchAuthorsAndInsertToDb(): ResultWrapper<Unit> {
         return safeApiCall {
             val response = remoteDataSource.fetchAuthors()
-            localDataSource.insertAuthors(
-                response.values.toList().map { authorResponse ->
-                    authorResponse.toAuthorEntity()
-                }
-            )
-            response.values.map { it.toAuthorView() }
+            localDataSource.insertAuthors(response.values.toList().map { authorResponse ->
+                authorResponse.toAuthorEntity()
+            })
         }
     }
 }

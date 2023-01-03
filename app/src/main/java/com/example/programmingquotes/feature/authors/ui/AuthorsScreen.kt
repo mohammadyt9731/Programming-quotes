@@ -27,7 +27,7 @@ import com.example.programmingquotes.core.ui.component.CustomButton
 import com.example.programmingquotes.feature.authors.ui.component.AppBar
 import com.example.programmingquotes.feature.authors.ui.component.AuthorListItem
 import com.example.programmingquotes.feature.authors.ui.component.SheetContent
-import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 @Composable
@@ -39,7 +39,7 @@ internal fun AuthorsScreen(
     val scope = rememberCoroutineScope()
     val viewState by viewModel.viewState.collectAsState()
     val pullRefreshState = rememberPullRefreshState(
-        refreshing = viewState.pageState is ResultWrapper.Loading,
+        refreshing = viewState.updateState is ResultWrapper.Loading,
         onRefresh = { viewModel.handleAction(AuthorAction.RefreshAuthors) }
     )
     val bottomSheetState = rememberModalBottomSheetState(
@@ -48,7 +48,9 @@ internal fun AuthorsScreen(
     val context = LocalContext.current
 
     LaunchedEffect(key1 = true) {
-        viewModel.errorChannel.consumeAsFlow().collect {
+
+        viewModel.errorChannel.receiveAsFlow().collect {
+
             if (bottomSheetState.isVisible)
                 Toast.makeText(
                     context,
@@ -149,7 +151,7 @@ private fun Body(
             .pullRefresh(state = pullRefreshState())
             .padding(paddingValues)
     ) {
-        if (state.pageState is ResultWrapper.Loading) {
+        if (state.updateState is ResultWrapper.Loading || state.authorsState is ResultWrapper.Loading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         } else {
             LazyColumn(
@@ -159,18 +161,17 @@ private fun Body(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(bottom = 80.dp)
             ) {
-                if (state.pageState is ResultWrapper.Success) {
-                    items(state.pageState.data) { authorView ->
+                if (state.authorsState is ResultWrapper.Success) {
+                    items(state.authorsState.data) { authorView ->
                         AuthorListItem(authorView) {
                             navigateToQuotes(authorView.name)
                         }
                     }
                 }
-
             }
         }
         PullRefreshIndicator(
-            refreshing = state.pageState is ResultWrapper.Loading,
+            refreshing = state.updateState is ResultWrapper.Loading,
             state = pullRefreshState(),
             modifier = Modifier.align(Alignment.TopCenter)
         )
