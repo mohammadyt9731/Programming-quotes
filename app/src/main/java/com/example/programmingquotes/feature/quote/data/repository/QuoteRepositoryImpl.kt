@@ -25,8 +25,6 @@ internal class QuoteRepositoryImpl @Inject constructor(
                     quoteResponse.toQuoteEntity()
                 }
             )
-
-            response.toAuthorWithQuotesView()
         }
     }
 
