@@ -1,9 +1,6 @@
 package com.example.programmingquotes.feature.quote.ui.screen
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
@@ -38,9 +35,9 @@ internal fun QuotesScreen(
 ) {
     val scaffoldState = rememberScaffoldState()
     val viewState by viewModel.viewState.collectAsState()
-    val authorWithQuotesState = viewState.authorWithQuotesState
+    val authorWithQuotesState = viewState.authorWithQuotes
     val pullRefreshState = rememberPullRefreshState(
-        refreshing = viewState.updateState is ResultWrapper.Loading,
+        refreshing = viewState.update is ResultWrapper.Loading,
         onRefresh = { viewModel.handleAction(QuoteAction.GetAuthorWithQuotesWhenRefresh) }
     )
     val context = LocalContext.current
@@ -63,8 +60,9 @@ internal fun QuotesScreen(
                 )
             }
         }
-    ) {
+    ) { padding ->
         MainContent(
+            paddingValues = padding,
             pullRefreshState = { pullRefreshState },
             viewState = { viewState },
             navigateToDetail = { index, name ->
@@ -81,6 +79,7 @@ internal fun QuotesScreen(
 
 @Composable
 private fun MainContent(
+    paddingValues: PaddingValues,
     pullRefreshState: () -> PullRefreshState,
     viewState: () -> QuoteViewState,
     navigateToDetail: (index: Int, name: String) -> Unit
@@ -90,8 +89,9 @@ private fun MainContent(
         modifier = Modifier
             .fillMaxSize()
             .pullRefresh(pullRefreshState())
+            .padding(paddingValues)
     ) {
-        if (state.updateState is ResultWrapper.Loading || state.authorWithQuotesState is ResultWrapper.Loading) {
+        if (state.update is ResultWrapper.Loading || state.authorWithQuotes is ResultWrapper.Loading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         } else {
             LazyColumn(
@@ -99,17 +99,17 @@ private fun MainContent(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(all = 16.dp)
             ) {
-                if (state.authorWithQuotesState is ResultWrapper.Success) {
-                    items(state.authorWithQuotesState.data.quotes.size) { index ->
-                        QuoteListItem(quote = state.authorWithQuotesState.data.quotes[index].quote) {
-                            navigateToDetail(index, state.authorWithQuotesState.data.author.name)
+                if (state.authorWithQuotes is ResultWrapper.Success) {
+                    items(state.authorWithQuotes.data.quotes.size) { index ->
+                        QuoteListItem(quote = state.authorWithQuotes.data.quotes[index].quote) {
+                            navigateToDetail(index, state.authorWithQuotes.data.author.name)
                         }
                     }
                 }
             }
         }
         PullRefreshIndicator(
-            refreshing = state.updateState is ResultWrapper.Loading,
+            refreshing = state.update is ResultWrapper.Loading,
             state = pullRefreshState(),
             modifier = Modifier.align(Alignment.TopCenter)
         )

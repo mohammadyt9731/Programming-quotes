@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.programmingquotes.core.common.Constants
+import com.example.programmingquotes.core.common.Errors
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.feature.quote.data.repository.QuoteRepository
 import com.example.programmingquotes.feature.quote.ui.action.QuoteAction
@@ -42,16 +43,25 @@ internal class QuoteViewModel @Inject constructor(
     }
 
     fun getAuthorWithQuotes(name: String = authorName) = viewModelScope.launch(Dispatchers.IO) {
-        _viewState.emit(_viewState.value.copy(authorWithQuotesState = ResultWrapper.Loading))
+        _viewState.emit(_viewState.value.copy(authorWithQuotes = ResultWrapper.Loading))
         repository.getAuthorWithQuotes(name)
-            .catch { errorChannel.send(it.message.toString()) }
+            .catch {
+                errorChannel.send(it.message.toString())
+                _viewState.emit(
+                    _viewState.value.copy(
+                        authorWithQuotes = ResultWrapper.Error(
+                            Errors.App(msg = it.message.toString())
+                        )
+                    )
+                )
+            }
             .collect {
                 if (it.quotes.isEmpty()) {
                     fetchAuthorWithQuotes()
                 }
                 _viewState.emit(
                     _viewState.value.copy(
-                        authorWithQuotesState = ResultWrapper.Success(
+                        authorWithQuotes = ResultWrapper.Success(
                             it
                         )
                     )
@@ -61,10 +71,10 @@ internal class QuoteViewModel @Inject constructor(
 
     private fun fetchAuthorWithQuotes(name: String = authorName) =
         viewModelScope.launch(Dispatchers.IO) {
-            _viewState.emit(_viewState.value.copy(updateState = ResultWrapper.Loading))
+            _viewState.emit(_viewState.value.copy(update = ResultWrapper.Loading))
             val response = repository.fetchAuthorQuotesAndInsertToDb(authorName = name)
 
-            _viewState.emit(_viewState.value.copy(updateState = response))
+            _viewState.emit(_viewState.value.copy(update = response))
 
             if (response is ResultWrapper.Error) {
                 errorChannel.send(response.errors.message)

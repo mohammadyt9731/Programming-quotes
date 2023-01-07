@@ -5,6 +5,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -13,6 +14,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.programmingquotes.R
+import com.example.programmingquotes.core.common.ResultWrapper
+import com.example.programmingquotes.core.common.getMessageFromStringOrStringId
 import com.example.programmingquotes.core.common.openUri
 import com.example.programmingquotes.core.common.shareText
 import com.example.programmingquotes.core.ui.component.CustomButton
@@ -21,6 +24,7 @@ import com.example.programmingquotes.feature.quote.ui.component.QuoteTopBar
 import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteDetailViewModel
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.flow.receiveAsFlow
 
 @Composable
 internal fun QuoteDetailScreen(
@@ -32,42 +36,55 @@ internal fun QuoteDetailScreen(
     val pagerState = rememberPagerState(initialPage = index)
     val context = LocalContext.current
     val viewState by viewModel.viewState.collectAsState()
+    val authorWithQuotesState = viewState.authorWithQuotes
+
+    LaunchedEffect(key1 = true) {
+        viewModel.errorChannel.receiveAsFlow().collect {
+            scaffoldState.snackbarHostState.showSnackbar(context.getMessageFromStringOrStringId(it))
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         scaffoldState = scaffoldState,
         topBar = {
-            QuoteTopBar(
-                emojiCode = viewState.authorWithQuotes.author.emoji,
-                authorName = viewState.authorWithQuotes.author.name
-            )
-        }
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            HorizontalPager(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(bottom = 16.dp),
-                count = viewState.authorWithQuotes.quotes.size,
-                state = pagerState
-            ) { page ->
-                AutoResizeText(
-                    text = viewState.authorWithQuotes.quotes[page].quote,
-                    style = MaterialTheme.typography.h1
+            if (authorWithQuotesState is ResultWrapper.Success) {
+                QuoteTopBar(
+                    emojiCode = authorWithQuotesState.data.author.emoji,
+                    authorName = authorWithQuotesState.data.author.name
                 )
             }
-            ButtonsSection(
-                onClickShare = {
-                    context.shareText(text = viewState.authorWithQuotes.quotes[index].quote)
-                },
-                onClickUri = {
-                    context.openUri(uri = viewState.authorWithQuotes.author.wikiUrl)
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(padding),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (authorWithQuotesState is ResultWrapper.Success) {
+                HorizontalPager(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(bottom = 16.dp),
+                    count = authorWithQuotesState.data.quotes.size,
+                    state = pagerState
+                ) { page ->
+                    AutoResizeText(
+                        text = authorWithQuotesState.data.quotes[page].quote,
+                        style = MaterialTheme.typography.h1
+                    )
                 }
-            )
+                ButtonsSection(
+                    onClickShare = {
+                        context.shareText(text = authorWithQuotesState.data.quotes[index].quote)
+                    },
+                    onClickUri = {
+                        context.openUri(uri = authorWithQuotesState.data.author.wikiUrl)
+                    }
+                )
+            }
         }
     }
 }
