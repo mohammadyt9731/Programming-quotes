@@ -6,6 +6,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.programmingquotes.core.common.Errors
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.feature.authors.data.repository.AuthorRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,30 +39,45 @@ internal class AuthorViewModel @Inject constructor(
 
     fun handleAction(action: AuthorAction) {
         when (action) {
-            AuthorAction.RefreshAuthors -> {
+            is AuthorAction.RefreshAuthors -> {
                 updateAuthors()
+            }
+            is AuthorAction.StartSensorManager -> {
+                startSensorManager()
+            }
+            is AuthorAction.StopSensorManager -> {
+                stopSensorManager()
             }
         }
     }
 
     private fun getAuthors() = viewModelScope.launch(Dispatchers.IO) {
-        _viewState.emit(_viewState.value.copy(authorsState = ResultWrapper.Loading))
+        _viewState.emit(_viewState.value.copy(authors = ResultWrapper.Loading))
         repository.getAuthors()
-            .catch { errorChannel.send(it.message.toString()) }
+            .catch {
+                errorChannel.send(it.message.toString())
+                _viewState.emit(
+                    _viewState.value.copy(
+                        authors = ResultWrapper.Error(
+                            Errors.App(msg = it.message.toString())
+                        )
+                    )
+                )
+            }
             .collect {
                 if (it.isEmpty()) {
                     updateAuthors()
                 }
                 _viewState.emit(
-                    _viewState.value.copy(authorsState = ResultWrapper.Success(it))
+                    _viewState.value.copy(authors = ResultWrapper.Success(it))
                 )
             }
     }
 
-    private fun updateAuthors() = viewModelScope.launch {
-        _viewState.emit(_viewState.value.copy(updateState = ResultWrapper.Loading))
+    private fun updateAuthors() = viewModelScope.launch(Dispatchers.IO) {
+        _viewState.emit(_viewState.value.copy(update = ResultWrapper.Loading))
         val response = repository.fetchAuthorsAndInsertToDb()
-        _viewState.emit(_viewState.value.copy(updateState = response))
+        _viewState.emit(_viewState.value.copy(update = response))
         if (response is ResultWrapper.Error) {
             errorChannel.send(response.errors.message)
 
@@ -69,25 +85,25 @@ internal class AuthorViewModel @Inject constructor(
     }
 
     private fun getRandomQuote() = viewModelScope.launch(Dispatchers.IO) {
-        _viewState.emit(_viewState.value.copy(bottomSheetState = ResultWrapper.Loading))
+        _viewState.emit(_viewState.value.copy(bottomSheet = ResultWrapper.Loading))
         repository.getRandomQuote()
             .collect {
                 if (it is ResultWrapper.Error) {
                     errorChannel.send(it.errors.message)
                 }
                 _viewState.emit(
-                    _viewState.value.copy(bottomSheetState = it)
+                    _viewState.value.copy(bottomSheet = it)
                 )
             }
         isNextRequestReady = true
     }
 
     //sensor
-    fun startSensorManager() = setUpSensorManager()
+    private fun startSensorManager() = setUpSensorManager()
 
-    suspend fun stopSensorManager() {
+    private fun stopSensorManager() = viewModelScope.launch(Dispatchers.IO) {
         sensorManager.unregisterListener(sensorListener)
-        _viewState.emit(_viewState.value.copy(bottomSheetState = ResultWrapper.UnInitialize))
+        _viewState.emit(_viewState.value.copy(bottomSheet = ResultWrapper.UnInitialize))
     }
 
     private fun setUpSensorManager() {
@@ -107,7 +123,7 @@ internal class AuthorViewModel @Inject constructor(
                 val delta: Float = currentAcceleration - lastAcceleration
                 acceleration = acceleration * 0.9f + delta
 
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     if (acceleration > 12) {
                         if (isNextRequestReady) {
                             isNextRequestReady = false

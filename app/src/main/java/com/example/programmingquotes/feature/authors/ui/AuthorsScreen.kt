@@ -39,7 +39,7 @@ internal fun AuthorsScreen(
     val scope = rememberCoroutineScope()
     val viewState by viewModel.viewState.collectAsState()
     val pullRefreshState = rememberPullRefreshState(
-        refreshing = viewState.updateState is ResultWrapper.Loading,
+        refreshing = viewState.update is ResultWrapper.Loading,
         onRefresh = { viewModel.handleAction(AuthorAction.RefreshAuthors) }
     )
     val bottomSheetState = rememberModalBottomSheetState(
@@ -65,9 +65,9 @@ internal fun AuthorsScreen(
 
     LaunchedEffect(key1 = bottomSheetState.isVisible) {
         if (bottomSheetState.isVisible) {
-            viewModel.startSensorManager()
+            viewModel.handleAction(AuthorAction.StartSensorManager)
         } else {
-            viewModel.stopSensorManager()
+            viewModel.handleAction(AuthorAction.StopSensorManager)
         }
     }
 
@@ -151,7 +151,7 @@ private fun Body(
             .pullRefresh(state = pullRefreshState())
             .padding(paddingValues)
     ) {
-        if (state.updateState is ResultWrapper.Loading || state.authorsState is ResultWrapper.Loading) {
+        if (state.update is ResultWrapper.Loading || state.authors is ResultWrapper.Loading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         } else {
             LazyColumn(
@@ -165,8 +165,8 @@ private fun Body(
                     end = 16.dp
                 )
             ) {
-                if (state.authorsState is ResultWrapper.Success) {
-                    items(state.authorsState.data) { authorView ->
+                if (state.authors is ResultWrapper.Success) {
+                    items(state.authors.data) { authorView ->
                         AuthorListItem(authorView) {
                             navigateToQuotes(authorView.name)
                         }
@@ -175,7 +175,7 @@ private fun Body(
             }
         }
         PullRefreshIndicator(
-            refreshing = state.updateState is ResultWrapper.Loading,
+            refreshing = state.update is ResultWrapper.Loading,
             state = pullRefreshState(),
             modifier = Modifier.align(Alignment.TopCenter)
         )

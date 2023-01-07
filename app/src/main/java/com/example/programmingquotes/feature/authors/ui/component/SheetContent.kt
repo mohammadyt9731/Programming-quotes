@@ -22,15 +22,15 @@ internal fun SheetContent(
     viewState: () -> AuthorViewState
 ) {
     val state = viewState()
-    when (state.bottomSheetState) {
+    when (state.bottomSheet) {
         is ResultWrapper.Loading -> {
             ProgressBar()
         }
         is ResultWrapper.Success -> {
-            state.bottomSheetState.data?.let {
+            state.bottomSheet.data?.let {
                 SheetContentShaken(
                     authorName = it.author,
-                    quote = state.bottomSheetState.data.quote
+                    quote = state.bottomSheet.data.quote
                 )
             }
         }
