@@ -38,8 +38,14 @@ internal class AuthorViewModel @Inject constructor(
 
     fun handleAction(action: AuthorAction) {
         when (action) {
-            AuthorAction.RefreshAuthors -> {
+            is AuthorAction.RefreshAuthors -> {
                 updateAuthors()
+            }
+            is AuthorAction.StartSensorManager -> {
+                startSensorManager()
+            }
+            is AuthorAction.StopSensorManager -> {
+                stopSensorManager()
             }
         }
     }
@@ -58,7 +64,7 @@ internal class AuthorViewModel @Inject constructor(
             }
     }
 
-    private fun updateAuthors() = viewModelScope.launch {
+    private fun updateAuthors() = viewModelScope.launch(Dispatchers.IO) {
         _viewState.emit(_viewState.value.copy(updateState = ResultWrapper.Loading))
         val response = repository.fetchAuthorsAndInsertToDb()
         _viewState.emit(_viewState.value.copy(updateState = response))
@@ -83,9 +89,9 @@ internal class AuthorViewModel @Inject constructor(
     }
 
     //sensor
-    fun startSensorManager() = setUpSensorManager()
+    private fun startSensorManager() = setUpSensorManager()
 
-    suspend fun stopSensorManager() {
+    private fun stopSensorManager() = viewModelScope.launch(Dispatchers.IO) {
         sensorManager.unregisterListener(sensorListener)
         _viewState.emit(_viewState.value.copy(bottomSheetState = ResultWrapper.UnInitialize))
     }
@@ -107,7 +113,7 @@ internal class AuthorViewModel @Inject constructor(
                 val delta: Float = currentAcceleration - lastAcceleration
                 acceleration = acceleration * 0.9f + delta
 
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     if (acceleration > 12) {
                         if (isNextRequestReady) {
                             isNextRequestReady = false

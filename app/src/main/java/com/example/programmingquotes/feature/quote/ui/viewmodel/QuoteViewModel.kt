@@ -41,7 +41,7 @@ internal class QuoteViewModel @Inject constructor(
         }
     }
 
-    fun getAuthorWithQuotes(name: String = authorName) = viewModelScope.launch {
+    fun getAuthorWithQuotes(name: String = authorName) = viewModelScope.launch(Dispatchers.IO) {
         _viewState.emit(_viewState.value.copy(authorWithQuotesState = ResultWrapper.Loading))
         repository.getAuthorWithQuotes(name)
             .catch { errorChannel.send(it.message.toString()) }

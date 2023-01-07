@@ -65,9 +65,9 @@ internal fun AuthorsScreen(
 
     LaunchedEffect(key1 = bottomSheetState.isVisible) {
         if (bottomSheetState.isVisible) {
-            viewModel.startSensorManager()
+            viewModel.handleAction(AuthorAction.StartSensorManager)
         } else {
-            viewModel.stopSensorManager()
+            viewModel.handleAction(AuthorAction.StopSensorManager)
         }
     }
 
