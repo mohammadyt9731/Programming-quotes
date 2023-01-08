@@ -30,7 +30,7 @@ internal fun SheetContent(
             state.bottomSheet.data?.let {
                 SheetContentShaken(
                     authorName = it.author,
-                    quote = state.bottomSheet.data.quote
+                    quote = state.bottomSheet.data.en
                 )
             }
         }

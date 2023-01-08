@@ -4,11 +4,8 @@ import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.core.data.network.safeApiCall
 import com.example.programmingquotes.feature.quote.data.datasource.local.QuoteLocalDataSource
 import com.example.programmingquotes.feature.quote.data.datasource.remote.QuoteRemoteDataSource
-import com.example.programmingquotes.feature.quote.ui.model.AuthorWithQuotesView
+import com.example.programmingquotes.feature.quote.data.db.relation.AuthorWithQuotes
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
 internal class QuoteRepositoryImpl @Inject constructor(
@@ -28,6 +25,6 @@ internal class QuoteRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getAuthorWithQuotes(authorName: String): Flow<AuthorWithQuotesView> =
-        localDataSource.getAuthorWithQuotes(authorName).map { it.toAuthorWithQuotesView() }
+    override fun getAuthorWithQuotes(authorName: String): Flow<AuthorWithQuotes> =
+        localDataSource.getAuthorWithQuotes(authorName)
 }

@@ -9,8 +9,8 @@ import com.example.programmingquotes.feature.authors.data.datasource.remote.Auth
 import com.example.programmingquotes.feature.authors.data.datasource.remote.AuthorRemoteDataSourceImpl
 import com.example.programmingquotes.feature.authors.data.db.dao.AuthorDao
 import com.example.programmingquotes.feature.authors.data.network.api.AuthorApi
-import com.example.programmingquotes.feature.authors.data.repository.AuthorRepository
 import com.example.programmingquotes.feature.authors.data.repository.AuthorRepositoryImpl
+import com.example.programmingquotes.feature.authors.domain.AuthorRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

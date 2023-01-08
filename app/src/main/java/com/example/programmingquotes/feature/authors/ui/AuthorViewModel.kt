@@ -8,7 +8,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.programmingquotes.core.common.Errors
 import com.example.programmingquotes.core.common.ResultWrapper
-import com.example.programmingquotes.feature.authors.data.repository.AuthorRepository
+import com.example.programmingquotes.feature.authors.domain.usecase.GetAuthorsUseCase
+import com.example.programmingquotes.feature.authors.domain.usecase.GetRandomQuoteUseCase
+import com.example.programmingquotes.feature.authors.domain.usecase.UpdateAuthorsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -20,7 +22,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class AuthorViewModel @Inject constructor(
-    private val repository: AuthorRepository,
+    private val getAuthorsUseCase: GetAuthorsUseCase,
+    private val updateAuthorsUseCase: UpdateAuthorsUseCase,
+    private val getRandomQuoteUseCase: GetRandomQuoteUseCase,
     private val sensorManager: SensorManager
 ) : ViewModel() {
 
@@ -43,7 +47,7 @@ internal class AuthorViewModel @Inject constructor(
                 updateAuthors()
             }
             is AuthorAction.StartSensorManager -> {
-                startSensorManager()
+                setUpSensorManager()
             }
             is AuthorAction.StopSensorManager -> {
                 stopSensorManager()
@@ -53,7 +57,7 @@ internal class AuthorViewModel @Inject constructor(
 
     private fun getAuthors() = viewModelScope.launch(Dispatchers.IO) {
         _viewState.emit(_viewState.value.copy(authors = ResultWrapper.Loading))
-        repository.getAuthors()
+        getAuthorsUseCase()
             .catch {
                 errorChannel.send(it.message.toString())
                 _viewState.emit(
@@ -76,7 +80,7 @@ internal class AuthorViewModel @Inject constructor(
 
     private fun updateAuthors() = viewModelScope.launch(Dispatchers.IO) {
         _viewState.emit(_viewState.value.copy(update = ResultWrapper.Loading))
-        val response = repository.fetchAuthorsAndInsertToDb()
+        val response = updateAuthorsUseCase()
         _viewState.emit(_viewState.value.copy(update = response))
         if (response is ResultWrapper.Error) {
             errorChannel.send(response.errors.message)
@@ -86,7 +90,7 @@ internal class AuthorViewModel @Inject constructor(
 
     private fun getRandomQuote() = viewModelScope.launch(Dispatchers.IO) {
         _viewState.emit(_viewState.value.copy(bottomSheet = ResultWrapper.Loading))
-        repository.getRandomQuote()
+        getRandomQuoteUseCase()
             .collect {
                 if (it is ResultWrapper.Error) {
                     errorChannel.send(it.errors.message)
@@ -98,9 +102,8 @@ internal class AuthorViewModel @Inject constructor(
         isNextRequestReady = true
     }
 
-    //sensor
-    private fun startSensorManager() = setUpSensorManager()
 
+    //sensor
     private fun stopSensorManager() = viewModelScope.launch(Dispatchers.IO) {
         sensorManager.unregisterListener(sensorListener)
         _viewState.emit(_viewState.value.copy(bottomSheet = ResultWrapper.UnInitialize))
