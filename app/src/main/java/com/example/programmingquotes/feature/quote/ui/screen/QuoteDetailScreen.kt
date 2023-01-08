@@ -50,8 +50,8 @@ internal fun QuoteDetailScreen(
         topBar = {
             if (authorWithQuotesState is ResultWrapper.Success) {
                 QuoteTopBar(
-                    emojiCode = authorWithQuotesState.data.author.emoji,
-                    authorName = authorWithQuotesState.data.author.name
+                    emojiCode = authorWithQuotesState.data.authorEntity.emoji,
+                    authorName = authorWithQuotesState.data.authorEntity.name
                 )
             }
         }
@@ -81,7 +81,7 @@ internal fun QuoteDetailScreen(
                         context.shareText(text = authorWithQuotesState.data.quotes[index].quote)
                     },
                     onClickUri = {
-                        context.openUri(uri = authorWithQuotesState.data.author.wikiUrl)
+                        context.openUri(uri = authorWithQuotesState.data.authorEntity.wikiUrl)
                     }
                 )
             }

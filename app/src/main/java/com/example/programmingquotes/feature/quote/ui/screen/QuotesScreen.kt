@@ -55,8 +55,8 @@ internal fun QuotesScreen(
         topBar = {
             if (authorWithQuotesState is ResultWrapper.Success) {
                 QuoteTopBar(
-                    emojiCode = authorWithQuotesState.data.author.emoji,
-                    authorName = authorWithQuotesState.data.author.name
+                    emojiCode = authorWithQuotesState.data.authorEntity.emoji,
+                    authorName = authorWithQuotesState.data.authorEntity.name
                 )
             }
         }
@@ -102,7 +102,7 @@ private fun MainContent(
                 if (state.authorWithQuotes is ResultWrapper.Success) {
                     items(state.authorWithQuotes.data.quotes.size) { index ->
                         QuoteListItem(quote = state.authorWithQuotes.data.quotes[index].quote) {
-                            navigateToDetail(index, state.authorWithQuotes.data.author.name)
+                            navigateToDetail(index, state.authorWithQuotes.data.authorEntity.name)
                         }
                     }
                 }

@@ -2,7 +2,7 @@ package com.example.programmingquotes.feature.quote.data.db.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.programmingquotes.feature.quote.ui.model.QuoteView
+import com.example.programmingquotes.feature.quote.data.network.model.QuoteResponse
 
 @Entity(tableName = "quote")
 internal data class QuoteEntity(
@@ -11,10 +11,9 @@ internal data class QuoteEntity(
     val author: String,
     val quote: String
 ) {
-
-    fun toQuoteView() = QuoteView(
+    fun toQuoteResponse() = QuoteResponse(
         id = id,
         author = author,
-        quote = quote
+        en = quote
     )
 }
