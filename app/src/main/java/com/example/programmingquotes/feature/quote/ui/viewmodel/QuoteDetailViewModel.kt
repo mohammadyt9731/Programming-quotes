@@ -6,7 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.programmingquotes.core.common.Constants
 import com.example.programmingquotes.core.common.Errors
 import com.example.programmingquotes.core.common.ResultWrapper
-import com.example.programmingquotes.feature.quote.data.repository.QuoteRepository
+import com.example.programmingquotes.feature.quote.domain.QuoteRepository
+import com.example.programmingquotes.feature.quote.domain.usecase.GetAuthorWithQuotesUseCase
 import com.example.programmingquotes.feature.quote.ui.viewstate.QuoteDetailViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class QuoteDetailViewModel @Inject constructor(
-    private val repository: QuoteRepository,
+    private val getAuthorWithQuotesUseCase: GetAuthorWithQuotesUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -36,7 +37,7 @@ internal class QuoteDetailViewModel @Inject constructor(
     private fun getQuotes(authorName: String) =
         viewModelScope.launch(Dispatchers.IO) {
             _viewState.emit(_viewState.value.copy(authorWithQuotes = ResultWrapper.Loading))
-            repository.getAuthorWithQuotes(authorName = authorName)
+            getAuthorWithQuotesUseCase(authorName)
                 .catch {
                     errorChannel.send(it.message.toString())
                     _viewState.emit(
