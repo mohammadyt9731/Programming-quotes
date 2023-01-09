@@ -1,4 +1,4 @@
-package com.example.programmingquotes.feature.quote.data.repository
+package com.example.programmingquotes.feature.quote.domain
 
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.feature.quote.data.db.relation.AuthorWithQuotes

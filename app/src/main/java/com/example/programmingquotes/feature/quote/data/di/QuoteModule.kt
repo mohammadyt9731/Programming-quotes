@@ -7,7 +7,7 @@ import com.example.programmingquotes.feature.quote.data.datasource.remote.QuoteR
 import com.example.programmingquotes.feature.quote.data.datasource.remote.QuoteRemoteDataSourceImpl
 import com.example.programmingquotes.feature.quote.data.db.dao.QuoteDao
 import com.example.programmingquotes.feature.quote.data.network.api.QuoteApi
-import com.example.programmingquotes.feature.quote.data.repository.QuoteRepository
+import com.example.programmingquotes.feature.quote.domain.QuoteRepository
 import com.example.programmingquotes.feature.quote.data.repository.QuoteRepositoryImpl
 import dagger.Binds
 import dagger.Module

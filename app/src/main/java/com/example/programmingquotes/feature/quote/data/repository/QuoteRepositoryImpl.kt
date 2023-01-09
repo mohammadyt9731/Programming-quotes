@@ -5,6 +5,7 @@ import com.example.programmingquotes.core.data.network.safeApiCall
 import com.example.programmingquotes.feature.quote.data.datasource.local.QuoteLocalDataSource
 import com.example.programmingquotes.feature.quote.data.datasource.remote.QuoteRemoteDataSource
 import com.example.programmingquotes.feature.quote.data.db.relation.AuthorWithQuotes
+import com.example.programmingquotes.feature.quote.domain.QuoteRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
