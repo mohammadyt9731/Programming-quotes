@@ -26,7 +26,6 @@ import com.example.programmingquotes.feature.quote.ui.component.QuoteListItem
 import com.example.programmingquotes.feature.quote.ui.component.QuoteTopBar
 import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteViewModel
 import com.example.programmingquotes.feature.quote.ui.viewstate.QuoteViewState
-import kotlinx.coroutines.flow.receiveAsFlow
 
 @Composable
 internal fun QuotesScreen(
@@ -43,7 +42,7 @@ internal fun QuotesScreen(
     val context = LocalContext.current
 
     LaunchedEffect(key1 = true) {
-        viewModel.errorChannel.receiveAsFlow().collect {
+        viewModel.errorChannelFlow().collect {
             scaffoldState.snackbarHostState.showSnackbar(context.getMessageFromStringOrStringId(it))
         }
     }

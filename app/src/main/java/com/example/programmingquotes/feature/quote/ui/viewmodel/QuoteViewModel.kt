@@ -1,20 +1,17 @@
 package com.example.programmingquotes.feature.quote.ui.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.programmingquotes.core.common.Constants
 import com.example.programmingquotes.core.common.Errors
 import com.example.programmingquotes.core.common.ResultWrapper
+import com.example.programmingquotes.core.ui.BaseViewModel
 import com.example.programmingquotes.feature.quote.domain.usecase.GetAuthorWithQuotesUseCase
 import com.example.programmingquotes.feature.quote.domain.usecase.UpdateAuthorQuotesUseCase
 import com.example.programmingquotes.feature.quote.ui.action.QuoteAction
 import com.example.programmingquotes.feature.quote.ui.viewstate.QuoteViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,14 +21,9 @@ internal class QuoteViewModel @Inject constructor(
     private val getAuthorWithQuotesUseCase: GetAuthorWithQuotesUseCase,
     private val updateAuthorQuotesUseCase: UpdateAuthorQuotesUseCase,
     savedStateHandle: SavedStateHandle
-) : ViewModel() {
+) : BaseViewModel<QuoteViewState, QuoteAction>(QuoteViewState()) {
 
     private var authorName: String
-
-    private val _viewState = MutableStateFlow(QuoteViewState())
-    val viewState = _viewState.asStateFlow()
-
-    val errorChannel = Channel<String>()
 
     init {
         authorName = savedStateHandle.get<String>(Constants.AUTHOR_NAME_KEY) ?: ""
@@ -45,41 +37,35 @@ internal class QuoteViewModel @Inject constructor(
     }
 
     fun getAuthorWithQuotes(name: String = authorName) = viewModelScope.launch(Dispatchers.IO) {
-        _viewState.emit(_viewState.value.copy(authorWithQuotes = ResultWrapper.Loading))
+        setState { copy(authorWithQuotes = ResultWrapper.Loading) }
         getAuthorWithQuotesUseCase(name)
             .catch {
-                errorChannel.send(it.message.toString())
-                _viewState.emit(
-                    _viewState.value.copy(
+                setError(it.message.toString())
+                setState {
+                    copy(
                         authorWithQuotes = ResultWrapper.Error(
                             Errors.App(msg = it.message.toString())
                         )
                     )
-                )
+                }
             }
             .collect {
                 if (it.quotes.isEmpty()) {
                     fetchAuthorWithQuotes()
                 }
-                _viewState.emit(
-                    _viewState.value.copy(
-                        authorWithQuotes = ResultWrapper.Success(
-                            it
-                        )
-                    )
-                )
+                setState { copy(authorWithQuotes = ResultWrapper.Success(it)) }
             }
     }
 
     private fun fetchAuthorWithQuotes(name: String = authorName) =
         viewModelScope.launch(Dispatchers.IO) {
-            _viewState.emit(_viewState.value.copy(update = ResultWrapper.Loading))
+            setState { copy(update = ResultWrapper.Loading) }
             val response = updateAuthorQuotesUseCase(name)
 
-            _viewState.emit(_viewState.value.copy(update = response))
+            setState { copy(update = response) }
 
             if (response is ResultWrapper.Error) {
-                errorChannel.send(response.errors.message)
+                setError(response.errors.message)
             }
         }
 }

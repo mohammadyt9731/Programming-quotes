@@ -4,18 +4,15 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.programmingquotes.core.common.Errors
 import com.example.programmingquotes.core.common.ResultWrapper
+import com.example.programmingquotes.core.ui.BaseViewModel
 import com.example.programmingquotes.feature.authors.domain.usecase.GetAuthorsUseCase
 import com.example.programmingquotes.feature.authors.domain.usecase.GetRandomQuoteUseCase
 import com.example.programmingquotes.feature.authors.domain.usecase.UpdateAuthorsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,12 +23,7 @@ internal class AuthorViewModel @Inject constructor(
     private val updateAuthorsUseCase: UpdateAuthorsUseCase,
     private val getRandomQuoteUseCase: GetRandomQuoteUseCase,
     private val sensorManager: SensorManager
-) : ViewModel() {
-
-    private val _viewState = MutableStateFlow(AuthorViewState())
-    val viewState = _viewState.asStateFlow()
-
-    val errorChannel = Channel<String>()
+) : BaseViewModel<AuthorViewState, AuthorAction>(AuthorViewState()) {
 
     private var isNextRequestReady = true
 
@@ -56,48 +48,48 @@ internal class AuthorViewModel @Inject constructor(
     }
 
     private fun getAuthors() = viewModelScope.launch(Dispatchers.IO) {
-        _viewState.emit(_viewState.value.copy(authors = ResultWrapper.Loading))
+        setState { copy(authors = ResultWrapper.Loading) }
         getAuthorsUseCase()
             .catch {
-                errorChannel.send(it.message.toString())
-                _viewState.emit(
-                    _viewState.value.copy(
+                setError(it.message.toString())
+                setState {
+                    copy(
                         authors = ResultWrapper.Error(
                             Errors.App(msg = it.message.toString())
                         )
                     )
-                )
+                }
             }
             .collect {
                 if (it.isEmpty()) {
                     updateAuthors()
                 }
-                _viewState.emit(
-                    _viewState.value.copy(authors = ResultWrapper.Success(it))
-                )
+                setState {
+                    copy(authors = ResultWrapper.Success(it))
+                }
             }
     }
 
     private fun updateAuthors() = viewModelScope.launch(Dispatchers.IO) {
-        _viewState.emit(_viewState.value.copy(update = ResultWrapper.Loading))
+        setState { copy(update = ResultWrapper.Loading) }
         val response = updateAuthorsUseCase()
-        _viewState.emit(_viewState.value.copy(update = response))
+        setState { copy(update = response) }
         if (response is ResultWrapper.Error) {
-            errorChannel.send(response.errors.message)
+            setError(response.errors.message)
 
         }
     }
 
     private fun getRandomQuote() = viewModelScope.launch(Dispatchers.IO) {
-        _viewState.emit(_viewState.value.copy(bottomSheet = ResultWrapper.Loading))
+        setState { copy(bottomSheet = ResultWrapper.Loading) }
         getRandomQuoteUseCase()
             .collect {
                 if (it is ResultWrapper.Error) {
-                    errorChannel.send(it.errors.message)
+                    setError(it.errors.message)
                 }
-                _viewState.emit(
-                    _viewState.value.copy(bottomSheet = it)
-                )
+                setState {
+                    copy(bottomSheet = it)
+                }
             }
         isNextRequestReady = true
     }
@@ -106,7 +98,7 @@ internal class AuthorViewModel @Inject constructor(
     //sensor
     private fun stopSensorManager() = viewModelScope.launch(Dispatchers.IO) {
         sensorManager.unregisterListener(sensorListener)
-        _viewState.emit(_viewState.value.copy(bottomSheet = ResultWrapper.UnInitialize))
+        setState { copy(bottomSheet = ResultWrapper.UnInitialize) }
     }
 
     private fun setUpSensorManager() {

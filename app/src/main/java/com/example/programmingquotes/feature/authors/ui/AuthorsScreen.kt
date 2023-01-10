@@ -27,7 +27,6 @@ import com.example.programmingquotes.core.ui.component.CustomButton
 import com.example.programmingquotes.feature.authors.ui.component.AppBar
 import com.example.programmingquotes.feature.authors.ui.component.AuthorListItem
 import com.example.programmingquotes.feature.authors.ui.component.SheetContent
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 @Composable
@@ -49,7 +48,7 @@ internal fun AuthorsScreen(
 
     LaunchedEffect(key1 = true) {
 
-        viewModel.errorChannel.receiveAsFlow().collect {
+        viewModel.errorChannelFlow().collect {
 
             if (bottomSheetState.isVisible)
                 Toast.makeText(
