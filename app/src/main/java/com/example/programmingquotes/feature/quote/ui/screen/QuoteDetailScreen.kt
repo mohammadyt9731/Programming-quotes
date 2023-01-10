@@ -24,7 +24,6 @@ import com.example.programmingquotes.feature.quote.ui.component.QuoteTopBar
 import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteDetailViewModel
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import kotlinx.coroutines.flow.receiveAsFlow
 
 @Composable
 internal fun QuoteDetailScreen(
@@ -39,7 +38,7 @@ internal fun QuoteDetailScreen(
     val authorWithQuotesState = viewState.authorWithQuotes
 
     LaunchedEffect(key1 = true) {
-        viewModel.errorChannel.receiveAsFlow().collect {
+        viewModel.errorChannelFlow().collect {
             scaffoldState.snackbarHostState.showSnackbar(context.getMessageFromStringOrStringId(it))
         }
     }
