@@ -20,7 +20,7 @@ internal open class BaseViewModel<S, A> @Inject constructor(initializeState: S) 
 
     private val errorChannel = Channel<String>()
 
-    protected fun setError(errorMessage: String) = viewModelScope.launch {
+    private fun setError(errorMessage: String) = viewModelScope.launch {
         errorChannel.send(errorMessage)
     }
 
@@ -66,12 +66,12 @@ internal open class BaseViewModel<S, A> @Inject constructor(initializeState: S) 
         setState { reducer(ResultWrapper.Loading) }
 
         return viewModelScope.launch(dispatcher ?: EmptyCoroutineContext) {
-            try {
-                val result = invoke()
+            val result = invoke()
+            if (result is ResultWrapper.Error) {
+                setState { reducer(ResultWrapper.Error(Errors.App(msg = result.errors.message))) }
+                setError(result.errors.message)
+            } else {
                 setState { reducer(result) }
-            } catch (error: Throwable) {
-                setState { reducer(ResultWrapper.Error(Errors.App(msg = error.message.toString()))) }
-                setError(error.message.toString())
             }
         }
     }

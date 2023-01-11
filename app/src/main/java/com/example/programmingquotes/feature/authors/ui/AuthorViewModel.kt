@@ -46,31 +46,29 @@ internal class AuthorViewModel @Inject constructor(
         }
     }
 
-    private fun getAuthors() = viewModelScope.launch(Dispatchers.IO) {
-        getAuthorsUseCase()
-            .onEach {
-                if (it.isEmpty()) {
-                    updateAuthors()
-                }
-            }.execute {
-                copy(authors = it)
+    private fun getAuthors() = getAuthorsUseCase()
+        .onEach {
+            if (it.isEmpty()) {
+                updateAuthors()
             }
-    }
-
-    private fun updateAuthors() = viewModelScope.launch(Dispatchers.IO) {
-        suspend {
-            updateAuthorsUseCase()
         }.execute {
-            copy(update = it)
+            copy(authors = it)
         }
+
+
+    private fun updateAuthors() = suspend {
+        updateAuthorsUseCase()
+    }.execute {
+        copy(update = it)
     }
 
-    private fun getRandomQuote() = viewModelScope.launch(Dispatchers.IO) {
+
+    private fun getRandomQuote() =
         getRandomQuoteUseCase().executeOnResultWrapper {
             copy(bottomSheet = it)
+        }.also {
+            isNextRequestReady = true
         }
-        isNextRequestReady = true
-    }
 
 
     //sensor
