@@ -29,11 +29,11 @@ internal class QuoteViewModel @Inject constructor(
     init {
         authorName = savedStateHandle.get<String>(Constants.AUTHOR_NAME_KEY) ?: ""
         getAuthorWithQuotes()
-    }
 
-    fun handleAction(action: QuoteAction) {
-        when (action) {
-            is QuoteAction.GetAuthorWithQuotesWhenRefresh -> fetchAuthorWithQuotes()
+        onEachAction { action ->
+            when (action) {
+                is QuoteAction.GetAuthorWithQuotesWhenRefresh -> fetchAuthorWithQuotes()
+            }
         }
     }
 
