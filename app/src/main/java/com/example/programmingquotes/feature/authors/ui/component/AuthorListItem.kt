@@ -2,7 +2,6 @@ package com.example.programmingquotes.feature.authors.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
@@ -16,6 +15,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.programmingquotes.core.common.createEmojiWithDecimalCode
+import com.example.programmingquotes.core.common.safeClickable
 import com.example.programmingquotes.feature.authors.data.db.entity.AuthorEntity
 
 @Composable
@@ -30,7 +30,7 @@ internal fun AuthorListItem(author: AuthorEntity, onClick: () -> Unit) {
                 color = MaterialTheme.colors.primary
             )
             .clip(shape = MaterialTheme.shapes.medium)
-            .clickable { onClick() }
+            .safeClickable { onClick() }
             .padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
