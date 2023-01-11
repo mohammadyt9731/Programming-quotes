@@ -5,7 +5,6 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import androidx.lifecycle.viewModelScope
-import com.example.programmingquotes.core.common.Errors
 import com.example.programmingquotes.core.common.ResultWrapper
 import com.example.programmingquotes.core.ui.BaseViewModel
 import com.example.programmingquotes.feature.authors.domain.usecase.GetAuthorsUseCase
@@ -13,7 +12,7 @@ import com.example.programmingquotes.feature.authors.domain.usecase.GetRandomQuo
 import com.example.programmingquotes.feature.authors.domain.usecase.UpdateAuthorsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -48,49 +47,28 @@ internal class AuthorViewModel @Inject constructor(
     }
 
     private fun getAuthors() = viewModelScope.launch(Dispatchers.IO) {
-        setState { copy(authors = ResultWrapper.Loading) }
         getAuthorsUseCase()
-            .catch {
-                setError(it.message.toString())
-                setState {
-                    copy(
-                        authors = ResultWrapper.Error(
-                            Errors.App(msg = it.message.toString())
-                        )
-                    )
-                }
-            }
-            .collect {
+            .onEach {
                 if (it.isEmpty()) {
                     updateAuthors()
                 }
-                setState {
-                    copy(authors = ResultWrapper.Success(it))
-                }
+            }.execute {
+                copy(authors = it)
             }
     }
 
     private fun updateAuthors() = viewModelScope.launch(Dispatchers.IO) {
-        setState { copy(update = ResultWrapper.Loading) }
-        val response = updateAuthorsUseCase()
-        setState { copy(update = response) }
-        if (response is ResultWrapper.Error) {
-            setError(response.errors.message)
-
+        suspend {
+            updateAuthorsUseCase()
+        }.execute {
+            copy(update = it)
         }
     }
 
     private fun getRandomQuote() = viewModelScope.launch(Dispatchers.IO) {
-        setState { copy(bottomSheet = ResultWrapper.Loading) }
-        getRandomQuoteUseCase()
-            .collect {
-                if (it is ResultWrapper.Error) {
-                    setError(it.errors.message)
-                }
-                setState {
-                    copy(bottomSheet = it)
-                }
-            }
+        getRandomQuoteUseCase().executeOnResultWrapper {
+            copy(bottomSheet = it)
+        }
         isNextRequestReady = true
     }
 

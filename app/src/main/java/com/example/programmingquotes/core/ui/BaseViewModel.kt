@@ -2,12 +2,16 @@ package com.example.programmingquotes.core.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.programmingquotes.core.common.Errors
+import com.example.programmingquotes.core.common.ResultWrapper
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import javax.inject.Inject
+import kotlin.coroutines.EmptyCoroutineContext
 
 internal open class BaseViewModel<S, A> @Inject constructor(initializeState: S) : ViewModel() {
 
@@ -24,5 +28,51 @@ internal open class BaseViewModel<S, A> @Inject constructor(initializeState: S) 
 
     protected fun setState(state: S.() -> S) = viewModelScope.launch {
         _viewState.emit(state(_viewState.value))
+    }
+
+    protected open fun <T> Flow<T>.execute(
+        dispatcher: CoroutineDispatcher? = null,
+        reducer: S.(ResultWrapper<T>) -> S,
+    ): Job {
+        setState { reducer(ResultWrapper.Loading) }
+
+        return catch { error ->
+            setState { reducer(ResultWrapper.Error(Errors.App(msg = error.message.toString()))) }
+            setError(error.message.toString())
+        }
+            .onEach { value -> setState { reducer(ResultWrapper.Success(value)) } }
+            .launchIn(viewModelScope + (dispatcher ?: EmptyCoroutineContext))
+    }
+
+    protected open fun <T> Flow<ResultWrapper<T>>.executeOnResultWrapper(
+        dispatcher: CoroutineDispatcher? = null,
+        reducer: S.(ResultWrapper<T>) -> S,
+    ): Job {
+        setState { reducer(ResultWrapper.Loading) }
+
+        return catch { error ->
+            setState { reducer(ResultWrapper.Error(Errors.App(msg = error.message.toString()))) }
+            setError(error.message.toString())
+        }
+            .onEach { value -> setState { reducer(value) } }
+            .launchIn(viewModelScope + (dispatcher ?: EmptyCoroutineContext))
+    }
+
+
+    protected open fun <T : Any?> (suspend () -> ResultWrapper<T>).execute(
+        dispatcher: CoroutineDispatcher? = null,
+        reducer: S.(ResultWrapper<T>) -> S
+    ): Job {
+        setState { reducer(ResultWrapper.Loading) }
+
+        return viewModelScope.launch(dispatcher ?: EmptyCoroutineContext) {
+            try {
+                val result = invoke()
+                setState { reducer(result) }
+            } catch (error: Throwable) {
+                setState { reducer(ResultWrapper.Error(Errors.App(msg = error.message.toString()))) }
+                setError(error.message.toString())
+            }
+        }
     }
 }
