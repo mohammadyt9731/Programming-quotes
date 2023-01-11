@@ -13,6 +13,7 @@ import com.example.programmingquotes.feature.quote.ui.viewstate.QuoteViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,36 +37,19 @@ internal class QuoteViewModel @Inject constructor(
         }
     }
 
-    fun getAuthorWithQuotes(name: String = authorName) = viewModelScope.launch(Dispatchers.IO) {
-        setState { copy(authorWithQuotes = ResultWrapper.Loading) }
-        getAuthorWithQuotesUseCase(name)
-            .catch {
-                setError(it.message.toString())
-                setState {
-                    copy(
-                        authorWithQuotes = ResultWrapper.Error(
-                            Errors.App(msg = it.message.toString())
-                        )
-                    )
-                }
-            }
-            .collect {
-                if (it.quotes.isEmpty()) {
-                    fetchAuthorWithQuotes()
-                }
-                setState { copy(authorWithQuotes = ResultWrapper.Success(it)) }
-            }
-    }
-
-    private fun fetchAuthorWithQuotes(name: String = authorName) =
-        viewModelScope.launch(Dispatchers.IO) {
-            setState { copy(update = ResultWrapper.Loading) }
-            val response = updateAuthorQuotesUseCase(name)
-
-            setState { copy(update = response) }
-
-            if (response is ResultWrapper.Error) {
-                setError(response.errors.message)
+    fun getAuthorWithQuotes(name: String = authorName) = getAuthorWithQuotesUseCase(name)
+        .onEach {
+            if (it.quotes.isEmpty()) {
+                fetchAuthorWithQuotes()
             }
         }
+        .execute {
+            copy(authorWithQuotes = it)
+        }
+
+    private fun fetchAuthorWithQuotes(name: String = authorName) = suspend {
+        updateAuthorQuotesUseCase(name)
+    }.execute {
+        copy(update = it)
+    }
 }

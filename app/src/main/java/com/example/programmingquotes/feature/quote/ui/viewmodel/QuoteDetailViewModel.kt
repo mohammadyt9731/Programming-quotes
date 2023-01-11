@@ -26,24 +26,8 @@ internal class QuoteDetailViewModel @Inject constructor(
         getQuotes(authorName)
     }
 
-    private fun getQuotes(authorName: String) =
-        viewModelScope.launch(Dispatchers.IO) {
-            setState { copy(authorWithQuotes = ResultWrapper.Loading) }
-            getAuthorWithQuotesUseCase(authorName)
-                .catch {
-                    setError(it.message.toString())
-                    setState {
-                        copy(
-                            authorWithQuotes = ResultWrapper.Error(
-                                Errors.App(msg = it.message.toString())
-                            )
-                        )
-                    }
-                }
-                .collect { authorWithQuotes ->
-                    setState {
-                        copy(authorWithQuotes = ResultWrapper.Success(authorWithQuotes))
-                    }
-                }
+    private fun getQuotes(authorName: String) = getAuthorWithQuotesUseCase(authorName)
+        .execute {
+            copy(authorWithQuotes = it)
         }
 }
