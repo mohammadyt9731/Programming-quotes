@@ -30,18 +30,18 @@ internal class AuthorViewModel @Inject constructor(
 
     init {
         getAuthors()
-    }
 
-    fun handleAction(action: AuthorAction) {
-        when (action) {
-            is AuthorAction.RefreshAuthors -> {
-                updateAuthors()
-            }
-            is AuthorAction.StartSensorManager -> {
-                setUpSensorManager()
-            }
-            is AuthorAction.StopSensorManager -> {
-                stopSensorManager()
+        onEachAction { action ->
+            when (action) {
+                is AuthorAction.RefreshAuthors -> {
+                    updateAuthors()
+                }
+                is AuthorAction.StartSensorManager -> {
+                    setUpSensorManager()
+                }
+                is AuthorAction.StopSensorManager -> {
+                    stopSensorManager()
+                }
             }
         }
     }
@@ -64,10 +64,9 @@ internal class AuthorViewModel @Inject constructor(
 
 
     private fun getRandomQuote() =
-        getRandomQuoteUseCase().executeOnResultWrapper {
-            copy(bottomSheet = it)
-        }.also {
+        getRandomQuoteUseCase().executeOnResultWrapper(Dispatchers.IO) {
             isNextRequestReady = true
+            copy(bottomSheet = it)
         }
 
 
@@ -94,12 +93,10 @@ internal class AuthorViewModel @Inject constructor(
                 val delta: Float = currentAcceleration - lastAcceleration
                 acceleration = acceleration * 0.9f + delta
 
-                viewModelScope.launch(Dispatchers.IO) {
-                    if (acceleration > 12) {
-                        if (isNextRequestReady) {
-                            isNextRequestReady = false
-                            getRandomQuote()
-                        }
+                if (acceleration > 12) {
+                    if (isNextRequestReady) {
+                        isNextRequestReady = false
+                        getRandomQuote()
                     }
                 }
             }

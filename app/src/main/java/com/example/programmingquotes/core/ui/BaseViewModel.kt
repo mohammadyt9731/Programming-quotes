@@ -6,10 +6,10 @@ import com.example.programmingquotes.core.common.Errors
 import com.example.programmingquotes.core.common.ResultWrapper
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 import javax.inject.Inject
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -19,6 +19,13 @@ internal open class BaseViewModel<S, A> @Inject constructor(initializeState: S) 
     val viewState = _viewState.asStateFlow()
 
     private val errorChannel = Channel<String>()
+
+    private val actionSharedFlow = MutableSharedFlow<A>()
+    private val stateSharedFlow = MutableSharedFlow<S>(
+        replay = 1,
+        extraBufferCapacity = 63,
+        onBufferOverflow = BufferOverflow.SUSPEND,
+    ).apply { tryEmit(initializeState) }
 
     private fun setError(errorMessage: String) = viewModelScope.launch {
         errorChannel.send(errorMessage)
@@ -41,7 +48,8 @@ internal open class BaseViewModel<S, A> @Inject constructor(initializeState: S) 
             setError(error.message.toString())
         }
             .onEach { value -> setState { reducer(ResultWrapper.Success(value)) } }
-            .launchIn(viewModelScope + (dispatcher ?: EmptyCoroutineContext))
+            .flowOn(dispatcher ?: EmptyCoroutineContext)
+            .launchIn(viewModelScope)
     }
 
     protected open fun <T> Flow<ResultWrapper<T>>.executeOnResultWrapper(
@@ -54,8 +62,16 @@ internal open class BaseViewModel<S, A> @Inject constructor(initializeState: S) 
             setState { reducer(ResultWrapper.Error(Errors.App(msg = error.message.toString()))) }
             setError(error.message.toString())
         }
-            .onEach { value -> setState { reducer(value) } }
-            .launchIn(viewModelScope + (dispatcher ?: EmptyCoroutineContext))
+            .onEach { value ->
+                if (value is ResultWrapper.Error) {
+                    setState { reducer(ResultWrapper.Error(Errors.App(msg = value.errors.message))) }
+                    setError(value.errors.message)
+                } else {
+                    setState { reducer(value) }
+                }
+            }
+            .flowOn(dispatcher ?: EmptyCoroutineContext)
+            .launchIn(viewModelScope)
     }
 
 
@@ -75,4 +91,19 @@ internal open class BaseViewModel<S, A> @Inject constructor(initializeState: S) 
             }
         }
     }
+
+    fun setAction(action: A) {
+        viewModelScope.launch {
+            actionSharedFlow.emit(action)
+        }
+    }
+
+    protected fun onEachAction(
+        action: suspend (A) -> Unit,
+    ): Job {
+        return viewModelScope.launch {
+            actionSharedFlow.collectLatest(action)
+        }
+    }
+
 }
