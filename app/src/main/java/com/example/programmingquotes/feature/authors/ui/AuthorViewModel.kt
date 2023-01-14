@@ -64,7 +64,7 @@ internal class AuthorViewModel @Inject constructor(
 
 
     private fun getRandomQuote() =
-        getRandomQuoteUseCase().executeOnResultWrapper(Dispatchers.IO) {
+        getRandomQuoteUseCase().executeOnResultWrapper {
             isNextRequestReady = true
             copy(bottomSheet = it)
         }

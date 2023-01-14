@@ -5,13 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.programmingquotes.core.common.Errors
 import com.example.programmingquotes.core.common.ResultWrapper
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.coroutines.EmptyCoroutineContext
 
 internal open class BaseViewModel<S, A> @Inject constructor(initializeState: S) : ViewModel() {
 
@@ -33,7 +32,7 @@ internal open class BaseViewModel<S, A> @Inject constructor(initializeState: S) 
     }
 
     protected open fun <T> Flow<T>.execute(
-        dispatcher: CoroutineDispatcher? = null,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
         reducer: S.(ResultWrapper<T>) -> S,
     ): Job {
         setState { reducer(ResultWrapper.Loading) }
@@ -43,12 +42,12 @@ internal open class BaseViewModel<S, A> @Inject constructor(initializeState: S) 
             setError(error.message.toString())
         }
             .onEach { value -> setState { reducer(ResultWrapper.Success(value)) } }
-            .flowOn(dispatcher ?: EmptyCoroutineContext)
+            .flowOn(dispatcher)
             .launchIn(viewModelScope)
     }
 
     protected open fun <T> Flow<ResultWrapper<T>>.executeOnResultWrapper(
-        dispatcher: CoroutineDispatcher? = null,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
         reducer: S.(ResultWrapper<T>) -> S,
     ): Job {
         setState { reducer(ResultWrapper.Loading) }
@@ -65,18 +64,18 @@ internal open class BaseViewModel<S, A> @Inject constructor(initializeState: S) 
                     setState { reducer(value) }
                 }
             }
-            .flowOn(dispatcher ?: EmptyCoroutineContext)
+            .flowOn(dispatcher)
             .launchIn(viewModelScope)
     }
 
 
     protected open fun <T : Any?> (suspend () -> ResultWrapper<T>).execute(
-        dispatcher: CoroutineDispatcher? = null,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
         reducer: S.(ResultWrapper<T>) -> S
     ): Job {
         setState { reducer(ResultWrapper.Loading) }
 
-        return viewModelScope.launch(dispatcher ?: EmptyCoroutineContext) {
+        return viewModelScope.launch(dispatcher) {
             val result = invoke()
             if (result is ResultWrapper.Error) {
                 setState { reducer(ResultWrapper.Error(Errors.App(msg = result.errors.message))) }
