@@ -30,47 +30,44 @@ internal class AuthorViewModel @Inject constructor(
 
     init {
         getAuthors()
-    }
 
-    fun handleAction(action: AuthorAction) {
-        when (action) {
-            is AuthorAction.RefreshAuthors -> {
-                updateAuthors()
-            }
-            is AuthorAction.StartSensorManager -> {
-                setUpSensorManager()
-            }
-            is AuthorAction.StopSensorManager -> {
-                stopSensorManager()
-            }
-        }
-    }
-
-    private fun getAuthors() = viewModelScope.launch(Dispatchers.IO) {
-        getAuthorsUseCase()
-            .onEach {
-                if (it.isEmpty()) {
+        onEachAction { action ->
+            when (action) {
+                is AuthorAction.RefreshAuthors -> {
                     updateAuthors()
                 }
-            }.execute {
-                copy(authors = it)
+                is AuthorAction.StartSensorManager -> {
+                    setUpSensorManager()
+                }
+                is AuthorAction.StopSensorManager -> {
+                    stopSensorManager()
+                }
             }
-    }
-
-    private fun updateAuthors() = viewModelScope.launch(Dispatchers.IO) {
-        suspend {
-            updateAuthorsUseCase()
-        }.execute {
-            copy(update = it)
         }
     }
 
-    private fun getRandomQuote() = viewModelScope.launch(Dispatchers.IO) {
+    private fun getAuthors() = getAuthorsUseCase()
+        .onEach {
+            if (it.isEmpty()) {
+                updateAuthors()
+            }
+        }.execute {
+            copy(authors = it)
+        }
+
+
+    private fun updateAuthors() = suspend {
+        updateAuthorsUseCase()
+    }.execute {
+        copy(update = it)
+    }
+
+
+    private fun getRandomQuote() =
         getRandomQuoteUseCase().executeOnResultWrapper {
+            isNextRequestReady = true
             copy(bottomSheet = it)
         }
-        isNextRequestReady = true
-    }
 
 
     //sensor
@@ -96,12 +93,10 @@ internal class AuthorViewModel @Inject constructor(
                 val delta: Float = currentAcceleration - lastAcceleration
                 acceleration = acceleration * 0.9f + delta
 
-                viewModelScope.launch(Dispatchers.IO) {
-                    if (acceleration > 12) {
-                        if (isNextRequestReady) {
-                            isNextRequestReady = false
-                            getRandomQuote()
-                        }
+                if (acceleration > 12) {
+                    if (isNextRequestReady) {
+                        isNextRequestReady = false
+                        getRandomQuote()
                     }
                 }
             }

@@ -37,7 +37,7 @@ internal fun QuotesScreen(
     val authorWithQuotesState = viewState.authorWithQuotes
     val pullRefreshState = rememberPullRefreshState(
         refreshing = viewState.update is ResultWrapper.Loading,
-        onRefresh = { viewModel.handleAction(QuoteAction.GetAuthorWithQuotesWhenRefresh) }
+        onRefresh = { viewModel.setAction(QuoteAction.GetAuthorWithQuotesWhenRefresh) }
     )
     val context = LocalContext.current
 

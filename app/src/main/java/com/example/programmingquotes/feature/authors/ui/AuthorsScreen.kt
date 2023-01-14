@@ -39,7 +39,7 @@ internal fun AuthorsScreen(
     val viewState by viewModel.viewState.collectAsState()
     val pullRefreshState = rememberPullRefreshState(
         refreshing = viewState.update is ResultWrapper.Loading,
-        onRefresh = { viewModel.handleAction(AuthorAction.RefreshAuthors) }
+        onRefresh = { viewModel.setAction(AuthorAction.RefreshAuthors) }
     )
     val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -64,9 +64,9 @@ internal fun AuthorsScreen(
 
     LaunchedEffect(key1 = bottomSheetState.isVisible) {
         if (bottomSheetState.isVisible) {
-            viewModel.handleAction(AuthorAction.StartSensorManager)
+            viewModel.setAction(AuthorAction.StartSensorManager)
         } else {
-            viewModel.handleAction(AuthorAction.StopSensorManager)
+            viewModel.setAction(AuthorAction.StopSensorManager)
         }
     }
 

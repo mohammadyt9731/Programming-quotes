@@ -5,13 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.programmingquotes.core.common.Errors
 import com.example.programmingquotes.core.common.ResultWrapper
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 import javax.inject.Inject
-import kotlin.coroutines.EmptyCoroutineContext
 
 internal open class BaseViewModel<S, A> @Inject constructor(initializeState: S) : ViewModel() {
 
@@ -20,7 +19,9 @@ internal open class BaseViewModel<S, A> @Inject constructor(initializeState: S) 
 
     private val errorChannel = Channel<String>()
 
-    protected fun setError(errorMessage: String) = viewModelScope.launch {
+    private val actionSharedFlow = MutableSharedFlow<A>()
+
+    private fun setError(errorMessage: String) = viewModelScope.launch {
         errorChannel.send(errorMessage)
     }
 
@@ -31,7 +32,7 @@ internal open class BaseViewModel<S, A> @Inject constructor(initializeState: S) 
     }
 
     protected open fun <T> Flow<T>.execute(
-        dispatcher: CoroutineDispatcher? = null,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
         reducer: S.(ResultWrapper<T>) -> S,
     ): Job {
         setState { reducer(ResultWrapper.Loading) }
@@ -41,11 +42,12 @@ internal open class BaseViewModel<S, A> @Inject constructor(initializeState: S) 
             setError(error.message.toString())
         }
             .onEach { value -> setState { reducer(ResultWrapper.Success(value)) } }
-            .launchIn(viewModelScope + (dispatcher ?: EmptyCoroutineContext))
+            .flowOn(dispatcher)
+            .launchIn(viewModelScope)
     }
 
     protected open fun <T> Flow<ResultWrapper<T>>.executeOnResultWrapper(
-        dispatcher: CoroutineDispatcher? = null,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
         reducer: S.(ResultWrapper<T>) -> S,
     ): Job {
         setState { reducer(ResultWrapper.Loading) }
@@ -54,25 +56,48 @@ internal open class BaseViewModel<S, A> @Inject constructor(initializeState: S) 
             setState { reducer(ResultWrapper.Error(Errors.App(msg = error.message.toString()))) }
             setError(error.message.toString())
         }
-            .onEach { value -> setState { reducer(value) } }
-            .launchIn(viewModelScope + (dispatcher ?: EmptyCoroutineContext))
+            .onEach { value ->
+                if (value is ResultWrapper.Error) {
+                    setState { reducer(ResultWrapper.Error(Errors.App(msg = value.errors.message))) }
+                    setError(value.errors.message)
+                } else {
+                    setState { reducer(value) }
+                }
+            }
+            .flowOn(dispatcher)
+            .launchIn(viewModelScope)
     }
 
 
     protected open fun <T : Any?> (suspend () -> ResultWrapper<T>).execute(
-        dispatcher: CoroutineDispatcher? = null,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
         reducer: S.(ResultWrapper<T>) -> S
     ): Job {
         setState { reducer(ResultWrapper.Loading) }
 
-        return viewModelScope.launch(dispatcher ?: EmptyCoroutineContext) {
-            try {
-                val result = invoke()
+        return viewModelScope.launch(dispatcher) {
+            val result = invoke()
+            if (result is ResultWrapper.Error) {
+                setState { reducer(ResultWrapper.Error(Errors.App(msg = result.errors.message))) }
+                setError(result.errors.message)
+            } else {
                 setState { reducer(result) }
-            } catch (error: Throwable) {
-                setState { reducer(ResultWrapper.Error(Errors.App(msg = error.message.toString()))) }
-                setError(error.message.toString())
             }
         }
     }
+
+    fun setAction(action: A) {
+        viewModelScope.launch {
+            actionSharedFlow.emit(action)
+        }
+    }
+
+    protected fun onEachAction(
+        action: suspend (A) -> Unit,
+    ): Job {
+        return viewModelScope.launch {
+            actionSharedFlow.collectLatest(action)
+        }
+    }
+
 }
