@@ -21,11 +21,6 @@ internal open class BaseViewModel<S, A> @Inject constructor(initializeState: S) 
     private val errorChannel = Channel<String>()
 
     private val actionSharedFlow = MutableSharedFlow<A>()
-    private val stateSharedFlow = MutableSharedFlow<S>(
-        replay = 1,
-        extraBufferCapacity = 63,
-        onBufferOverflow = BufferOverflow.SUSPEND,
-    ).apply { tryEmit(initializeState) }
 
     private fun setError(errorMessage: String) = viewModelScope.launch {
         errorChannel.send(errorMessage)
