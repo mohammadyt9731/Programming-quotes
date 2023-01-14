@@ -31,6 +31,16 @@ internal open class BaseViewModel<S, A> @Inject constructor(initializeState: S) 
         _viewState.emit(state(_viewState.value))
     }
 
+    fun setAction(action: A) = viewModelScope.launch {
+        actionSharedFlow.emit(action)
+    }
+
+    protected fun onEachAction(
+        action: suspend (A) -> Unit,
+    ): Job = viewModelScope.launch {
+        actionSharedFlow.collectLatest(action)
+    }
+
     protected open fun <T> Flow<T>.execute(
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
         reducer: S.(ResultWrapper<T>) -> S,
@@ -85,19 +95,4 @@ internal open class BaseViewModel<S, A> @Inject constructor(initializeState: S) 
             }
         }
     }
-
-    fun setAction(action: A) {
-        viewModelScope.launch {
-            actionSharedFlow.emit(action)
-        }
-    }
-
-    protected fun onEachAction(
-        action: suspend (A) -> Unit,
-    ): Job {
-        return viewModelScope.launch {
-            actionSharedFlow.collectLatest(action)
-        }
-    }
-
 }

@@ -12,6 +12,7 @@ import com.example.programmingquotes.feature.authors.domain.usecase.GetRandomQuo
 import com.example.programmingquotes.feature.authors.domain.usecase.UpdateAuthorsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,12 +26,11 @@ internal class AuthorViewModel @Inject constructor(
 ) : BaseViewModel<AuthorViewState, AuthorAction>(AuthorViewState()) {
 
     private var isNextRequestReady = true
-
     private var sensorListener: SensorEventListener? = null
+    private var job: Job? = null
 
     init {
         getAuthors()
-
         onEachAction { action ->
             when (action) {
                 is AuthorAction.RefreshAuthors -> {
@@ -55,20 +55,19 @@ internal class AuthorViewModel @Inject constructor(
             copy(authors = it)
         }
 
-
     private fun updateAuthors() = suspend {
         updateAuthorsUseCase()
     }.execute {
         copy(update = it)
     }
 
-
-    private fun getRandomQuote() =
-        getRandomQuoteUseCase().executeOnResultWrapper {
+    private fun getRandomQuote() {
+        job?.cancel()
+        job = getRandomQuoteUseCase().executeOnResultWrapper {
             isNextRequestReady = true
             copy(bottomSheet = it)
         }
-
+    }
 
     //sensor
     private fun stopSensorManager() = viewModelScope.launch(Dispatchers.IO) {
