@@ -1,7 +1,6 @@
-package com.example.programmingquotes.feature.authors.data.datasource.local
+package com.example.author_data.datasource.local
 
 import com.example.author_model.AuthorEntity
-import com.example.programmingquotes.feature.quote.data.db.entity.QuoteEntity
 import kotlinx.coroutines.flow.Flow
 
 internal interface AuthorLocalDataSource {
@@ -10,5 +9,4 @@ internal interface AuthorLocalDataSource {
 
     fun getAuthors(): Flow<List<AuthorEntity>>
 
-    fun getRandomQuote(): QuoteEntity?
 }

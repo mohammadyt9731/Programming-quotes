@@ -52,7 +52,10 @@ dependencies {
     implementation "androidx.room:room-ktx:$room_version"
     //modules
     implementation project(path: ':feature_author:author_model')
+    implementation project(path: ':feature_quote:quote_model')
+    implementation project(path: ':feature_author:author_domain')
     implementation project(path: ':common_android')
+    implementation project(path: ':common')
     // retrofit
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
     implementation 'com.squareup.okhttp3:logging-interceptor:4.10.0'

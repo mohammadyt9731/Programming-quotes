@@ -1,14 +1,8 @@
 package com.example.programmingquotes.core.di
 
-import android.content.Context
-import android.net.ConnectivityManager
-import com.example.programmingquotes.core.data.network.NetworkConnectivity
-import com.example.programmingquotes.core.data.network.NetworkConnectivityImpl
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -53,12 +47,5 @@ internal abstract class NetworkModule {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
 
-        @Provides
-        fun provideConnectivityManager(@ApplicationContext context: Context): ConnectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     }
-
-
-    @Binds
-    abstract fun bindNetworkConnectivity(impl: NetworkConnectivityImpl): NetworkConnectivity
 }

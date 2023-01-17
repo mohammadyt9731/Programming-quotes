@@ -4,7 +4,7 @@ import com.example.common.Errors
 import com.example.common.ResultWrapper
 import java.net.ConnectException
 
-internal suspend fun <T> safeApiCall(apiCall: suspend () -> T): ResultWrapper<T> {
+suspend fun <T> safeApiCall(apiCall: suspend () -> T): ResultWrapper<T> {
     return try {
         ResultWrapper.Success(apiCall())
     } catch (e: Exception) {
