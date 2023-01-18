@@ -73,7 +73,6 @@ dependencies {
     implementation project(path: ':common')
     implementation project(path: ':common_android')
     implementation project(path: ':common_ui')
-    implementation project(path: ':feature_author:author_model')
-    implementation project(path: ':feature_quote:quote_model')
     implementation project(path: ':feature_author:author_domain')
+    implementation project(path: ':feature_quote:quote_domain')
 }

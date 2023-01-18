@@ -40,16 +40,11 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-
-    //modules
-    implementation project(path: ':common')
-    implementation project(path: ':feature_author:author_model')
-    implementation project(path: ':feature_quote:quote_model')
-    implementation project(path: ':feature_quote:quote_domain')
     //hilt
     implementation 'com.google.dagger:hilt-android:2.43.2'
     kapt 'com.google.dagger:hilt-compiler:2.43.2'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-
-
+    //modules
+    implementation project(path: ':common')
+    api project(path: ':feature_author:author_model')
 }

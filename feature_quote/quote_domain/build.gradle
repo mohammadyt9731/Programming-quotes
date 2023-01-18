@@ -47,5 +47,5 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     //modules
     implementation project(path: ':common')
-    implementation project(path: ':feature_quote:quote_model')
+    api project(path: ':feature_quote:quote_model')
 }

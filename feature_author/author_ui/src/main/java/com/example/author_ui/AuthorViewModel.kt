@@ -6,10 +6,10 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import androidx.lifecycle.viewModelScope
 import com.example.author_domain.usecase.GetAuthorsUseCase
-import com.example.author_domain.usecase.GetRandomQuoteUseCase
 import com.example.author_domain.usecase.UpdateAuthorsUseCase
 import com.example.common.ResultWrapper
 import com.example.common_android.BaseViewModel
+import com.example.quote_domain.usecase.GetRandomQuoteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
