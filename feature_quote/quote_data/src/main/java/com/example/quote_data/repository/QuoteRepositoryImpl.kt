@@ -15,7 +15,6 @@ internal class QuoteRepositoryImpl @Inject constructor(
     private val localDataSource: QuoteLocalDataSource,
     private val remoteDataSource: QuoteRemoteDataSource
 ) : QuoteRepository {
-
     override suspend fun fetchAuthorQuotesAndInsertToDb(authorName: String): ResultWrapper<Unit> {
         return safeApiCall {
             val response = remoteDataSource.fetchAuthorWithQuotes(authorName)
@@ -30,7 +29,6 @@ internal class QuoteRepositoryImpl @Inject constructor(
 
     override fun getAuthorWithQuotes(authorName: String): Flow<AuthorWithQuotes> =
         localDataSource.getAuthorWithQuotes(authorName)
-
     override fun getRandomQuote(): Flow<ResultWrapper<QuoteResponse>> =
         flow {
             val response = fetchRandomQuote()
@@ -46,12 +44,10 @@ internal class QuoteRepositoryImpl @Inject constructor(
                 }
             }
         }
-
     private suspend fun fetchRandomQuote(): ResultWrapper<QuoteResponse> {
         return safeApiCall {
             remoteDataSource.fetchRandomQuote()
         }
     }
-
     private fun getRandomQuoteFromDb() = localDataSource.getRandomQuote()
 }

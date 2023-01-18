@@ -19,8 +19,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.common.ResultWrapper
+import com.example.common.Screens
 import com.example.common_android.getMessageFromStringOrStringId
-import com.example.programmingquotes.core.navigation.Screens
 import com.example.quote_ui.action.QuoteAction
 import com.example.quote_ui.component.QuoteListItem
 import com.example.quote_ui.component.QuoteTopBar
@@ -28,7 +28,7 @@ import com.example.quote_ui.viewmodel.QuoteViewModel
 import com.example.quote_ui.viewstate.QuoteViewState
 
 @Composable
-internal fun QuotesScreen(
+fun QuotesScreen(
     navHostController: NavHostController,
     viewModel: QuoteViewModel
 ) {

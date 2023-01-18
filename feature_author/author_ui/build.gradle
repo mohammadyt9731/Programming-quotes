@@ -34,6 +34,18 @@ android {
                 "-Xopt-in=com.google.accompanist.pager.ExperimentalPagerApi",
         ]
     }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.1.1'
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+
 }
 
 dependencies {
@@ -61,4 +73,7 @@ dependencies {
     implementation project(path: ':common')
     implementation project(path: ':common_android')
     implementation project(path: ':common_ui')
+    implementation project(path: ':feature_author:author_model')
+    implementation project(path: ':feature_quote:quote_model')
+    implementation project(path: ':feature_author:author_domain')
 }

@@ -8,8 +8,6 @@ import javax.inject.Inject
 internal class AuthorRemoteDataSourceImpl @Inject constructor(
     private val authorApi: AuthorApi
 ) : AuthorRemoteDataSource {
-
     override suspend fun fetchAuthors(): Map<String, AuthorResponse> =
         authorApi.getAuthors().bodyOrThrow()
-
 }

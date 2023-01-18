@@ -9,12 +9,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-internal class QuoteDetailViewModel @Inject constructor(
+class QuoteDetailViewModel @Inject constructor(
     private val getAuthorWithQuotesUseCase: GetAuthorWithQuotesUseCase,
     savedStateHandle: SavedStateHandle
 ) : BaseViewModel<QuoteDetailViewState, Nothing>(QuoteDetailViewState()) {
-
-
     init {
         val authorName = savedStateHandle.get<String>(Constants.AUTHOR_NAME_KEY) ?: ""
         getQuotes(authorName)

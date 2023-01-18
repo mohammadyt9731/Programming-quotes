@@ -86,6 +86,7 @@ dependencies {
     implementation 'com.google.dagger:hilt-android:2.43.2'
     kapt 'com.google.dagger:hilt-compiler:2.43.2'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.hilt:hilt-navigation-compose:1.1.0-alpha01'
     // viewModel, livedata and lifecycle
     def lifecycle_version = "2.5.1"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
@@ -97,4 +98,17 @@ dependencies {
     // GSON
     implementation 'com.google.code.gson:gson:2.9.1'
     implementation "com.squareup.retrofit2:converter-gson:2.9.0"
+    //modules
+    implementation project(path: ":common")
+    implementation project(path: ":common_android")
+    implementation project(path: ":common_ui")
+    implementation project(path: ":di")
+    implementation project(path: ":feature_author:author_model")
+    implementation project(path: ":feature_author:author_data")
+    implementation project(path: ":feature_author:author_domain")
+    implementation project(path: ":feature_author:author_ui")
+    implementation project(path: ":feature_quote:quote_model")
+    implementation project(path: ":feature_quote:quote_data")
+    implementation project(path: ":feature_quote:quote_domain")
+    implementation project(path: ":feature_quote:quote_ui")
 }

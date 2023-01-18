@@ -6,7 +6,5 @@ import kotlinx.coroutines.flow.Flow
 internal interface AuthorLocalDataSource {
 
     suspend fun insertAuthors(authors: List<AuthorEntity>)
-
     fun getAuthors(): Flow<List<AuthorEntity>>
-
 }

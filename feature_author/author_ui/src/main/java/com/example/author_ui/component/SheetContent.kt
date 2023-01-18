@@ -13,8 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.example.programmingquotes.core.common.ResultWrapper
-import com.example.programmingquotes.feature.authors.ui.AuthorViewState
+import com.example.author_ui.AuthorViewState
+import com.example.author_ui.R
+import com.example.common.ResultWrapper
 
 @Composable
 internal fun SheetContent(
@@ -29,7 +30,7 @@ internal fun SheetContent(
             state.bottomSheet.data?.let {
                 SheetContentShaken(
                     authorName = it.author,
-                    quote = state.bottomSheet.data.en
+                    quote = it.en
                 )
             }
         }
