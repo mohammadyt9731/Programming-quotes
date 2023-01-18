@@ -8,8 +8,4 @@ import com.example.quote_data.db.QuoteDataBase
 import com.example.quote_model.QuoteEntity
 
 @Database(entities = [AuthorEntity::class, QuoteEntity::class], version = 1)
-internal abstract class AppDatabase : RoomDatabase() {
-
-    abstract fun authorDataBase(): AuthorDataBase
-    abstract fun quoteDataBase(): QuoteDataBase
-}
+internal abstract class AppDatabase : RoomDatabase(), AuthorDataBase, QuoteDataBase

@@ -14,9 +14,7 @@ internal class AuthorRepositoryImpl @Inject constructor(
     private val remoteDataSource: AuthorRemoteDataSource,
 ) :
     AuthorRepository {
-
     override fun getAuthors(): Flow<List<AuthorEntity>> = localDataSource.getAuthors()
-
     override suspend fun fetchAuthorsAndInsertToDb(): ResultWrapper<Unit> {
         return safeApiCall {
             val response = remoteDataSource.fetchAuthors()

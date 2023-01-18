@@ -1,8 +1,8 @@
 package com.example.author_domain.usecase
 
-import com.example.author_domain.AuthorRepository
+import com.example.quote_domain.usecase.GetRandomQuoteUseCase
 import javax.inject.Inject
 
-class GetRandomQuoteUseCase @Inject constructor(private val repository: AuthorRepository) {
-    operator fun invoke() = repository.getRandomQuote()
+class GetRandomQuoteUseCase @Inject constructor(private val getRandomQuoteUseCase: GetRandomQuoteUseCase) {
+    operator fun invoke() = getRandomQuoteUseCase.invoke()
 }

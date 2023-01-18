@@ -45,6 +45,7 @@ dependencies {
     implementation project(path: ':common')
     implementation project(path: ':feature_author:author_model')
     implementation project(path: ':feature_quote:quote_model')
+    implementation project(path: ':feature_quote:quote_domain')
     //hilt
     implementation 'com.google.dagger:hilt-android:2.43.2'
     kapt 'com.google.dagger:hilt-compiler:2.43.2'

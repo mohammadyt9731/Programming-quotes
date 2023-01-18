@@ -1,6 +1,6 @@
-package com.example.programmingquotes.core.navigation
+package com.example.common
 
-internal sealed class Screens(val route: String) {
+sealed class Screens(val route: String) {
     object SplashScreen : Screens("splash_screen")
     object AuthorsScreen : Screens("author_screen")
     object QuotesScreen : Screens("quotes_screen")

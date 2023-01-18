@@ -5,11 +5,11 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import androidx.lifecycle.viewModelScope
+import com.example.author_domain.usecase.GetAuthorsUseCase
+import com.example.author_domain.usecase.GetRandomQuoteUseCase
+import com.example.author_domain.usecase.UpdateAuthorsUseCase
 import com.example.common.ResultWrapper
 import com.example.common_android.BaseViewModel
-import com.example.programmingquotes.feature.authors.domain.usecase.GetAuthorsUseCase
-import com.example.programmingquotes.feature.authors.domain.usecase.GetRandomQuoteUseCase
-import com.example.programmingquotes.feature.authors.domain.usecase.UpdateAuthorsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-internal class AuthorViewModel @Inject constructor(
+class AuthorViewModel @Inject constructor(
     private val getAuthorsUseCase: GetAuthorsUseCase,
     private val updateAuthorsUseCase: UpdateAuthorsUseCase,
     private val getRandomQuoteUseCase: GetRandomQuoteUseCase,

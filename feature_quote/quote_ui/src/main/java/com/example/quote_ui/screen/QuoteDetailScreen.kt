@@ -1,5 +1,6 @@
 package com.example.quote_ui.screen
 
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -20,13 +21,13 @@ import com.example.common_android.getMessageFromStringOrStringId
 import com.example.common_android.openUri
 import com.example.common_android.shareText
 import com.example.common_ui.component.CustomButton
+import com.example.quote_ui.R
 import com.example.quote_ui.component.AutoResizeText
 import com.example.quote_ui.component.QuoteTopBar
 import com.example.quote_ui.viewmodel.QuoteDetailViewModel
 
-
 @Composable
-internal fun QuoteDetailScreen(
+fun QuoteDetailScreen(
     index: Int,
     viewModel: QuoteDetailViewModel
 ) {
@@ -67,7 +68,7 @@ internal fun QuoteDetailScreen(
                         .fillMaxWidth()
                         .weight(1f)
                         .padding(bottom = 16.dp),
-                    count = authorWithQuotesState.data.quotes.size,
+                    pageCount = authorWithQuotesState.data.quotes.size,
                     state = pagerState
                 ) { page ->
                     AutoResizeText(

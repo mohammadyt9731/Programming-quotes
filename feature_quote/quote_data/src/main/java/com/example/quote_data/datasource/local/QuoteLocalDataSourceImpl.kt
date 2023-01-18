@@ -9,12 +9,9 @@ import javax.inject.Inject
 internal class QuoteLocalDataSourceImpl @Inject constructor(
     private val quoteDao: QuoteDao
 ) : QuoteLocalDataSource {
-
     override suspend fun insertAuthorQuotes(quotes: List<QuoteEntity>) =
         quoteDao.insertAuthorQuotes(quotes = quotes)
-
     override fun getAuthorWithQuotes(authorName: String): Flow<AuthorWithQuotes> =
         quoteDao.getAuthorWithQuotes(authorName)
-
     override fun getRandomQuote(): QuoteEntity? = quoteDao.getRandomQuote()
 }

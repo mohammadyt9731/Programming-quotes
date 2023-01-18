@@ -9,11 +9,9 @@ import javax.inject.Inject
 internal class QuoteRemoteDataSourceImpl @Inject constructor(
     private val api: QuoteApi
 ) : QuoteRemoteDataSource {
-
     override suspend fun fetchAuthorWithQuotes(authorName: String): AuthorWithQuotesResponse {
         return api.getAuthorWithQuotes(authorName = authorName).bodyOrThrow()
     }
-
     override suspend fun fetchRandomQuote(): QuoteResponse =
         api.getRandomQuote().bodyOrThrow()
 }

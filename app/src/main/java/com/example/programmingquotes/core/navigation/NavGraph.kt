@@ -7,14 +7,15 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.programmingquotes.core.common.Constants
-import com.example.programmingquotes.feature.authors.ui.AuthorViewModel
-import com.example.programmingquotes.feature.authors.ui.AuthorsScreen
-import com.example.programmingquotes.feature.quote.ui.screen.QuoteDetailScreen
-import com.example.programmingquotes.feature.quote.ui.screen.QuotesScreen
-import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteDetailViewModel
-import com.example.programmingquotes.feature.quote.ui.viewmodel.QuoteViewModel
+import com.example.author_ui.AuthorViewModel
+import com.example.author_ui.AuthorsScreen
+import com.example.common.Constants
+import com.example.common.Screens
 import com.example.programmingquotes.feature.splash.ui.screen.SplashScreen
+import com.example.quote_ui.screen.QuoteDetailScreen
+import com.example.quote_ui.screen.QuotesScreen
+import com.example.quote_ui.viewmodel.QuoteDetailViewModel
+import com.example.quote_ui.viewmodel.QuoteViewModel
 
 @Composable
 internal fun NavGraph(navHostController: NavHostController) {
