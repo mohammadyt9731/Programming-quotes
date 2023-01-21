@@ -1,15 +1,4 @@
 <resources>
     <string name="app_name">ProgrammingQuotes</string>
-    <string name="label_p_quotes">P.Quotes</string>
-    <string name="label_generate_random">Generate Random</string>
     <string name="content_desc_app">App Icon</string>
-    <string name="content_desc_top_bar">Top Bar Icon</string>
-    <string name="label_share">Share</string>
-    <string name="label_open_wiki_peida">Open Wikipedia</string>
-    <string name="label_sample_quote">Nine women can\'t make a baby in one month.</string>
-    <string name="label_shake_your_phone_to_see_magic">Shake your phone to see magic</string>
-    <string name="label_you_can_shake_again">Tip:You can shake again.</string>
-    <string name="label_share_with">Share with ...</string>
-    <string name="msg_no_internet">No Internet connection</string>
-    <string name="msg_invalid_uri">Invalid uri</string>
 </resources>
