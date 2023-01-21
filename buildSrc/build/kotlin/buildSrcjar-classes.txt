@@ -1,0 +1,1 @@
+/home/mohammadyazdi/AndroidStudioProjects/programming-quotes/buildSrc/build/classes/kotlin/main/AndroidX.class:/home/mohammadyazdi/AndroidStudioProjects/programming-quotes/buildSrc/build/classes/kotlin/main/Compose.class:/home/mohammadyazdi/AndroidStudioProjects/programming-quotes/buildSrc/build/classes/kotlin/main/ComposeTest.class
