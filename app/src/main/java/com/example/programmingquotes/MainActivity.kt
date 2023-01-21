@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.programmingquotes.core.navigation.NavGraph
-import com.example.programmingquotes.core.ui.theme.ProgrammingQuotesTheme
+import com.example.programmingquotes.theme.ProgrammingQuotesTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 

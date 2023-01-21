@@ -77,15 +77,15 @@ dependencies {
     kapt 'com.google.dagger:hilt-compiler:2.43.2'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.hilt:hilt-navigation-compose:1.1.0-alpha01'
+    implementation project(path: ':base')
+    implementation project(path: ':common-android')
+    implementation project(path: ':common-ui')
     //modules
-    implementation project(path: ":common")
-    implementation project(path: ":common_android")
-    implementation project(path: ":common_ui")
     implementation project(path: ":di")
-    implementation project(path: ":feature_author:author_data")
-    implementation project(path: ":feature_author:author_domain")
-    implementation project(path: ":feature_author:author_ui")
-    implementation project(path: ":feature_quote:quote_data")
-    implementation project(path: ":feature_quote:quote_domain")
-    implementation project(path: ":feature_quote:quote_ui")
+    implementation project(path: ":feature-author:author-data")
+    implementation project(path: ":feature-author:author-domain")
+    implementation project(path: ":feature-author:author-ui")
+    implementation project(path: ":feature-quote:quote-data")
+    implementation project(path: ":feature-quote:quote-domain")
+    implementation project(path: ":feature-quote:quote-ui")
 }
