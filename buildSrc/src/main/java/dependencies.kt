@@ -17,6 +17,7 @@ object Versions {
 
     const val activityComposeVersion = "1.6.1"
     const val composeVersion = "1.3.2"
+    const val composeMaterial = "1.4.0-alpha03"
     const val navigationVersion = "2.5.3"
     const val hiltNavigationComposeVersion = "1.1.0-alpha01"
     const val coreKtxVersion = "1.9.0"
@@ -44,7 +45,7 @@ object Libraries {
     const val composeActivity = "androidx.activity:activity-compose:${Versions.activityComposeVersion}"
     const val composeUi = "androidx.compose.ui:ui:${Versions.composeVersion}"
     const val composeToolingPreview = "androidx.compose.ui:ui-tooling-preview:${Versions.composeVersion}"
-    const val composeMaterial = "androidx.compose.material:material:${Versions.composeVersion}"
+    const val composeMaterial = "androidx.compose.material:material:${Versions.composeMaterial}"
     const val composeNavigation = "androidx.navigation:navigation-compose:${Versions.navigationVersion}"
     const val composeHiltNavigation =
         "androidx.hilt:hilt-navigation-compose:${Versions.hiltNavigationComposeVersion}"
@@ -56,8 +57,6 @@ object Libraries {
 
 
     //lifecycle
-    const val lifecycleRuntimeKtx =
-        "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycleRtKtxVersion}"
     const val lifecycleExtensions =
         "androidx.lifecycle:lifecycle-extensions:${Versions.lifecycleExtensions}"
     const val lifecycleViewModel =
@@ -84,12 +83,12 @@ object Libraries {
 
     // network
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
-    const val okhttp3 = "com.squareup.okhttp3:logging-interceptor:${Versions.okhttp}"
+    const val okhttpInterceptor = "com.squareup.okhttp3:logging-interceptor:${Versions.okhttp}"
     const val gson = "com.google.code.gson:gson:${Versions.gson}"
     const val gsonConvertor = "com.squareup.retrofit2:converter-gson:${Versions.gsonFactory}"
 
     //room
-    const val roomRuntime = "androidx.room:room-runtime:${Versions.room}"
+    const val room = "androidx.room:room-runtime:${Versions.room}"
     const val roomKtx = "androidx.room:room-ktx:${Versions.room}"
 }
 

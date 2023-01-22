@@ -6,87 +6,25 @@ plugins {
     id 'kotlin-kapt'
 }
 
+apply from: "$rootDir/base.gradle"
+
 android {
     namespace 'com.example.programmingquotes'
-    compileSdk 33
-
-    defaultConfig {
-        applicationId "com.example.programmingquotes"
-        minSdk 21
-        targetSdk 33
-        versionCode 1
-        versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary true
-        }
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
-        freeCompilerArgs += [
-                "-Xopt-in=androidx.compose.material.ExperimentalMaterialApi",
-                "-Xopt-in=com.google.accompanist.pager.ExperimentalPagerApi",
-        ]
-    }
-    buildFeatures {
-        compose true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion '1.1.1'
-    }
-    packagingOptions {
-        resources {
-            excludes += '/META-INF/{AL2.0,LGPL2.1}'
-        }
-    }
 }
 
 dependencies {
-    //android
-    implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
-    //compose
-    implementation 'androidx.activity:activity-compose:1.6.1'
-    implementation "androidx.compose.ui:ui:$compose_ui_version"
-    implementation "androidx.compose.ui:ui-tooling-preview:$compose_ui_version"
-    implementation 'androidx.compose.material:material:1.4.0-alpha03'
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_ui_version"
-    debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
-    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
-    implementation "androidx.navigation:navigation-compose:$nav_version"
-    //test
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    // system controller
-    implementation "com.google.accompanist:accompanist-systemuicontroller:0.27.0"
-    //hilt
-    implementation 'com.google.dagger:hilt-android:2.44'
-    kapt 'com.google.dagger:hilt-compiler:2.43.2'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.hilt:hilt-navigation-compose:1.1.0-alpha01'
 
-    //modules
-    implementation project(path: ':base')
-    implementation project(path: ':common-android')
-    implementation project(path: ':common-ui')
-    implementation project(path: ":di")
-    implementation project(path: ":feature-author:author-data")
-    implementation project(path: ":feature-author:author-domain")
-    implementation project(path: ":feature-author:author-ui")
-    implementation project(path: ":feature-quote:quote-data")
-    implementation project(path: ":feature-quote:quote-domain")
-    implementation project(path: ":feature-quote:quote-ui")
+    implementation Libraries.accompanistSystemUiController
+    kapt AnnotationProcessors.hilt
+
+    implementation project(Modules.base)
+    implementation project(Modules.commonAndroid)
+    implementation project(Modules.commonUi)
+    implementation project(Modules.di)
+    implementation project(Modules.authorData)
+    implementation project(Modules.authorsDomain)
+    implementation project(Modules.authorUi)
+    implementation project(Modules.quoteData)
+    implementation project(Modules.quoteDomain)
+    implementation project(Modules.quoteUI)
 }

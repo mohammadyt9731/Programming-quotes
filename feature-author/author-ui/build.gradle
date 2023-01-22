@@ -4,7 +4,10 @@ plugins {
     id 'com.google.dagger.hilt.android'
     id 'kotlin-kapt'
 }
-apply from: "$rootDir/compose-base.gradle"
+apply from: "$rootDir/base.gradle"
+android {
+    namespace 'com.example.author_ui'
+}
 
 dependencies {
 

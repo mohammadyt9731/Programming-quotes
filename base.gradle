@@ -1,5 +1,4 @@
 android {
-    namespace 'com.example.author_ui'
     compileSdk Versions.compileSdk
 
     defaultConfig {
@@ -46,6 +45,8 @@ android {
 dependencies {
 
     implementation Libraries.coreKtx
+    implementation Libraries.lifecycleRuntime
+    implementation Libraries.lifecycleExtensions
     implementation Libraries.junit
     implementation Libraries.testExtJunit
     implementation Libraries.testEspresso
