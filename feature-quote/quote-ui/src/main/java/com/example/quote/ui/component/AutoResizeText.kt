@@ -1,5 +1,6 @@
 package com.example.quote_ui.component
 
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -21,6 +22,7 @@ internal fun AutoResizeText(
     Text(
         modifier = modifier
             .padding(horizontal = 16.dp)
+            .fillMaxHeight()
             .drawWithContent {
                 if (readyToDraw) {
                     drawContent()
