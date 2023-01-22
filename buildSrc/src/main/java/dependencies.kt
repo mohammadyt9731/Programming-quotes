@@ -41,18 +41,18 @@ object Libraries {
     const val coreKtx = "androidx.core:core-ktx:${Versions.coreKtxVersion}"
 
     //compose
-    const val activity = "androidx.activity:activity-compose:${Versions.activityComposeVersion}"
-    const val ui = "androidx.compose.ui:ui:${Versions.composeVersion}"
-    const val toolingPreview = "androidx.compose.ui:ui-tooling-preview:${Versions.composeVersion}"
-    const val material = "androidx.compose.material:material:${Versions.composeVersion}"
-    const val navigation = "androidx.navigation:navigation-compose:${Versions.navigationVersion}"
-    const val hiltNavigation =
+    const val composeActivity = "androidx.activity:activity-compose:${Versions.activityComposeVersion}"
+    const val composeUi = "androidx.compose.ui:ui:${Versions.composeVersion}"
+    const val composeToolingPreview = "androidx.compose.ui:ui-tooling-preview:${Versions.composeVersion}"
+    const val composeMaterial = "androidx.compose.material:material:${Versions.composeVersion}"
+    const val composeNavigation = "androidx.navigation:navigation-compose:${Versions.navigationVersion}"
+    const val composeHiltNavigation =
         "androidx.hilt:hilt-navigation-compose:${Versions.hiltNavigationComposeVersion}"
 
     //test compose
-    const val uiTestJunit4 = "androidx.compose.ui:ui-test-junit4:${Versions.composeVersion}"
-    const val uiTestManifest = "androidx.compose.ui:ui-test-manifest:${Versions.composeVersion}"
-    const val tooling = "androidx.compose.ui:ui-tooling:${Versions.composeVersion}"
+    const val composeUiTestJunit4 = "androidx.compose.ui:ui-test-junit4:${Versions.composeVersion}"
+    const val composeUiTestManifest = "androidx.compose.ui:ui-test-manifest:${Versions.composeVersion}"
+    const val composeTooling = "androidx.compose.ui:ui-tooling:${Versions.composeVersion}"
 
 
     //lifecycle
@@ -102,7 +102,7 @@ object Modules {
     const val app = ":app"
     const val base = ":base"
     const val commonAndroid = ":common-android"
-    const val common = ":common-ui"
+    const val commonUi = ":common-ui"
     const val di = ":di"
 
     const val authorModel = ":feature-author:author-model"
