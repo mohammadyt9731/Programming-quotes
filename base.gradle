@@ -26,6 +26,7 @@ android {
         freeCompilerArgs += [
                 "-Xopt-in=androidx.compose.material.ExperimentalMaterialApi",
                 "-Xopt-in=com.google.accompanist.pager.ExperimentalPagerApi",
+                "-Xopt-in=androidx.compose.foundation.ExperimentalFoundationApi",
         ]
     }
     buildFeatures {
