@@ -5,7 +5,6 @@ import androidx.room.Room
 import com.example.author.data.db.AuthorDataBase
 import com.example.quote.data.db.QuoteDataBase
 import dagger.Binds
-
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -17,10 +17,8 @@ dependencies {
     kapt AnnotationProcessors.room
 
     implementation Libraries.room
-    implementation Libraries.roomKtx
 
     implementation Libraries.retrofit
-    implementation Libraries.okhttpInterceptor
 
     implementation project(Modules.quoteDomain)
     implementation project(Modules.authorsDomain)

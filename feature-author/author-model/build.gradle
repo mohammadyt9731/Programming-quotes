@@ -14,7 +14,6 @@ dependencies {
 
     kapt AnnotationProcessors.room
     implementation Libraries.room
-    implementation Libraries.roomKtx
 
     implementation project(Modules.base)
 }

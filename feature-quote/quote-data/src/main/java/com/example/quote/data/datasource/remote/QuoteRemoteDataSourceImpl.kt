@@ -1,6 +1,5 @@
 package com.example.quote.data.datasource.remote
 
-
 import com.example.common.android.bodyOrThrow
 import com.example.quote.data.network.QuoteApi
 import com.example.quote.model.AuthorWithQuotesResponse

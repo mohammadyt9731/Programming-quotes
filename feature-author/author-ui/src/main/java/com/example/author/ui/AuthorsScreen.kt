@@ -22,7 +22,6 @@ import androidx.navigation.NavController
 import com.example.author.ui.component.AppBar
 import com.example.author.ui.component.AuthorListItem
 import com.example.author.ui.component.SheetContent
-import com.example.author.ui.R
 import com.example.base.ResultWrapper
 import com.example.common.android.getMessageFromStringOrStringId
 import com.example.common.ui.Screens

@@ -11,9 +11,9 @@ android {
 
 dependencies {
 
-    implementation Libraries.room
     kapt AnnotationProcessors.room
-    implementation Libraries.roomKtx
+
+    implementation Libraries.room
 
     implementation project(Modules.authorModel)
 }

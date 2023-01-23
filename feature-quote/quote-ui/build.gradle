@@ -13,15 +13,13 @@ android {
 
 dependencies {
 
+    kapt AnnotationProcessors.hilt
+
     implementation Libraries.accompanistPager
     implementation Libraries.accompanistPagerIndicators
-
-    kapt AnnotationProcessors.hilt
 
     implementation project(Modules.base)
     implementation project(Modules.commonAndroid)
     implementation project(Modules.commonUi)
-
     implementation project(Modules.quoteDomain)
-    implementation project(Modules.authorModel)
 }

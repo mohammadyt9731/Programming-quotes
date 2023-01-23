@@ -1,6 +1,5 @@
 package com.example.quote.data.datasource.local
 
-
 import com.example.quote.data.db.QuoteDao
 import com.example.quote.model.AuthorWithQuotes
 import com.example.quote.model.QuoteEntity

@@ -13,12 +13,10 @@ android {
 
 dependencies {
 
-    implementation Libraries.lifecycleViewModel
-
     kapt AnnotationProcessors.hilt
 
-    implementation Libraries.gson
-    implementation Libraries.gsonConvertor
+    implementation Libraries.lifecycleViewModel
+    implementation Libraries.retrofit
 
     implementation project(Modules.base)
 }
