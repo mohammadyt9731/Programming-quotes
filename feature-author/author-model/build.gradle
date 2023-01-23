@@ -7,13 +7,13 @@ plugins {
 apply from: "$rootDir/base.gradle"
 
 android {
-    namespace 'com.example.author_model'
+    namespace 'com.example.author.model'
 }
 
 dependencies {
 
-    implementation Libraries.room
     kapt AnnotationProcessors.room
+    implementation Libraries.room
     implementation Libraries.roomKtx
 
     implementation project(Modules.base)

@@ -8,15 +8,15 @@ plugins {
 apply from: "$rootDir/base.gradle"
 
 android {
-    namespace 'com.example.quote_data'
+    namespace 'com.example.quote.data'
 }
 
 dependencies {
 
     kapt AnnotationProcessors.hilt
+    kapt AnnotationProcessors.room
 
     implementation Libraries.room
-    kapt AnnotationProcessors.room
     implementation Libraries.roomKtx
 
     implementation Libraries.retrofit

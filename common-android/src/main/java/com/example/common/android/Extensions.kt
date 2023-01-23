@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
-import com.example.common_android.R
+import com.example.common.android.R
 
 fun Context.openUri(uri: String) {
     try {

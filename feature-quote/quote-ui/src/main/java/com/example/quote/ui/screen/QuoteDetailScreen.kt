@@ -1,4 +1,4 @@
-package com.example.quote_ui.screen
+package com.example.quote.ui.screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
@@ -20,10 +20,10 @@ import com.example.common.android.getMessageFromStringOrStringId
 import com.example.common.android.openUri
 import com.example.common.android.shareText
 import com.example.common.ui.component.CustomButton
-import com.example.quote_ui.R
-import com.example.quote_ui.component.AutoResizeText
-import com.example.quote_ui.component.QuoteTopBar
-import com.example.quote_ui.viewmodel.QuoteDetailViewModel
+import com.example.quote.ui.R
+import com.example.quote.ui.component.AutoResizeText
+import com.example.quote.ui.component.QuoteTopBar
+import com.example.quote.ui.viewmodel.QuoteDetailViewModel
 
 @Composable
 fun QuoteDetailScreen(

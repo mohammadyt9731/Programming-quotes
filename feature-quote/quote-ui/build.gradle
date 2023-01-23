@@ -8,7 +8,7 @@ plugins {
 apply from: "$rootDir/base.gradle"
 
 android {
-    namespace 'com.example.quote_ui'
+    namespace 'com.example.quote.ui'
 }
 
 dependencies {

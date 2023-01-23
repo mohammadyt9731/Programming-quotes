@@ -1,7 +1,7 @@
-package com.example.quote_data.network
+package com.example.quote.data.network
 
-import com.example.quote_model.AuthorWithQuotesResponse
-import com.example.quote_model.QuoteResponse
+import com.example.quote.model.AuthorWithQuotesResponse
+import com.example.quote.model.QuoteResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

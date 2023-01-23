@@ -1,4 +1,4 @@
-package com.example.quote_ui
+package com.example.quote.ui
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

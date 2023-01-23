@@ -2,7 +2,7 @@ package com.example.common.android
 
 import com.example.base.Errors
 import com.example.base.ResultWrapper
-import com.example.common_android.R
+import com.example.common.android.R
 import java.net.ConnectException
 
 suspend fun <T> safeApiCall(apiCall: suspend () -> T): ResultWrapper<T> {

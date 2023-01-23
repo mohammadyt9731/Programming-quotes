@@ -6,7 +6,7 @@ plugins {
 apply from: "$rootDir/base.gradle"
 
 android {
-    namespace 'com.example.quote_model'
+    namespace 'com.example.quote.model'
 }
 
 dependencies {

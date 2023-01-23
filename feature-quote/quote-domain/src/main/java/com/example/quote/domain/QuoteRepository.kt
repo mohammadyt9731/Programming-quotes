@@ -1,8 +1,8 @@
-package com.example.quote_domain
+package com.example.quote.domain
 
 import com.example.base.ResultWrapper
-import com.example.quote_model.AuthorWithQuotes
-import com.example.quote_model.QuoteResponse
+import com.example.quote.model.AuthorWithQuotes
+import com.example.quote.model.QuoteResponse
 import kotlinx.coroutines.flow.Flow
 
 interface QuoteRepository {

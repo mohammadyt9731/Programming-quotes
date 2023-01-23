@@ -9,7 +9,7 @@ import com.example.author.domain.usecase.GetAuthorsUseCase
 import com.example.author.domain.usecase.UpdateAuthorsUseCase
 import com.example.base.ResultWrapper
 import com.example.common.android.BaseViewModel
-import com.example.quote_domain.usecase.GetRandomQuoteUseCase
+import com.example.quote.domain.usecase.GetRandomQuoteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

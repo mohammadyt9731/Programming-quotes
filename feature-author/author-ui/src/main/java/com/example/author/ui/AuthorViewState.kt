@@ -2,7 +2,7 @@ package com.example.author.ui
 
 import com.example.author.model.AuthorEntity
 import com.example.base.ResultWrapper
-import com.example.quote_model.QuoteResponse
+import com.example.quote.model.QuoteResponse
 
 data class AuthorViewState(
     val authors: ResultWrapper<List<AuthorEntity>> = ResultWrapper.UnInitialize,

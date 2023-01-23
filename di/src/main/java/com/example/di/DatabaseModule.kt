@@ -3,7 +3,7 @@ package com.example.di
 import android.content.Context
 import androidx.room.Room
 import com.example.author.data.db.AuthorDataBase
-import com.example.quote_data.db.QuoteDataBase
+import com.example.quote.data.db.QuoteDataBase
 import dagger.Binds
 
 import dagger.Module

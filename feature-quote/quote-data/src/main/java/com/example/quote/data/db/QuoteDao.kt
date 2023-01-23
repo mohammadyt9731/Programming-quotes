@@ -1,8 +1,8 @@
-package com.example.quote_data.db
+package com.example.quote.data.db
 
 import androidx.room.*
-import com.example.quote_model.AuthorWithQuotes
-import com.example.quote_model.QuoteEntity
+import com.example.quote.model.AuthorWithQuotes
+import com.example.quote.model.QuoteEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

@@ -1,4 +1,4 @@
-package com.example.programmingquotes.feature.splash.ui.screen
+package com.example.programmingquotes
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box

@@ -1,4 +1,4 @@
-package com.example.quote_ui.component
+package com.example.quote.ui.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import safeClickable
+import com.example.common.android.safeClickable
 
 @Composable
 internal fun QuoteListItem(

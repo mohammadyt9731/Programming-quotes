@@ -1,12 +1,12 @@
-package com.example.quote_data.repository
+package com.example.quote.data.repository
 
 import com.example.base.ResultWrapper
 import com.example.common.android.safeApiCall
-import com.example.quote_data.datasource.local.QuoteLocalDataSource
-import com.example.quote_data.datasource.remote.QuoteRemoteDataSource
-import com.example.quote_domain.QuoteRepository
-import com.example.quote_model.AuthorWithQuotes
-import com.example.quote_model.QuoteResponse
+import com.example.quote.data.datasource.local.QuoteLocalDataSource
+import com.example.quote.data.datasource.remote.QuoteRemoteDataSource
+import com.example.quote.domain.QuoteRepository
+import com.example.quote.model.AuthorWithQuotes
+import com.example.quote.model.QuoteResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject

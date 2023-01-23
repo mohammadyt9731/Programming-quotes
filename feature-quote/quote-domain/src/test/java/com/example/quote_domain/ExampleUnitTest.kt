@@ -1,4 +1,4 @@
-package com.example.quote_domain
+package com.example.quote.domain
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

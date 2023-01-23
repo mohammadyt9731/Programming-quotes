@@ -1,3 +1,5 @@
+package com.example.common.android
+
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -6,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.semantics.Role
-import com.example.common.android.safeOnClick
 
 fun Modifier.safeClickable(
     enabled: Boolean = true,

@@ -1,4 +1,4 @@
-package com.example.quote_ui.screen
+package com.example.quote.ui.screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,11 +21,11 @@ import androidx.navigation.NavHostController
 import com.example.base.ResultWrapper
 import com.example.common.android.getMessageFromStringOrStringId
 import com.example.common.ui.Screens
-import com.example.quote_ui.action.QuoteAction
-import com.example.quote_ui.component.QuoteListItem
-import com.example.quote_ui.component.QuoteTopBar
-import com.example.quote_ui.viewmodel.QuoteViewModel
-import com.example.quote_ui.viewstate.QuoteViewState
+import com.example.quote.ui.action.QuoteAction
+import com.example.quote.ui.component.QuoteListItem
+import com.example.quote.ui.component.QuoteTopBar
+import com.example.quote.ui.viewmodel.QuoteViewModel
+import com.example.quote.ui.viewstate.QuoteViewState
 
 @Composable
 fun QuotesScreen(

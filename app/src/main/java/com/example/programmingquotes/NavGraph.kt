@@ -1,4 +1,4 @@
-package com.example.programmingquotes.core.navigation
+package com.example.programmingquotes
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -11,11 +11,10 @@ import com.example.author.ui.AuthorViewModel
 import com.example.author.ui.AuthorsScreen
 import com.example.base.Constants
 import com.example.common.ui.Screens
-import com.example.programmingquotes.feature.splash.ui.screen.SplashScreen
-import com.example.quote_ui.screen.QuoteDetailScreen
-import com.example.quote_ui.screen.QuotesScreen
-import com.example.quote_ui.viewmodel.QuoteDetailViewModel
-import com.example.quote_ui.viewmodel.QuoteViewModel
+import com.example.quote.ui.screen.QuoteDetailScreen
+import com.example.quote.ui.screen.QuotesScreen
+import com.example.quote.ui.viewmodel.QuoteDetailViewModel
+import com.example.quote.ui.viewmodel.QuoteViewModel
 
 @Composable
 internal fun NavGraph(navHostController: NavHostController) {

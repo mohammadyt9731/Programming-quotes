@@ -2,9 +2,11 @@ plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
 }
+
 apply from: "$rootDir/base.gradle"
+
 android {
-    namespace 'com.example.common_ui'
+    namespace 'com.example.common.ui'
 }
 
 dependencies {

@@ -1,7 +1,7 @@
-package com.example.quote_data.datasource.local
+package com.example.quote.data.datasource.local
 
-import com.example.quote_model.AuthorWithQuotes
-import com.example.quote_model.QuoteEntity
+import com.example.quote.model.AuthorWithQuotes
+import com.example.quote.model.QuoteEntity
 import kotlinx.coroutines.flow.Flow
 
 internal interface QuoteLocalDataSource {
