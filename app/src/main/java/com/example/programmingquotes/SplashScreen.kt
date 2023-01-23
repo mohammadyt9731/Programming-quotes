@@ -1,4 +1,4 @@
-package com.example.programmingquotes.feature.splash.ui.screen
+package com.example.programmingquotes
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -11,7 +11,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.example.common.ui.Screens
-import com.example.programmingquotes.R
 import kotlinx.coroutines.delay
 
 @Composable

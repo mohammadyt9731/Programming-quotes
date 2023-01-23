@@ -8,16 +8,15 @@ plugins {
 apply from: "$rootDir/base.gradle"
 
 android {
-    namespace 'com.example.common_android'
+    namespace 'com.example.common.android'
 }
 
 dependencies {
 
-    implementation Libraries.lifecycleViewModel
-
     kapt AnnotationProcessors.hilt
 
+    implementation Libraries.lifecycleViewModel
+    implementation Libraries.retrofit
+
     implementation project(Modules.base)
-    implementation Libraries.gson
-    implementation Libraries.gsonConvertor
 }

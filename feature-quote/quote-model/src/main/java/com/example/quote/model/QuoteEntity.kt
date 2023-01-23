@@ -1,4 +1,4 @@
-package com.example.quote_model
+package com.example.quote.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

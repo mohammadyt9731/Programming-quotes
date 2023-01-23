@@ -1,5 +1,4 @@
-package com.example.quote_data.db
-
+package com.example.quote.data.db
 
 interface QuoteDataBase {
     fun quoteDao(): QuoteDao

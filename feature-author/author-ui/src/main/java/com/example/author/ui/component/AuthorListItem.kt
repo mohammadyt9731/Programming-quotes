@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.author.model.AuthorEntity
 import com.example.base.createEmojiWithDecimalCode
-import safeClickable
+import com.example.common.android.safeClickable
 
 @Composable
 internal fun AuthorListItem(author: AuthorEntity, onClick: () -> Unit) {

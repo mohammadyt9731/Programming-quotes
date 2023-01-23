@@ -1,8 +1,7 @@
-package com.example.quote_data.datasource.remote
+package com.example.quote.data.datasource.remote
 
-import com.example.quote_model.AuthorWithQuotesResponse
-import com.example.quote_model.QuoteResponse
-
+import com.example.quote.model.AuthorWithQuotesResponse
+import com.example.quote.model.QuoteResponse
 
 internal interface QuoteRemoteDataSource {
     suspend fun fetchAuthorWithQuotes(authorName: String): AuthorWithQuotesResponse

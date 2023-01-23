@@ -1,4 +1,3 @@
-
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
@@ -8,7 +7,7 @@ plugins {
 apply from: "$rootDir/base.gradle"
 
 android {
-    namespace 'com.example.quote_domain'
+    namespace 'com.example.quote.domain'
 }
 
 dependencies {

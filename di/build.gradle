@@ -13,15 +13,14 @@ android {
 
 dependencies {
 
-    implementation Libraries.room
-    kapt AnnotationProcessors.room
-    implementation Libraries.roomKtx
     kapt AnnotationProcessors.hilt
+    kapt AnnotationProcessors.room
+
+    implementation Libraries.room
+    implementation Libraries.roomKtx
 
     implementation Libraries.retrofit
     implementation Libraries.okhttpInterceptor
-
-    implementation Libraries.gson
     implementation Libraries.gsonConvertor
 
     implementation project(Modules.quoteModel)

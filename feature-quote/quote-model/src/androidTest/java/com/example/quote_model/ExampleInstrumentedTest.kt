@@ -1,4 +1,4 @@
-package com.example.quote_model
+package com.example.quote.model
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -17,6 +17,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.example.quote_model.test", appContext.packageName)
+        assertEquals("com.example.quote.model.test", appContext.packageName)
     }
 }

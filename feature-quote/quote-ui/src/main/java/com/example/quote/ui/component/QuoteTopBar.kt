@@ -1,4 +1,4 @@
-package com.example.quote_ui.component
+package com.example.quote.ui.component
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme

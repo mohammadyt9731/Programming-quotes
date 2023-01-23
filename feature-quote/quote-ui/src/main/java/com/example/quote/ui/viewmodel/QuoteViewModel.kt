@@ -1,12 +1,12 @@
-package com.example.quote_ui.viewmodel
+package com.example.quote.ui.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import com.example.base.Constants
 import com.example.common.android.BaseViewModel
-import com.example.quote_domain.usecase.GetAuthorWithQuotesUseCase
-import com.example.quote_domain.usecase.UpdateAuthorQuotesUseCase
-import com.example.quote_ui.action.QuoteAction
-import com.example.quote_ui.viewstate.QuoteViewState
+import com.example.quote.domain.usecase.GetAuthorWithQuotesUseCase
+import com.example.quote.domain.usecase.UpdateAuthorQuotesUseCase
+import com.example.quote.ui.action.QuoteAction
+import com.example.quote.ui.viewstate.QuoteViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject

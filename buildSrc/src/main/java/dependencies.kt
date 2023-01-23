@@ -50,12 +50,6 @@ object Libraries {
     const val composeHiltNavigation =
         "androidx.hilt:hilt-navigation-compose:${Versions.hiltNavigationComposeVersion}"
 
-    //test compose
-    const val composeUiTestJunit4 = "androidx.compose.ui:ui-test-junit4:${Versions.composeVersion}"
-    const val composeUiTestManifest = "androidx.compose.ui:ui-test-manifest:${Versions.composeVersion}"
-    const val composeTooling = "androidx.compose.ui:ui-tooling:${Versions.composeVersion}"
-
-
     //lifecycle
     const val lifecycleExtensions =
         "androidx.lifecycle:lifecycle-extensions:${Versions.lifecycleExtensions}"
@@ -63,11 +57,6 @@ object Libraries {
         "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycle}"
     const val lifecycleLiveData = "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.lifecycle}"
     const val lifecycleRuntime = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}"
-
-    //test
-    const val junit = "junit:junit:${Versions.junit}"
-    const val testExtJunit = "androidx.test.ext:junit:${Versions.testExtJunit}"
-    const val testEspresso = "androidx.test.espresso:espresso-core:${Versions.testEspresso}"
 
     //accompanist
     const val accompanistSystemUiController =
@@ -90,6 +79,16 @@ object Libraries {
     //room
     const val room = "androidx.room:room-runtime:${Versions.room}"
     const val roomKtx = "androidx.room:room-ktx:${Versions.room}"
+
+    //test compose
+    const val composeUiTestJunit4 = "androidx.compose.ui:ui-test-junit4:${Versions.composeVersion}"
+    const val composeUiTestManifest = "androidx.compose.ui:ui-test-manifest:${Versions.composeVersion}"
+    const val composeTooling = "androidx.compose.ui:ui-tooling:${Versions.composeVersion}"
+
+    //test
+    const val junit = "junit:junit:${Versions.junit}"
+    const val testExtJunit = "androidx.test.ext:junit:${Versions.testExtJunit}"
+    const val testEspresso = "androidx.test.espresso:espresso-core:${Versions.testEspresso}"
 }
 
 object AnnotationProcessors {

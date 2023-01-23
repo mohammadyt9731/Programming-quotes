@@ -1,7 +1,7 @@
-package com.example.quote_ui.viewstate
+package com.example.quote.ui.viewstate
 
 import com.example.base.ResultWrapper
-import com.example.quote_model.AuthorWithQuotes
+import com.example.quote.model.AuthorWithQuotes
 
 data class QuoteViewState(
     val authorWithQuotes: ResultWrapper<AuthorWithQuotes> = ResultWrapper.UnInitialize,

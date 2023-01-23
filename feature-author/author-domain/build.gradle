@@ -8,7 +8,7 @@ plugins {
 apply from: "$rootDir/base.gradle"
 
 android {
-    namespace 'com.example.author_domain'
+    namespace 'com.example.author.domain'
 }
 
 dependencies {

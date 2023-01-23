@@ -2,7 +2,6 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'com.google.dagger.hilt.android'
-    id 'kotlin-parcelize'
     id 'kotlin-kapt'
 }
 
@@ -21,10 +20,6 @@ dependencies {
     implementation project(Modules.commonAndroid)
     implementation project(Modules.commonUi)
     implementation project(Modules.di)
-    implementation project(Modules.authorData)
-    implementation project(Modules.authorsDomain)
     implementation project(Modules.authorUi)
-    implementation project(Modules.quoteData)
-    implementation project(Modules.quoteDomain)
     implementation project(Modules.quoteUI)
 }
