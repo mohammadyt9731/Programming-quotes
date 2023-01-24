@@ -24,8 +24,8 @@ import com.example.author.ui.component.AuthorListItem
 import com.example.author.ui.component.SheetContent
 import com.example.base.ResultWrapper
 import com.example.common.android.getMessageFromStringOrStringId
-import com.example.common.ui.Screens
 import com.example.common.ui.component.CustomButton
+import com.example.common.ui.screen.QuotesScreens
 import kotlinx.coroutines.launch
 
 @Composable
@@ -88,7 +88,7 @@ fun AuthorsScreen(
                 pullRefreshState = { pullRefreshState },
                 viewState = { viewState },
                 navigateToQuotes = { name ->
-                    navController.navigate(Screens.QuotesScreen.withArg(name))
+                    navController.navigate(QuotesScreens.QuotesScreen.withArg(name))
                 },
                 showBottomSheet = {
                     scope.launch {

@@ -24,7 +24,7 @@ internal class MainActivity : ComponentActivity() {
 
             val navController = rememberNavController()
             MyApp {
-                NavGraph(navHostController = navController)
+                RootNavGraph(navHostController = navController)
             }
         }
     }

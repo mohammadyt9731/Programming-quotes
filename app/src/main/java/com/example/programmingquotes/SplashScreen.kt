@@ -10,15 +10,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
-import com.example.common.ui.Screens
+import com.example.common.ui.screen.AuthorsScreens
+import com.example.common.ui.screen.MainScreens
 import kotlinx.coroutines.delay
 
 @Composable
 internal fun SplashScreen(navController: NavController) {
     LaunchedEffect(key1 = true) {
         delay(1000)
-        navController.navigate(Screens.AuthorsScreen.route) {
-            popUpTo(Screens.SplashScreen.route) {
+        navController.navigate(AuthorsScreens.AuthorsScreen.route) {
+            popUpTo(MainScreens.SplashScreen.route) {
                 inclusive = true
             }
         }
