@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
-class QuoteViewModel @Inject constructor(
+internal class QuoteViewModel @Inject constructor(
     private val getAuthorWithQuotesUseCase: GetAuthorWithQuotesUseCase,
     private val updateAuthorQuotesUseCase: UpdateAuthorQuotesUseCase,
     savedStateHandle: SavedStateHandle

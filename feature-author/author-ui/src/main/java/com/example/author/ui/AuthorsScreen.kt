@@ -29,7 +29,7 @@ import com.example.common.ui.screen.QuotesScreens
 import kotlinx.coroutines.launch
 
 @Composable
-fun AuthorsScreen(
+internal fun AuthorsScreen(
     navController: NavController,
     viewModel: AuthorViewModel
 ) {

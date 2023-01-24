@@ -28,7 +28,7 @@ import com.example.quote.ui.viewmodel.QuoteViewModel
 import com.example.quote.ui.viewstate.QuoteViewState
 
 @Composable
-fun QuotesScreen(
+internal fun QuotesScreen(
     navHostController: NavHostController,
     viewModel: QuoteViewModel
 ) {

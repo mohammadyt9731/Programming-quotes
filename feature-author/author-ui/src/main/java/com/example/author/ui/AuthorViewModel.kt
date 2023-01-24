@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthorViewModel @Inject constructor(
+internal class AuthorViewModel @Inject constructor(
     private val getAuthorsUseCase: GetAuthorsUseCase,
     private val updateAuthorsUseCase: UpdateAuthorsUseCase,
     private val getRandomQuoteUseCase: GetRandomQuoteUseCase,

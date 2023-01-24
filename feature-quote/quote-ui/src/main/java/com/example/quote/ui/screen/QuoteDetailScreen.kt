@@ -26,7 +26,7 @@ import com.example.quote.ui.component.QuoteTopBar
 import com.example.quote.ui.viewmodel.QuoteDetailViewModel
 
 @Composable
-fun QuoteDetailScreen(
+internal fun QuoteDetailScreen(
     index: Int,
     viewModel: QuoteDetailViewModel
 ) {
