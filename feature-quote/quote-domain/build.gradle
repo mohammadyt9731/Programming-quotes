@@ -16,4 +16,5 @@ dependencies {
 
     implementation project(Modules.base)
     api project(Modules.quoteModel)
+    api project(Modules.authorModel)
 }
