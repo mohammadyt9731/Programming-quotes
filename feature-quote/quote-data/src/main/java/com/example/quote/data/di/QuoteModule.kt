@@ -21,18 +21,18 @@ import retrofit2.Retrofit
 internal abstract class QuoteModule {
     companion object {
         @Provides
-        fun provideQuoteApi(
+        internal fun provideQuoteApi(
             retrofit: Retrofit
         ): QuoteApi =
             retrofit.create(QuoteApi::class.java)
         @Provides
-        fun provideQuoteDao(quoteDataBase: QuoteDataBase): QuoteDao =
+        internal fun provideQuoteDao(quoteDataBase: QuoteDataBase): QuoteDao =
             quoteDataBase.quoteDao()
     }
     @Binds
-    abstract fun bindQuoteLocalDataSource(impl: QuoteLocalDataSourceImpl): QuoteLocalDataSource
+    internal abstract fun bindQuoteLocalDataSource(impl: QuoteLocalDataSourceImpl): QuoteLocalDataSource
     @Binds
-    abstract fun bindQuoteRemoteDataSource(impl: QuoteRemoteDataSourceImpl): QuoteRemoteDataSource
+    internal abstract fun bindQuoteRemoteDataSource(impl: QuoteRemoteDataSourceImpl): QuoteRemoteDataSource
     @Binds
-    abstract fun bindQuoteRepository(impl: QuoteRepositoryImpl): QuoteRepository
+    internal abstract fun bindQuoteRepository(impl: QuoteRepositoryImpl): QuoteRepository
 }
