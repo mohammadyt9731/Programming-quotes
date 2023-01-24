@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.base.ResultWrapper
 import com.example.common.android.getMessageFromStringOrStringId
-import com.example.common.ui.Screens
-import com.example.quote.ui.action.QuoteAction
+import com.example.common.ui.screen.QuotesScreens
+import com.example.quote.ui.QuoteAction
 import com.example.quote.ui.component.QuoteListItem
 import com.example.quote.ui.component.QuoteTopBar
 import com.example.quote.ui.viewmodel.QuoteViewModel
@@ -66,7 +66,7 @@ fun QuotesScreen(
             viewState = { viewState },
             navigateToDetail = { index, name ->
                 navHostController.navigate(
-                    Screens.QuoteDetailScreen.withArg(
+                    QuotesScreens.QuoteDetailScreen.withArg(
                         "$index",
                         name
                     )

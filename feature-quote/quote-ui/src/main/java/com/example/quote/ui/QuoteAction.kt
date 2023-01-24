@@ -1,4 +1,4 @@
-package com.example.quote.ui.action
+package com.example.quote.ui
 
 sealed interface QuoteAction {
     object GetAuthorWithQuotesWhenRefresh : QuoteAction

@@ -5,7 +5,7 @@ import com.example.base.Constants
 import com.example.common.android.BaseViewModel
 import com.example.quote.domain.usecase.GetAuthorWithQuotesUseCase
 import com.example.quote.domain.usecase.UpdateAuthorQuotesUseCase
-import com.example.quote.ui.action.QuoteAction
+import com.example.quote.ui.QuoteAction
 import com.example.quote.ui.viewstate.QuoteViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.onEach
