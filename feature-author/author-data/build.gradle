@@ -20,7 +20,7 @@ dependencies {
 
     implementation Libraries.retrofit
 
-    implementation project(Modules.authorsDomain)
+    implementation project(Modules.authorDomain)
     implementation project(Modules.commonAndroid)
     implementation project(Modules.base)
 }

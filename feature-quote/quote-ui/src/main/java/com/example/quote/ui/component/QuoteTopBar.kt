@@ -13,7 +13,7 @@ import com.example.base.createEmojiWithDecimalCode
 
 @Composable
 internal fun QuoteTopBar(
-    modifier: Modifier = Modifier.padding(horizontal = 16.dp),
+    modifier: Modifier = Modifier,
     emojiCode: Int,
     authorName: String
 ) {
@@ -22,7 +22,9 @@ internal fun QuoteTopBar(
         elevation = 0.dp,
     ) {
         Text(
-            modifier = modifier,
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .then(modifier),
             text = "${createEmojiWithDecimalCode(emojiCode)} $authorName",
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.subtitle1,

@@ -1,6 +1,9 @@
+// From https://github.com/JakeWharton/SdkSearch/blob/master/gradle/projectDependencyGraph.gradle
+// The only difference here is the output directory.
+
 task projectDependencyGraph {
     doLast {
-        def dot = file('img/dependency-graph/project.dot')
+        def dot = new File(rootProject.rootDir, 'gradle/dependency-graph/project.dot')
         dot.parentFile.mkdirs()
         dot.delete()
 
@@ -50,7 +53,6 @@ task projectDependencyGraph {
                             projects.add(project)
                             projects.add(dependency)
                             rootProjects.remove(dependency)
-
                             def color = randomRgbCode()
 
                             def graphKey = new Tuple2<Project, Project>(project, dependency)
@@ -118,13 +120,9 @@ task projectDependencyGraph {
             throw new RuntimeException(p.errorStream.text)
         }
 
-        println("Project dependency graph created at ${dot.absolutePath}.png")
-
-        dot.delete()
-
+        println("Project module dependency graph created at ${dot.absolutePath}.png")
     }
 }
-
 def randomRgbCode() {
     def rgb = new Random().nextInt(1 << 24) // A random 24-bit integer
     '#' + Integer.toString(rgb, 16).padLeft(6, '0')

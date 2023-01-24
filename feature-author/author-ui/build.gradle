@@ -16,6 +16,6 @@ dependencies {
     implementation project(Modules.base)
     implementation project(Modules.commonAndroid)
     implementation project(Modules.commonUi)
-    implementation project(Modules.authorsDomain)
+    implementation project(Modules.authorDomain)
     implementation project(Modules.quoteDomain)
 }

@@ -23,18 +23,18 @@ import retrofit2.Retrofit
 @InstallIn(SingletonComponent::class)
 internal abstract class AuthorModule {
     @Binds
-    abstract fun bindAuthorLocalDataSource(impl: AuthorLocalDataSourceImpl): AuthorLocalDataSource
+    internal abstract fun bindAuthorLocalDataSource(impl: AuthorLocalDataSourceImpl): AuthorLocalDataSource
     @Binds
-    abstract fun bindAuthorRepository(impl: AuthorRepositoryImpl): AuthorRepository
+    internal abstract fun bindAuthorRepository(impl: AuthorRepositoryImpl): AuthorRepository
     @Binds
-    abstract fun bindAuthorRemoteDataSource(impl: AuthorRemoteDataSourceImpl): AuthorRemoteDataSource
+    internal abstract fun bindAuthorRemoteDataSource(impl: AuthorRemoteDataSourceImpl): AuthorRemoteDataSource
     companion object {
         @Provides
-        fun provideAuthorDao(authorDataBase: AuthorDataBase): AuthorDao = authorDataBase.authorDao()
+        internal fun provideAuthorDao(authorDataBase: AuthorDataBase): AuthorDao = authorDataBase.authorDao()
         @Provides
-        fun provideAuthorApi(retrofit: Retrofit): AuthorApi = retrofit.create(AuthorApi::class.java)
+        internal fun provideAuthorApi(retrofit: Retrofit): AuthorApi = retrofit.create(AuthorApi::class.java)
         @Provides
-        fun provideSensorManager(@ApplicationContext context: Context): SensorManager =
+        internal fun provideSensorManager(@ApplicationContext context: Context): SensorManager =
             context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
 }

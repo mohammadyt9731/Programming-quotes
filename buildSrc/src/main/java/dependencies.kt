@@ -105,7 +105,7 @@ object Modules {
 
     const val authorModel = ":feature-author:author-model"
     const val authorData = ":feature-author:author-data"
-    const val authorsDomain = ":feature-author:author-domain"
+    const val authorDomain = ":feature-author:author-domain"
     const val authorUi = ":feature-author:author-ui"
 
     const val quoteModel = ":feature-quote:quote-model"

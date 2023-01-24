@@ -4,8 +4,8 @@ import com.example.author.model.AuthorEntity
 import com.example.base.ResultWrapper
 import com.example.quote.model.QuoteResponse
 
-data class AuthorViewState(
-    val authors: ResultWrapper<List<AuthorEntity>> = ResultWrapper.UnInitialize,
-    val update: ResultWrapper<Unit> = ResultWrapper.UnInitialize,
-    val bottomSheet: ResultWrapper<QuoteResponse?> = ResultWrapper.UnInitialize
+internal data class AuthorViewState(
+    internal val authors: ResultWrapper<List<AuthorEntity>> = ResultWrapper.UnInitialize,
+    internal val update: ResultWrapper<Unit> = ResultWrapper.UnInitialize,
+    internal val bottomSheet: ResultWrapper<QuoteResponse?> = ResultWrapper.UnInitialize
 )
