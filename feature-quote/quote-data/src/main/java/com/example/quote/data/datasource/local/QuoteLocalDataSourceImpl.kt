@@ -15,5 +15,5 @@ internal class QuoteLocalDataSourceImpl @Inject constructor(
     override fun getAuthorWithQuotes(authorName: String): Flow<AuthorWithQuotes> =
         quoteDao.getAuthorWithQuotes(authorName)
 
-    override fun getRandomQuote(): QuoteEntity? = quoteDao.getRandomQuote()
+    override suspend fun getRandomQuote(): QuoteEntity? = quoteDao.getRandomQuote()
 }

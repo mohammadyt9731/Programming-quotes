@@ -66,9 +66,9 @@ internal fun QuotesScreen(
             viewState = { viewState },
             navigateToDetail = { index, name ->
                 navHostController.navigate(
-                    QuotesScreens.QuoteDetailScreen.withArg(
-                        "$index",
-                        name
+                    QuotesScreens.QuoteDetailScreen.createRoute(
+                        quoteIndexKey = index,
+                        authorNameKey = name
                     )
                 )
             }

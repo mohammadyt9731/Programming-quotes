@@ -88,7 +88,7 @@ internal fun AuthorsScreen(
                 pullRefreshState = { pullRefreshState },
                 viewState = { viewState },
                 navigateToQuotes = { name ->
-                    navController.navigate(QuotesScreens.QuotesScreen.withArg(name))
+                    navController.navigate(QuotesScreens.QuotesScreen.createRoute(name))
                 },
                 showBottomSheet = {
                     scope.launch {

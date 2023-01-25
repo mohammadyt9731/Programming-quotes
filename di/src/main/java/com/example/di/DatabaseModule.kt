@@ -18,16 +18,16 @@ internal abstract class DatabaseModule {
 
     @Binds
     @Singleton
-    abstract fun bindAuthorDataBase(appDatabase: AppDatabase): AuthorDataBase
+    internal abstract fun bindAuthorDataBase(appDatabase: AppDatabase): AuthorDataBase
 
     @Binds
     @Singleton
-    abstract fun bindQuoteDataBase(appDatabase: AppDatabase): QuoteDataBase
+    internal abstract fun bindQuoteDataBase(appDatabase: AppDatabase): QuoteDataBase
 
     companion object {
         @Provides
         @Singleton
-        fun provideRoom(@ApplicationContext context: Context): AppDatabase {
+        internal fun provideRoom(@ApplicationContext context: Context): AppDatabase {
             return Room.databaseBuilder(
                 context,
                 AppDatabase::class.java,

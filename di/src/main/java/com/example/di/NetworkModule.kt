@@ -13,39 +13,36 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal abstract class NetworkModule {
+internal object NetworkModule {
+    @Provides
+    fun provideLoggerInterceptor(): HttpLoggingInterceptor =
+        HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
 
-    companion object {
-        @Provides
-        fun provideLoggerInterceptor(): HttpLoggingInterceptor =
-            HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+    @Provides
+    fun provideOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor,
+        timeOut: Long
+    ): OkHttpClient =
+        OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .readTimeout(timeOut, TimeUnit.SECONDS)
+            .writeTimeout(timeOut, TimeUnit.SECONDS)
+            .connectTimeout(timeOut, TimeUnit.SECONDS)
+            .build()
 
-        @Provides
-        fun provideOkHttpClient(
-            loggingInterceptor: HttpLoggingInterceptor,
-            timeOut: Long
-        ): OkHttpClient =
-            OkHttpClient.Builder()
-                .addInterceptor(loggingInterceptor)
-                .readTimeout(timeOut, TimeUnit.SECONDS)
-                .writeTimeout(timeOut, TimeUnit.SECONDS)
-                .connectTimeout(timeOut, TimeUnit.SECONDS)
-                .build()
+    @Provides
+    fun provideBaseUrl(): String = "http://167.235.142.70:5002"
 
-        @Provides
-        fun provideBaseUrl(): String = "http://167.235.142.70:5002"
+    @Provides
+    fun provideTimeOut(): Long = 30L
 
-        @Provides
-        fun provideTimeOut(): Long = 3L
+    @Provides
+    @Singleton
+    fun provideRetrofit(okHttpClient: OkHttpClient, baseUrl: String): Retrofit =
+        Retrofit.Builder()
+            .client(okHttpClient)
+            .baseUrl(baseUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
 
-        @Provides
-        @Singleton
-        fun provideRetrofit(okHttpClient: OkHttpClient, baseUrl: String): Retrofit =
-            Retrofit.Builder()
-                .client(okHttpClient)
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-
-    }
 }

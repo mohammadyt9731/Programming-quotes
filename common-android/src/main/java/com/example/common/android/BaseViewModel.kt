@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-open class BaseViewModel<S, A> @Inject constructor(initializeState: S) : ViewModel() {
+abstract class BaseViewModel<S, A> constructor(initializeState: S) : ViewModel() {
 
     private val _viewState = MutableStateFlow(initializeState)
     val viewState = _viewState.asStateFlow()

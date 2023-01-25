@@ -1,7 +1,13 @@
 package com.example.common.ui.screen
 
-sealed class QuotesScreens(route: String) : BaseScreen(route) {
+sealed class QuotesScreens(val route: String) {
 
-    object QuotesScreen : QuotesScreens("quotes_screen")
-    object QuoteDetailScreen : QuotesScreens("quote_detail_screen")
+    object QuotesScreen : QuotesScreens("quotes_screen") {
+        fun createRoute(authorNameKey: String) = "$route/$authorNameKey"
+    }
+
+    object QuoteDetailScreen : QuotesScreens("quote_detail_screen") {
+        fun createRoute(quoteIndexKey: Int, authorNameKey: String) =
+            "$route/$quoteIndexKey/$authorNameKey"
+    }
 }
