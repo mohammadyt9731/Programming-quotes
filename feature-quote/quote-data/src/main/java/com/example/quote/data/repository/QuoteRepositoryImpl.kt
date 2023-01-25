@@ -52,5 +52,5 @@ internal class QuoteRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun getRandomQuoteFromDb() = localDataSource.getRandomQuote()
+    private suspend fun getRandomQuoteFromDb() = localDataSource.getRandomQuote()
 }

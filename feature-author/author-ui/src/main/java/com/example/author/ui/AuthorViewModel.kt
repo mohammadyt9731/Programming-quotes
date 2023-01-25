@@ -25,7 +25,6 @@ internal class AuthorViewModel @Inject constructor(
     private val sensorManager: SensorManager
 ) : BaseViewModel<AuthorViewState, AuthorAction>(AuthorViewState()) {
 
-    private var isNextRequestReady = true
     private var sensorListener: SensorEventListener? = null
     private var job: Job? = null
 
@@ -64,7 +63,6 @@ internal class AuthorViewModel @Inject constructor(
     private fun getRandomQuote() {
         job?.cancel()
         job = getRandomQuoteUseCase().executeOnResultWrapper {
-            isNextRequestReady = true
             copy(bottomSheet = it)
         }
     }
@@ -93,10 +91,7 @@ internal class AuthorViewModel @Inject constructor(
                 acceleration = acceleration * 0.9f + delta
 
                 if (acceleration > 12) {
-                    if (isNextRequestReady) {
-                        isNextRequestReady = false
                         getRandomQuote()
-                    }
                 }
             }
 

@@ -11,7 +11,7 @@ interface QuoteDao {
     suspend fun insertAuthorQuotes(quotes: List<QuoteEntity>)
 
     @Query("SELECT * FROM quote ORDER BY RANDOM() LIMIT 1")
-    fun getRandomQuote(): QuoteEntity?
+    suspend fun getRandomQuote(): QuoteEntity?
 
     @Transaction
     @Query("SELECT * FROM author WHERE name = (:authorName)")

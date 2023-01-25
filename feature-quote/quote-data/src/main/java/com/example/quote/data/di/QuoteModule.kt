@@ -19,6 +19,13 @@ import retrofit2.Retrofit
 @Module
 @InstallIn(SingletonComponent::class)
 internal abstract class QuoteModule {
+    @Binds
+    internal abstract fun bindQuoteLocalDataSource(impl: QuoteLocalDataSourceImpl): QuoteLocalDataSource
+    @Binds
+    internal abstract fun bindQuoteRemoteDataSource(impl: QuoteRemoteDataSourceImpl): QuoteRemoteDataSource
+    @Binds
+    internal abstract fun bindQuoteRepository(impl: QuoteRepositoryImpl): QuoteRepository
+
     companion object {
         @Provides
         internal fun provideQuoteApi(
@@ -29,10 +36,4 @@ internal abstract class QuoteModule {
         internal fun provideQuoteDao(quoteDataBase: QuoteDataBase): QuoteDao =
             quoteDataBase.quoteDao()
     }
-    @Binds
-    internal abstract fun bindQuoteLocalDataSource(impl: QuoteLocalDataSourceImpl): QuoteLocalDataSource
-    @Binds
-    internal abstract fun bindQuoteRemoteDataSource(impl: QuoteRemoteDataSourceImpl): QuoteRemoteDataSource
-    @Binds
-    internal abstract fun bindQuoteRepository(impl: QuoteRepositoryImpl): QuoteRepository
 }
