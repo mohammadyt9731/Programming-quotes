@@ -1,0 +1,20 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'com.google.dagger.hilt.android'
+}
+apply from: "$rootDir/base.gradle"
+
+android {
+    namespace 'com.example.quote.domain'
+}
+
+dependencies {
+
+    kapt AnnotationProcessors.hilt
+
+    implementation project(Modules.base)
+    api project(Modules.quoteModel)
+    api project(Modules.authorModel)
+}

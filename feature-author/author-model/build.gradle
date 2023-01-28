@@ -1,0 +1,19 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+}
+
+apply from: "$rootDir/base.gradle"
+
+android {
+    namespace 'com.example.author.model'
+}
+
+dependencies {
+
+    kapt AnnotationProcessors.room
+    implementation Libraries.room
+
+    implementation project(Modules.base)
+}

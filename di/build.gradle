@@ -1,0 +1,30 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'com.google.dagger.hilt.android'
+    id 'kotlin-kapt'
+}
+
+apply from: "$rootDir/base.gradle"
+
+android {
+    namespace 'com.example.di'
+}
+
+dependencies {
+
+    kapt AnnotationProcessors.hilt
+    kapt AnnotationProcessors.room
+
+    implementation Libraries.room
+    implementation Libraries.roomKtx
+
+    implementation Libraries.retrofit
+    implementation Libraries.okhttpInterceptor
+    implementation Libraries.gsonConvertor
+
+    implementation project(Modules.quoteModel)
+    implementation project(Modules.quoteData)
+    implementation project(Modules.authorModel)
+    implementation project(Modules.authorData)
+}

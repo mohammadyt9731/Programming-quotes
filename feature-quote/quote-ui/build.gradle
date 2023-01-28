@@ -1,0 +1,25 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'com.google.dagger.hilt.android'
+}
+
+apply from: "$rootDir/base.gradle"
+
+android {
+    namespace 'com.example.quote.ui'
+}
+
+dependencies {
+
+    kapt AnnotationProcessors.hilt
+
+    implementation Libraries.accompanistPager
+    implementation Libraries.accompanistPagerIndicators
+
+    implementation project(Modules.base)
+    implementation project(Modules.commonAndroid)
+    implementation project(Modules.commonUi)
+    implementation project(Modules.quoteDomain)
+}

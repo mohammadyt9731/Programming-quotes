@@ -1,0 +1,22 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'com.google.dagger.hilt.android'
+    id 'kotlin-kapt'
+}
+
+apply from: "$rootDir/base.gradle"
+
+android {
+    namespace 'com.example.common.android'
+}
+
+dependencies {
+
+    kapt AnnotationProcessors.hilt
+
+    implementation Libraries.lifecycleViewModel
+    implementation Libraries.retrofit
+
+    implementation project(Modules.base)
+}

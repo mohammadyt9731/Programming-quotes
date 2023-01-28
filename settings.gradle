@@ -14,3 +14,15 @@ dependencyResolutionManagement {
 }
 rootProject.name = "ProgrammingQuotes"
 include ':app'
+include ':base'
+include ':common-android'
+include ':common-ui'
+include ':feature-author:author-ui'
+include ':feature-author:author-domain'
+include ':feature-author:author-model'
+include ':feature-author:author-data'
+include ':feature-quote:quote-model'
+include ':feature-quote:quote-data'
+include ':feature-quote:quote-domain'
+include ':feature-quote:quote-ui'
+include ':di'
